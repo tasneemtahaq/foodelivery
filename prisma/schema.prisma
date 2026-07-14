@@ -1,5 +1,3 @@
-// This tells Prisma we are using SQLite (simple file-based database)
-// Perfect for beginners — no server needed!
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,41 +7,29 @@ datasource db {
   url      = "file:./dev.db"
 }
 
-// ── CATEGORY ──────────────────────────────────────────────
-// Example: "Burgers", "Pizza", "Drinks"
 model Category {
   id        Int      @id @default(autoincrement())
   name      String   @unique
-  image     String?  // optional image for the category
+  image     String?
   createdAt DateTime @default(now())
-
-  // One category has MANY foods
   foods     Food[]
 }
 
-// ── FOOD ──────────────────────────────────────────────────
-// Every food item on the menu
 model Food {
-  id          Int      @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   name        String
   description String
   price       Float
   image       String?
-  isAvailable Boolean  @default(true)
-  isFeatured  Boolean  @default(false)
-  offerPrice  Float?   // discounted price (optional)
-  createdAt   DateTime @default(now())
-
-  // Every food BELONGS TO one category
+  isAvailable Boolean     @default(true)
+  isFeatured  Boolean     @default(false)
+  offerPrice  Float?
+  createdAt   DateTime    @default(now())
   categoryId  Int
-  category    Category   @relation(fields: [categoryId], references: [id])
-
-  // One food can appear in MANY order items
+  category    Category    @relation(fields: [categoryId], references: [id])
   orderItems  OrderItem[]
 }
 
-// ── CUSTOMER ──────────────────────────────────────────────
-// People who place orders
 model Customer {
   id        Int      @id @default(autoincrement())
   name      String
@@ -53,70 +39,49 @@ model Customer {
   city      String
   area      String?
   createdAt DateTime @default(now())
-
-  // One customer can have MANY orders
   orders    Order[]
 }
 
-// ── ORDER ─────────────────────────────────────────────────
-// A single order placed by a customer
 model Order {
-  id               Int         @id @default(autoincrement())
-  orderNumber      String      @unique // e.g. "ORD-001"
-  status           String      @default("pending")
-  // Status options: pending, preparing, out_for_delivery, delivered, cancelled
-
-  paymentMethod    String      // cash, bank, jazzcash, easypaisa
-  deliveryCharge   Float       @default(50)
-  tax              Float       @default(0)
-  totalAmount      Float
-  instructions     String?     // special delivery instructions
-  estimatedTime    String?     // e.g. "30-45 minutes"
-  createdAt        DateTime    @default(now())
-
-  // Every order BELONGS TO one customer
-  customerId       Int
-  customer         Customer    @relation(fields: [customerId], references: [id])
-
-  // One order has MANY order items
-  orderItems       OrderItem[]
+  id             Int         @id @default(autoincrement())
+  orderNumber    String      @unique
+  status         String      @default("pending")
+  paymentMethod  String
+  deliveryCharge Float       @default(50)
+  tax            Float       @default(0)
+  totalAmount    Float
+  instructions   String?
+  estimatedTime  String?
+  createdAt      DateTime    @default(now())
+  customerId     Int
+  customer       Customer    @relation(fields: [customerId], references: [id])
+  orderItems     OrderItem[]
 }
 
-// ── ORDER ITEM ────────────────────────────────────────────
-// Each food inside an order
-// Example: 2x Burger, 1x Pizza in the same order
 model OrderItem {
   id       Int   @id @default(autoincrement())
   quantity Int
-  price    Float // price at time of ordering (in case food price changes later)
-
-  // BELONGS TO one order
+  price    Float
   orderId  Int
-  order    Order  @relation(fields: [orderId], references: [id])
-
-  // BELONGS TO one food
+  order    Order @relation(fields: [orderId], references: [id])
   foodId   Int
-  food     Food   @relation(fields: [foodId], references: [id])
+  food     Food  @relation(fields: [foodId], references: [id])
 }
 
-// ── SETTINGS ──────────────────────────────────────────────
-// Restaurant settings — only one row in this table
 model Settings {
-  id              Int     @id @default(autoincrement())
-  restaurantName  String  @default("My Restaurant")
-  logo            String?
-  deliveryCharge  Float   @default(50)
-  openingHours    String  @default("10:00 AM - 11:00 PM")
-  address         String  @default("")
-  phone           String  @default("")
-  taxPercent      Float   @default(0)
+  id             Int     @id @default(autoincrement())
+  restaurantName String  @default("My Restaurant")
+  logo           String?
+  deliveryCharge Float   @default(50)
+  openingHours   String  @default("10:00 AM - 11:00 PM")
+  address        String  @default("")
+  phone          String  @default("")
+  taxPercent     Float   @default(0)
 }
 
-// ── ADMIN ─────────────────────────────────────────────────
-// Simple admin login (email + password only)
 model Admin {
   id        Int      @id @default(autoincrement())
   email     String   @unique
-  password  String   // will be stored as a hashed password (bcrypt)
+  password  String
   createdAt DateTime @default(now())
 }
