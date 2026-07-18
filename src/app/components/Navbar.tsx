@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart, Menu, X } from "lucide-react";
 import Image from "next/image";
 import { useCartStore, CartStore  } from "../../store/cartStore";
+import { useAuthStore } from "@/store/authStore";
+import toast from "react-hot-toast";
 
 const NAV_LINKS = [
   { label: "Home",            href: "/"        },
@@ -22,6 +24,9 @@ export default function Navbar() {
   const pathname   = usePathname();
   const totalItems = useCartStore((state: CartStore) => state.totalItems());
   const hasHydrated = useCartStore((state: CartStore) => state.hasHydrated);
+  const user       = useAuthStore((s) => s.user);
+  const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
+  const logout     = useAuthStore((s) => s.logout);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -120,28 +125,39 @@ useEffect(() => {
             </Link>
 
             {/* Sign In */}
-            <Link
-              href="/admin"
-              className="min-w-16 px-8 py-3 rounded-full text-sm font-semibold text-center transition-all duration-200 hover:scale-105"
-              style={{
-                background: "#F97316",
-                color: "#FFFFFF",
-              }}
-            >
-              Sign In
-            </Link>
-
-            {/* Sign Up */}
-            <Link
-              href="#"
-              className="min-w-16 px-8 py-3 rounded-full text-sm font-semibold text-center border-2 transition-all duration-200 hover:bg-orange-50 hover:scale-105"
-              style={{
-                borderColor: "#F97316",
-                color: "#F97316",
-              }}
-            >
-              Sign Up
-            </Link>
+            {isLoggedIn && user ? (
+              // ── Logged in state ──
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium" style={{ color: "#374151" }}>
+                  Hi, {user.name ?? user.email.split("@")[0]}! 👋
+                </span>
+                <button
+                  onClick={() => { logout(); toast.success("Logged out!"); }}
+                  className="px-5 py-2 rounded-full text-sm font-semibold border-2 transition-all hover:bg-red-50"
+                  style={{ borderColor: "#EF4444", color: "#EF4444" }}
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              // ── Logged out state ──
+              <>
+                <Link
+                  href="/login"
+                  className="px-6 py-2.5 rounded-full text-sm font-semibold transition-all hover:scale-105"
+                  style={{ background: "#F97316", color: "white" }}
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  className="px-6 py-2.5 rounded-full text-sm font-semibold border-2 transition-all hover:bg-orange-50 hover:scale-105"
+                  style={{ borderColor: "#F97316", color: "#F97316" }}
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile hamburger */}

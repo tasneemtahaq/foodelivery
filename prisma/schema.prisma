@@ -85,3 +85,14 @@ model Admin {
   password  String
   createdAt DateTime @default(now())
 }
+// ── USER (for customer login accounts) ────────────────────
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String?
+  address   String?
+  city      String   @default("Karachi")
+  createdAt DateTime @default(now())
+}
