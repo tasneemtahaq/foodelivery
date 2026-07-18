@@ -20,6 +20,8 @@ export interface CartStore {
   clearCart:   () => void;
   totalItems:  () => number;
   totalPrice:  () => number;
+  hasHydrated: boolean;
+  setHasHydrated: (state: boolean) => void;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -28,6 +30,9 @@ export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
+      hasHydrated: false,
+
+      setHasHydrated: (state) => set({ hasHydrated: state }),
 
       // Add item to cart (or increase quantity if already there)
       addItem: (newItem) => {
@@ -87,7 +92,11 @@ export const useCartStore = create<CartStore>()(
         get().items.reduce((sum, i) => sum + i.price * i.quantity, 0),
     }),
     {
-      name: "food-cart", // key used in localStorage
-    }
+  name: "food-cart",
+
+  onRehydrateStorage: () => (state) => {
+    state?.setHasHydrated(true);
+  },
+}
   )
 );

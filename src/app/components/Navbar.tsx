@@ -21,6 +21,7 @@ export default function Navbar() {
   const [menuOpen,  setMenuOpen]  = useState(false);
   const pathname   = usePathname();
   const totalItems = useCartStore((state: CartStore) => state.totalItems());
+  const hasHydrated = useCartStore((state: CartStore) => state.hasHydrated);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -42,8 +43,8 @@ useEffect(() => {
       <motion.nav
   className={`fixed top-0 left-0 right-0 z-20 backdrop-blur-xl border-b transition-all duration-300 ${
     scrolled
-      ? "bg-blend-multiply border-white/30 shadow-lg"
-      : "bg-white/60 border-transparent"
+            ? "bg-white/95 border-white/30 shadow-lg"
+            : "bg-white/60 border-transparent"
   }`}
   style={{
     padding: scrolled ? "12px 0" : "18px 0",
@@ -61,7 +62,7 @@ useEffect(() => {
               alt="Logo"
               width={60}
               height={60}
-              style={{ width: "auto", height: "60px", objectFit: "contain" }}
+              style={{ width: "auto", height: "40px", objectFit: "contain" }}
             />
           </Link>
 
@@ -101,7 +102,7 @@ useEffect(() => {
                 whileHover={{ color: "#F97316" }}
               >
                 <ShoppingCart size={20} />
-                {totalItems > 0 && (
+                {hasHydrated && totalItems > 0 && (
                   <motion.span
                     key={totalItems}
                     className="absolute -top-1 -right-1 w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center text-white"
@@ -122,7 +123,7 @@ useEffect(() => {
               className="min-w-16 px-8 py-3 rounded-full text-sm font-semibold text-center transition-all duration-200 hover:scale-105"
               style={{
                 background: "#F97316",
-                color: "white",
+                color: "#FFFFFF",
               }}
             >
               Sign In
@@ -145,7 +146,7 @@ useEffect(() => {
           <div className="md:hidden flex items-center gap-3">
             <Link href="/cart" className="relative">
               <ShoppingCart size={22} style={{ color: "#374151" }} />
-              {totalItems > 0 && (
+              {hasHydrated && totalItems > 0 && (
                 <span
                   className="absolute -top-2 -right-2 w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center text-white"
                   style={{ background: "#F97316" }}

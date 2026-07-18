@@ -38,8 +38,8 @@ export default function FeaturedFoods({ foods }: FeaturedFoodsProps) {
   if (foods.length === 0) return null;
 
   return (
-    <section className="py-20 px-4" id="featured">
-      <div className="max-w-7xl mx-auto">
+    <section className="py-20 px-4" style={{ background: "#737373" }} id="featured">
+      <div className="max-w-7xl mx-auto ">
 
         {/* Section Header */}
         <motion.div

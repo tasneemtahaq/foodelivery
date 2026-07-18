@@ -11,10 +11,9 @@ interface Category {
 }
 
 const CATEGORY_EMOJIS: Record<string, string> = {
-  Burgers: "🍔",
-  Pizza:   "🍕",
-  Biryani: "🍚",
-  Drinks:  "🥤",
+  "Soups": "🥣",
+  "fries": "🍟",
+  "soda": "🥤",
   default: "🍽️",
 };
 

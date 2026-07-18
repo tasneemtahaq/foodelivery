@@ -14,14 +14,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+   <html lang="en" data-scroll-behavior="smooth">
       <body>
         <Navbar />
         <Toaster
           position="top-right"
           toastOptions={{
             style: {
-              background: "#1A1A1A",
+              background: "#F97316",
               color:      "white",
               border:     "1px solid rgba(245,158,11,0.3)",
             },

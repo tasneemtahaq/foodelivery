@@ -63,12 +63,13 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
   };
 
   return (
-    <div style={{ paddingTop: "80px" }}>
+    <div className="w-full"
+    style={{paddingTop:"110px"}}>
       
 
       {/* ── Page Header ── */}
       <div
-        className="py-12 px-4 text-center"
+         className="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 px-4 sm:px-6 lg:px-8"
         style={{
           background: "linear-gradient(135deg, #fff7ed 0%, #ffffff 100%)",
           borderBottom: "1px solid rgba(249,115,22,0.1)",
@@ -83,7 +84,7 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
           Fresh &amp; Delicious
         </motion.p>
         <motion.h1
-          className="text-4xl md:text-5xl font-bold mb-4"
+          className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight"
           style={{ color: "#1F2937" }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -92,7 +93,7 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
           Our <span style={{ color: "#F97316" }}>Menu</span>
         </motion.h1>
         <motion.p
-          className="text-sm max-w-md mx-auto"
+          className="text-base lg:text-lg leading-8 max-w-2xl mx-auto"
           style={{ color: "#6B7280" }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -102,13 +103,13 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
         </motion.p>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
 
         {/* ── Search + Filter Bar ── */}
-        <div className="flex flex-wrap gap-3 mb-6">
+        <div className="flex flex-col sm:flex-row gap-4 mb-8 items-stretch">
 
           {/* Search */}
-          <div className="relative flex-1 min-w-50">
+          <div className="relative w-full max-w-sm">
             <Search
               size={16}
               className="absolute left-3 top-1/2 -translate-y-1/2"
@@ -119,7 +120,7 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
               placeholder="Search foods..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-3 rounded-xl text-sm outline-none"
+              className="w-full pl-11 pr-5 py-3 rounded-lg text-base outline-none transition-all duration-300 focus:ring-4 focus:ring-orange-100"
               style={{
                 background: "white",
                 border: "1px solid rgba(0,0,0,0.1)",
@@ -132,7 +133,7 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
           {/* Sort Filter Toggle */}
           <button
             onClick={() => setShowFilter((s) => !s)}
-            className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all"
+            className="flex items-center gap-2 px-5 py-3 rounded-2xl min-w-16 text-sm font-medium transition-all"
             style={{
               background: showFilter ? "#F97316" : "white",
               border: "1px solid rgba(0,0,0,0.1)",
@@ -140,7 +141,7 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
               boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
             }}
           >
-            <SlidersHorizontal size={16} />
+            <SlidersHorizontal size={16}/>
             Sort
           </button>
         </div>
@@ -149,7 +150,7 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
         <AnimatePresence>
           {showFilter && (
             <motion.div
-              className="flex gap-3 mb-6 flex-wrap"
+              className="min-w-20 px-8 py-4 flex gap-2 rounded-2xl border transition-all"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{   opacity: 0, height: 0 }}
@@ -162,7 +163,7 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
                 <button
                   key={opt.value}
                   onClick={() => setSortBy(opt.value as typeof sortBy)}
-                  className="px-4 py-2 rounded-xl text-xs font-medium border transition-all"
+                  className="min-w-20 px-8 py-4 rounded-xl text-xs font-medium border transition-all"
                   style={{
                     background: sortBy === opt.value ? "#F97316" : "white",
                     borderColor: sortBy === opt.value ? "#F97316" : "rgba(0,0,0,0.1)",
@@ -177,10 +178,10 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
         </AnimatePresence>
 
         {/* ── Category Pills ── */}
-        <div className="flex gap-2 flex-wrap mb-8">
+        <div className="flex gap-3 overflow-x-auto pb-2 mb-10 scrollbar-hide">
           <button
             onClick={() => setActiveCat(null)}
-            className="px-5 py-2 rounded-full text-sm font-medium border transition-all"
+            className="min-w-20 px-5 py-2 rounded-full text-sm font-medium border transition-all"
             style={{
               background: activeCat === null ? "#F97316" : "white",
               borderColor: activeCat === null ? "#F97316" : "rgba(0,0,0,0.1)",
@@ -193,7 +194,7 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
             <button
               key={cat.id}
               onClick={() => setActiveCat(cat.id)}
-              className="px-5 py-2 rounded-full text-sm font-medium border transition-all"
+              className="min-w-24 px-8 py-4 rounded-full text-sm font-medium border transition-all"
               style={{
                 background: activeCat === cat.id ? "#F97316" : "white",
                 borderColor: activeCat === cat.id ? "#F97316" : "rgba(0,0,0,0.1)",
@@ -237,13 +238,13 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid xl:grid-cols-[1fr_320px] gap-8">
             <AnimatePresence mode="popLayout">
               {filteredFoods.map((food, i) => (
                 <motion.div
                   key={food.id}
                   layout
-                  className="rounded-2xl overflow-hidden group"
+                  className="flex bg-white rounded-lg shadow-sm overflow-hidden"
                   style={{
                     background: "white",
                     border: "1px solid rgba(0,0,0,0.07)",
@@ -257,7 +258,7 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
                 >
                   {/* Image */}
                   <div
-                    className="relative h-48 overflow-hidden flex items-center justify-center text-6xl"
+                    className="relative w-44 h-40 shrink-0 overflow-hidden flex items-center justify-center text-6xl"
                     style={{ background: "#fff7ed" }}
                   >
                     {food.image ? (
@@ -285,7 +286,8 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
                   </div>
 
                   {/* Info */}
-                  <div className="p-4 flex flex-col gap-3">
+                
+                   <div className="flex-1 flex flex-col justify-between p-5">
                     <div>
                       <p className="text-xs font-medium mb-1"
                          style={{ color: "#F97316" }}>
@@ -295,9 +297,11 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
                           style={{ color: "#1F2937" }}>
                         {food.name}
                       </h3>
-                      <p className="text-xs mt-1 line-clamp-2"
-                         style={{ color: "#6B7280" }}>
-                        {food.description}
+                      <p
+                    className="text-sm mt-2 line-clamp-3 leading-6"
+                    style={{ color: "#6B7280" }}
+                     >
+                    {food.description}
                       </p>
                     </div>
 

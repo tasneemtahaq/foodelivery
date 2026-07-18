@@ -9,7 +9,7 @@ const FOOD_CARDS = [
   {
     emoji: "🍜",
     title: "Chicken Corn Soup",
-    desc:  "Hot & hearty, 3 sizes",
+    desc:  "Hot & hearty, 2 sizes",
     highlighted: true,
   },
   {
@@ -29,10 +29,11 @@ const FOOD_CARDS = [
 export default function Hero() {
   return (
     <section
-      className="relative min-h-screen flex items-center overflow-hidden"
+      className="relative min-h-screen flex items-center overflow-hidden px-4 sm:px-6 lg:px-8"
       style={{
         background: "linear-gradient(135deg, #fff7ed 0%, #ffffff 50%, #fff7ed 100%)",
-        paddingTop: "80px",
+        paddingTop: "110px",
+        paddingBottom: "60px",
       }}
     >
       {/* ── Orange glow behind center image ── */}
@@ -48,14 +49,14 @@ export default function Hero() {
         }}
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center min-h-[80vh]">
+      <div className="relative z-10 w-full max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr_1fr] gap-10 lg:gap-14 items-center">
 
           {/* ── LEFT: Text Content ── */}
           <div className="flex flex-col gap-6 order-2 lg:order-1">
 
             <motion.h1
-              className="text-4xl md:text-5xl font-extrabold leading-tight"
+              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-[1.05] tracking-tight "
               style={{ color: "#1F2937" }}
               initial={{ opacity: 0, x: -40 }}
               animate={{ opacity: 1, x: 0 }}
@@ -63,7 +64,7 @@ export default function Hero() {
             >
               TASTE THE SOUL
               <br />
-              <span style={{ color: "#F97316" }}>IN EVERY BITE</span>
+              <span style={{ color: "#F97316" }}>IN EVERY SPOON</span>
             </motion.h1>
 
             <motion.p
@@ -87,7 +88,7 @@ export default function Hero() {
             >
               <Link
                 href="/menu"
-                className="px-7 py-3 rounded-full font-bold text-white text-sm transition-all hover:scale-105 hover:shadow-lg"
+                className="min-w-24 px-8 py-10 rounded-full text-sm font-semibold text-center transition-all duration-200 hover:scale-105"
                 style={{
                   background: "#F97316",
                   boxShadow: "0 4px 20px rgba(249,115,22,0.35)",
@@ -97,7 +98,7 @@ export default function Hero() {
               </Link>
               <Link
                 href="/menu"
-                className="px-7 py-3 rounded-full font-bold text-sm border-2 transition-all hover:bg-orange-50"
+                className="min-w-24 px-10 py-4 rounded-full font-bold text-sm text-center border-2 transition-all hover:bg-orange-50"
                 style={{ borderColor: "#F97316", color: "#F97316" }}
               >
                 See Menu
@@ -117,8 +118,8 @@ export default function Hero() {
               <motion.div
                 className="absolute rounded-full"
                 style={{
-                  width: "320px",
-                  height: "320px",
+                  width: "500px",
+                  height: "500px",
                   background: "radial-gradient(circle, rgba(249,115,22,0.25) 0%, rgba(249,115,22,0.05) 60%, transparent 80%)",
                 }}
                 animate={{ scale: [1, 1.05, 1] }}
@@ -126,36 +127,34 @@ export default function Hero() {
               />
 
               {/* Black plate with real soup image */}
-<motion.div
-  className="relative rounded-full overflow-hidden"
-  style={{
-    width: "280px",
-    height: "280px",
-    background: "#0a0a0a",
-    boxShadow: "0 25px 80px rgba(0,0,0,0.4), 0 0 0 8px #1a1a1a, 0 0 0 10px #2a2a2a",
-  }}
-  animate={{ y: [0, -10, 0] }}
-  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
->
-  {/* Real soup image */}
-  <Image
-    src="/images/soup.jpg"
-    alt="Soup"
-    fill
-    sizes="280px"
-    className="object-cover"
-    priority
-  />
+            <motion.div
+               className="relative rounded-full overflow-hidden"
+                style={{
+                     width:"clamp(240px,35vw,430px)",
+                     height:"clamp(240px,35vw,430px)"
+                  }}
+               animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            >
+                   {/* Real soup image */}
+              <Image
+                 src="/images/soup.jpg"
+                 alt="Soup"
+                 fill
+                 sizes="280px"
+                 className="object-cover"
+                 priority
+               />
 
 
-  {/* Shiny rim highlight */}
-  <div
-    className="absolute inset-0 rounded-full pointer-events-none"
-    style={{
-      background: "radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.12) 0%, transparent 45%)",
-    }}
-  />
-</motion.div>
+                 {/* Shiny rim highlight */}
+              <div
+                className="absolute inset-0 rounded-full pointer-events-none"
+                 style={{
+                     background: "radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.12) 0%, transparent 45%)",
+                        }}
+                 />
+                </motion.div>
 
               {/* Steam particles rising from bowl */}
               {["-20px", "0px", "20px"].map((x, i) => (
@@ -190,11 +189,11 @@ export default function Hero() {
             {FOOD_CARDS.map((card, i) => (
               <motion.div
                 key={card.title}
-                className="flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 cursor-pointer hover:scale-105"
+                className="flex items-center gap-4 p-5 rounded-3xl w-full max-w-sm transition-all duration-300"
                 style={{
                   background: card.highlighted
                     ? "#F97316"
-                    : "white",
+                    : "#FFFFFF",
                   boxShadow: card.highlighted
                     ? "0 8px 30px rgba(249,115,22,0.35)"
                     : "0 4px 20px rgba(0,0,0,0.08)",
@@ -221,7 +220,7 @@ export default function Hero() {
                 <div>
                   <p
                     className="font-bold text-sm leading-tight"
-                    style={{ color: card.highlighted ? "white" : "#1F2937" }}
+                    style={{ color: card.highlighted ? "#FFFFFF" : "#1F2937" }}
                   >
                     {card.title}
                   </p>

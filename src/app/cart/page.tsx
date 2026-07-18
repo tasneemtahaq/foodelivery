@@ -15,13 +15,26 @@ export default function CartPage() {
   const removeItem  = useCartStore((s: CartStore) => s.removeItem);
   const clearCart   = useCartStore((s: CartStore) => s.clearCart);
   const totalPrice  = useCartStore((s: CartStore) => s.totalPrice());
+  const hasHydrated = useCartStore((s: CartStore) => s.hasHydrated);
 
   const DELIVERY_CHARGE = Math.max(0, totalPrice < 2000 ? 200 : 0);
   const TAX             = Math.round(totalPrice * 0.17);
   const GRAND_TOTAL     = totalPrice + DELIVERY_CHARGE + TAX;
 
   // ── Empty Cart ──
-  if (items.length === 0) {
+  if (!hasHydrated) {
+  return (
+    <div
+      className="min-h-screen flex items-center justify-center"
+      style={{ background: "#f9fafb", paddingTop: "80px" }}
+    >
+      Loading...
+    </div>
+  );
+}
+
+// Empty Cart
+if (items.length === 0) {
     return (
       <div
         className="min-h-screen flex flex-col items-center justify-center px-4"
