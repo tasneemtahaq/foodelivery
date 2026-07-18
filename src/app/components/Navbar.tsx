@@ -58,11 +58,13 @@ useEffect(() => {
           {/* ── Logo ── */}
           <Link href="/" className="flex items-center gap-4">
             <Image
-              src="/images/logo.png"
-              alt="Logo"
-              width={60}
-              height={60}
-              style={{ width: "auto", height: "40px", objectFit: "contain" }}
+             src="/images/logo.png"
+             alt="Logo"
+             width={60}
+             height={60}
+             loading="eager"
+            priority
+             style={{ width: "auto", height: "40px", objectFit: "contain" }}
             />
           </Link>
 

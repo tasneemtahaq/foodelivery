@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
 import toast from "react-hot-toast";
@@ -29,6 +29,26 @@ export default function AdminOrdersClient({
   const [orders,      setOrders]      = useState(initialOrders);
   const [expandedId,  setExpandedId]  = useState<number | null>(null);
   const [updatingId,  setUpdatingId]  = useState<number | null>(null);
+
+  // Auto-check for new pending orders every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const res  = await fetch("/api/orders/new");
+        const data = await res.json();
+        if (data.count > 0) {
+          toast(`🔔 ${data.count} new order${data.count > 1 ? "s" : ""}!`, {
+            duration: 6000,
+            icon: "🍜",
+          });
+        }
+      } catch {
+        // silent fail
+      }
+    }, 30000); // every 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Toggle expand/collapse order details
   const toggleExpand = (id: number) => {
