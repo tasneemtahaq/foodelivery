@@ -28,7 +28,7 @@ export default async function AdminOrdersPage() {
   return (
     <div className="flex min-h-screen">
       <AdminSidebar />
-      <main className="flex-1 ml-64 p-8 pt-20">
+      <main className="flex-1 ml-64 p-8 pt-10">
         <AdminOrdersClient orders={orders} />
       </main>
     </div>

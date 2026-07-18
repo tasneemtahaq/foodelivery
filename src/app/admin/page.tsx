@@ -69,7 +69,7 @@ export default async function AdminDashboard() {
   return (
     <div className="flex min-h-screen">
       <AdminSidebar />
-      <main className="flex-1 ml-64 p-8 pt-16">
+      <main className="flex-1 ml-64 p-8 pt-10">
         <AdminDashboardClient stats={stats} />
       </main>
     </div>

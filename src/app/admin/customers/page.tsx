@@ -21,7 +21,7 @@ export default async function AdminCustomersPage() {
   return (
     <div className="flex min-h-screen">
       <AdminSidebar />
-      <main className="flex-1 ml-64 p-8">
+      <main className="flex-1 ml-64 p-8 pt-10">
         <div>
           {/* Header */}
           <div className="mb-8">

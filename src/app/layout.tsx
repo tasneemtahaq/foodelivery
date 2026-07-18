@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
+import NavbarWrapper from "./components/NavbarWrapper";
 
 export const metadata: Metadata = {
-  title:       "Mama Soups — Order Online",
-  description: "Fresh, hot food delivered to your door in Karachi.",
+  title:       "Mama Soups — Soups, Fries & Puris",
+  description: "Hot soups, crispy fries and fresh puris delivered to your door in Karachi.",
 };
 
 export default function RootLayout({
@@ -14,16 +14,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-   <html lang="en" data-scroll-behavior="smooth">
+    <html lang="en">
       <body>
-        <Navbar />
+        {/* Navbar — hidden on admin pages */}
+        <NavbarWrapper />
+
         <Toaster
           position="top-right"
           toastOptions={{
             style: {
-              background: "#F97316",
+              background: "#1A1A1A",
               color:      "white",
-              border:     "1px solid rgba(245,158,11,0.3)",
+              border:     "1px solid rgba(249,115,22,0.3)",
             },
           }}
         />
