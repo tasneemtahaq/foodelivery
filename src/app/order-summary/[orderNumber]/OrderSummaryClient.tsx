@@ -250,14 +250,8 @@ export default function OrderSummaryClient({ order }: { order: Order }) {
             <span style={{ color: "#1F2937" }}>Rs.{subtotal}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span style={{ color: "#6B7280" }}>Delivery</span>
-            <span style={{
-              color: order.deliveryCharge === 0 ? "#10B981" : "#1F2937"
-            }}>
-              {order.deliveryCharge === 0
-                ? "FREE"
-                : `Rs.${order.deliveryCharge}`}
-            </span>
+            <p>Delivery charges may apply</p>
+            
           </div>
           <div
             className="flex justify-between font-bold text-base pt-2"
