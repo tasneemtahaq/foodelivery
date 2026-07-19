@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
       `⏰ ${new Date().toLocaleString("en-PK")}`;
 
     const whatsappLink =
-      `https://wa.me/923312287497?text=${encodeURIComponent(message)}`;
+      `https://wa.me/923332287497?text=${encodeURIComponent(message)}`;
 
     // ── Send Email Notification ──
     const itemsHtml = order.orderItems
@@ -191,7 +191,7 @@ export async function POST(request: NextRequest) {
 
             <!-- Action Button -->
             <div style="padding:24px;background:white;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px;text-align:center">
-              <a href="https://wa.me/923312287497?text=${encodeURIComponent(message)}"
+              <a href="https://wa.me/923332287497?text=${encodeURIComponent(message)}"
                  style="display:inline-block;background:linear-gradient(135deg,#25D366,#1ebe57);color:white;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:bold;margin-right:12px">
                 📱 Reply on WhatsApp
               </a>

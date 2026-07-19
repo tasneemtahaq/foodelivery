@@ -22,6 +22,8 @@ export default async function MenuPage() {
       orderBy: { createdAt: "desc" },
     });
 
+    console.log("Foods found:", foods.length); console.log(foods);
+
     categories = await prisma.category.findMany({
       include: { _count: { select: { foods: true } } },
     });

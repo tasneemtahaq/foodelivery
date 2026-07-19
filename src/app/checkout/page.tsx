@@ -540,7 +540,7 @@ export default function CheckoutPage() {
                       {formData.paymentMethod === "jazzcash" && (
                         <>
                           <p className="font-bold mb-2">JazzCash Details:</p>
-                          <p>Number: 0331-2287497</p>
+                          <p>Number: 0333-2287497</p>
                           <p>Name: Mama Soups</p>
                           <p className="mt-2 text-xs" style={{ color: "#9CA3AF" }}>
                             Send screenshot to our WhatsApp after placing order.
@@ -550,7 +550,7 @@ export default function CheckoutPage() {
                       {formData.paymentMethod === "easypaisa" && (
                         <>
                           <p className="font-bold mb-2">EasyPaisa Details:</p>
-                          <p>Number: 0331-2287497</p>
+                          <p>Number: 0333-2287497</p>
                           <p>Name: Mama Soups</p>
                           <p className="mt-2 text-xs" style={{ color: "#9CA3AF" }}>
                             Send screenshot to our WhatsApp after placing order.
