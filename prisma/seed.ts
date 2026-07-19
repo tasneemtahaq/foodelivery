@@ -7,15 +7,22 @@ async function main() {
   console.log("🌱 Seeding database...");
 
   // ── Admin ──
-  const hashedPassword = await bcrypt.hash("admin123", 10);
-  await prisma.admin.upsert({
-    where:  { email: "tahaquettawala@gmail.com" },
-    update: {},
-    create: {
-      email:    "tahaquettawala@gmail.com",
-      password: hashedPassword,
-    },
-  });
+  const adminEmail    = process.env.ADMIN_EMAIL    ?? "admin@mamasoups.com";
+const adminPassword = process.env.ADMIN_PASSWORD ?? "changeme123";
+
+const hashedPassword = await bcrypt.hash(adminPassword, 10);
+
+await prisma.admin.upsert({
+  where:  { email: adminEmail },
+  update: {
+    email:    adminEmail,
+    password: hashedPassword,
+  },
+  create: {
+    email:    adminEmail,
+    password: hashedPassword,
+  },
+});
   console.log("✅ Admin created");
 
   // ── Settings ──
@@ -250,7 +257,8 @@ async function main() {
   console.log("✅ Foods created");
   console.log("🎉 Database seeded successfully!");
   console.log("");
-  console.log("Admin login: admin@restaurant.com / admin123");
+  console.log("Admin login: admin@mamasoups.com");
+ 
 }
 
 main()

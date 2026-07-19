@@ -132,9 +132,7 @@ export default function AdminLoginPage() {
             </motion.button>
           </form>
 
-          <p className="text-center text-xs mt-5" style={{ color: "#4B5563" }}>
-            Default: admin@restaurant.com / admin123
-          </p>
+        
         </div>
       </motion.div>
     </div>
