@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
 import toast from "react-hot-toast";
@@ -26,36 +26,102 @@ export default function AdminOrdersClient({
 }: {
   orders: AdminOrder[];
 }) {
-  const [orders,      setOrders]      = useState(initialOrders);
-  const [expandedId,  setExpandedId]  = useState<number | null>(null);
-  const [updatingId,  setUpdatingId]  = useState<number | null>(null);
+  const [orders,     setOrders]     = useState(initialOrders);
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [updatingId, setUpdatingId] = useState<number | null>(null);
 
-  // Auto-check for new pending orders every 30 seconds
+  // ── Refs for notifications ──
+  const audioRef         = useRef<HTMLAudioElement | null>(null);
+  const lastOrderCount   = useRef<number>(initialOrders.length);
+  const notifPermission  = useRef<boolean>(false);
+
+  // ── STEP 1: Setup audio + request browser notification permission ──
   useEffect(() => {
-    const interval = setInterval(async () => {
+    // Request browser notification permission
+    if ("Notification" in window) {
+      Notification.requestPermission().then((permission) => {
+        notifPermission.current = permission === "granted";
+      });
+    }
+
+    // Create beep sound using AudioContext (no external file needed!)
+    const createBeep = () => {
+      try {
+        const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        const ctx      = new AudioCtx();
+        const oscillator = ctx.createOscillator();
+        const gainNode   = ctx.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        oscillator.frequency.value = 880; // beep pitch
+        oscillator.type            = "sine";
+        gainNode.gain.value        = 0.3;
+
+        oscillator.start();
+        setTimeout(() => {
+          oscillator.stop();
+          ctx.close();
+        }, 400); // beep for 400ms
+      } catch {
+        // silent fail if audio not supported
+      }
+    };
+
+    // Store beep function in ref
+    audioRef.current = { play: createBeep } as unknown as HTMLAudioElement;
+  }, []);
+
+  // ── STEP 2: Poll for new orders every 30 seconds ──
+  useEffect(() => {
+    const checkNewOrders = async () => {
       try {
         const res  = await fetch("/api/orders/new");
         const data = await res.json();
+
         if (data.count > 0) {
+
+          // 🔊 Play beep sound
+          if (audioRef.current) {
+            (audioRef.current as unknown as { play: () => void }).play();
+          }
+
+          // 🔔 Browser popup notification
+          if (notifPermission.current) {
+            new Notification("🍜 New Order — Mama Soups!", {
+              body: `${data.count} new order${data.count > 1 ? "s" : ""} waiting!`,
+              icon: "/images/logo.png",
+            });
+          }
+
+          // 🍞 Toast in admin panel
           toast(`🔔 ${data.count} new order${data.count > 1 ? "s" : ""}!`, {
-            duration: 6000,
-            icon: "🍜",
+            duration: 8000,
+            icon:     "🍜",
           });
+
+          lastOrderCount.current = data.count;
         }
       } catch {
         // silent fail
       }
-    }, 30000); // every 30 seconds
+    };
 
+    // Check immediately on page load
+    checkNewOrders();
+
+    // Then check every 30 seconds
+    const interval = setInterval(checkNewOrders, 30000);
     return () => clearInterval(interval);
   }, []);
 
-  // Toggle expand/collapse order details
+  // ── Toggle expand/collapse ──
   const toggleExpand = (id: number) => {
     setExpandedId((prev) => (prev === id ? null : id));
   };
 
-  // Update order status
+  // ── Update order status ──
   const updateStatus = async (orderId: number, newStatus: string) => {
     setUpdatingId(orderId);
     try {
@@ -67,7 +133,6 @@ export default function AdminOrdersClient({
 
       if (!res.ok) throw new Error("Failed to update");
 
-      // Update local state immediately (no page reload needed!)
       setOrders((prev) =>
         prev.map((o) =>
           o.id === orderId ? { ...o, status: newStatus } : o
@@ -96,6 +161,19 @@ export default function AdminOrdersClient({
             {orders.length} total orders
           </p>
         </div>
+
+        {/* Notification status */}
+        <div
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs"
+          style={{
+            background: "rgba(16,185,129,0.1)",
+            border:     "1px solid rgba(16,185,129,0.2)",
+            color:      "#10B981",
+          }}
+        >
+          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          Live — checking every 30s
+        </div>
       </div>
 
       {/* Orders List */}
@@ -103,7 +181,7 @@ export default function AdminOrdersClient({
         <div className="text-center py-20">
           <p className="text-5xl mb-4">📋</p>
           <p className="text-white font-bold text-lg">No orders yet</p>
-          <p style={{ color: "#6B7280" }} className="text-sm mt-1">
+          <p className="text-sm mt-1" style={{ color: "#6B7280" }}>
             Orders will appear here when customers place them
           </p>
         </div>
@@ -127,20 +205,16 @@ export default function AdminOrdersClient({
                 onClick={() => toggleExpand(order.id)}
               >
                 {/* Order Number */}
-                <div className="min-w-32.5">
-                  <p className="text-xs" style={{ color: "#6B7280" }}>
-                    Order #
-                  </p>
+                <div className="min-w-32">
+                  <p className="text-xs" style={{ color: "#6B7280" }}>Order #</p>
                   <p className="font-bold" style={{ color: "#F97316" }}>
                     {order.orderNumber}
                   </p>
                 </div>
 
                 {/* Customer */}
-                <div className="flex-1 min-w-35">
-                  <p className="text-xs" style={{ color: "#6B7280" }}>
-                    Customer
-                  </p>
+                <div className="flex-1 min-w-36">
+                  <p className="text-xs" style={{ color: "#6B7280" }}>Customer</p>
                   <p className="text-sm font-medium text-white">
                     {order.customer.name}
                   </p>
@@ -150,7 +224,7 @@ export default function AdminOrdersClient({
                 </div>
 
                 {/* Amount */}
-                <div className="min-w-22.5">
+                <div className="min-w-20">
                   <p className="text-xs" style={{ color: "#6B7280" }}>Amount</p>
                   <p className="text-sm font-bold text-white">
                     Rs.{order.totalAmount}
@@ -158,7 +232,7 @@ export default function AdminOrdersClient({
                 </div>
 
                 {/* Payment */}
-                <div className="min-w-30">
+                <div className="min-w-28">
                   <p className="text-xs" style={{ color: "#6B7280" }}>Payment</p>
                   <p className="text-xs font-medium" style={{ color: "#9CA3AF" }}>
                     {PAYMENT_LABELS[order.paymentMethod] ?? order.paymentMethod}
@@ -170,9 +244,7 @@ export default function AdminOrdersClient({
                   className="min-w-40"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <p className="text-xs mb-1" style={{ color: "#6B7280" }}>
-                    Status
-                  </p>
+                  <p className="text-xs mb-1" style={{ color: "#6B7280" }}>Status</p>
                   <div className="relative">
                     <select
                       value={order.status}
@@ -243,10 +315,7 @@ export default function AdminOrdersClient({
                             >
                               <span style={{ color: "#D1D5DB" }}>
                                 {item.food.name}
-                                <span
-                                  className="ml-2 text-xs"
-                                  style={{ color: "#6B7280" }}
-                                >
+                                <span className="ml-2 text-xs" style={{ color: "#6B7280" }}>
                                   x{item.quantity}
                                 </span>
                               </span>
@@ -257,20 +326,10 @@ export default function AdminOrdersClient({
                           ))}
                         </div>
 
-                        {/* Price summary */}
                         <div
                           className="mt-3 pt-3 flex flex-col gap-1"
                           style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
                         >
-                          <div className="flex justify-between text-xs"
-                               style={{ color: "#6B7280" }}>
-                            <span>Delivery</span>
-                            <span>
-                              {order.deliveryCharge === 0
-                                ? "FREE"
-                                : `Rs.${order.deliveryCharge}`}
-                            </span>
-                          </div>
                           <div className="flex justify-between text-sm font-bold">
                             <span style={{ color: "#D1D5DB" }}>Total</span>
                             <span style={{ color: "#F97316" }}>
@@ -291,9 +350,7 @@ export default function AdminOrdersClient({
                             <span style={{ color: "#6B7280" }}>Address: </span>
                             <span style={{ color: "#D1D5DB" }}>
                               {order.customer.address}
-                              {order.customer.area
-                                ? `, ${order.customer.area}`
-                                : ""}
+                              {order.customer.area ? `, ${order.customer.area}` : ""}
                               , {order.customer.city}
                             </span>
                           </div>
