@@ -17,9 +17,7 @@ export default function CartPage() {
   const totalPrice  = useCartStore((s: CartStore) => s.totalPrice());
   const hasHydrated = useCartStore((s: CartStore) => s.hasHydrated);
 
-  const DELIVERY_CHARGE = Math.max(0, totalPrice < 2000 ? 200 : 0);
-  const TAX             = Math.round(totalPrice * 0.17);
-  const GRAND_TOTAL     = totalPrice + DELIVERY_CHARGE + TAX;
+ const GRAND_TOTAL = totalPrice;
 
   // ── Empty Cart ──
   if (!hasHydrated) {
@@ -247,7 +245,9 @@ if (items.length === 0) {
               </div>
 
               {/* Price Breakdown */}
+              {/* Price Breakdown */}
               <div className="flex flex-col gap-3 mb-6">
+
                 <div className="flex justify-between text-sm">
                   <span style={{ color: "#6B7280" }}>
                     Subtotal ({items.length} items)
@@ -257,17 +257,20 @@ if (items.length === 0) {
                   </span>
                 </div>
 
-                <div className="flex justify-between text-sm">
-                  <span style={{ color: "#6B7280" }}>Delivery Charge</span>
-                  <span className="font-medium" style={{ color: "#1F2937" }}>
-                    Rs.{DELIVERY_CHARGE}
-                  </span>
-                </div>
 
-                <div className="flex justify-between text-sm">
-                  <span style={{ color: "#6B7280" }}>Tax</span>
-                  <span className="font-medium" style={{ color: "#1F2937" }}>
-                    Rs.{TAX}
+                {/* Delivery notice */}
+                <div
+                  className="flex items-start gap-2 px-3 py-2.5 rounded-xl text-xs"
+                  style={{
+                    background: "rgba(249,115,22,0.06)",
+                    border:     "1px solid rgba(249,115,22,0.15)",
+                    color:      "#92400E",
+                  }}
+                >
+                  <span className="mt-0.5">🚗</span>
+                  <span>
+                    Delivery charges will be calculated based on your area.
+                    Our team will confirm the exact amount when processing your order.
                   </span>
                 </div>
 
@@ -280,7 +283,7 @@ if (items.length === 0) {
                 {/* Grand Total */}
                 <div className="flex justify-between">
                   <span className="font-bold" style={{ color: "#1F2937" }}>
-                    Grand Total
+                    Total
                   </span>
                   <span
                     className="font-bold text-xl"
@@ -291,30 +294,6 @@ if (items.length === 0) {
                 </div>
               </div>
 
-              {/* Free delivery notice */}
-              {totalPrice < 1000 && (
-                <div
-                  className="text-xs px-3 py-2 rounded-lg mb-4 text-center"
-                  style={{
-                    background: "rgba(249,115,22,0.08)",
-                    color: "#F97316",
-                  }}
-                >
-                  Add Rs.{1000 - totalPrice} more for free delivery! 🎉
-                </div>
-              )}
-
-              {totalPrice >= 1000 && (
-                <div
-                  className="text-xs px-3 py-2 rounded-lg mb-4 text-center font-medium"
-                  style={{
-                    background: "rgba(34,197,94,0.1)",
-                    color: "#16A34A",
-                  }}
-                >
-                  ✅ You got free delivery!
-                </div>
-              )}
 
               {/* Checkout Button */}
               <Link href="/checkout">

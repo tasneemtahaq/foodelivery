@@ -6,21 +6,20 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeft, User, Phone, Mail, MapPin,
-  CreditCard, Truck, Building2, Smartphone, CheckCircle
+  CreditCard, Truck, Building2, Smartphone, CheckCircle,
 } from "lucide-react";
 import { useCartStore } from "../../store/cartStore";
 import type { CartStore } from "../../store/cartStore";
 import toast from "react-hot-toast";
 
-// ── Types ──────────────────────────────────────────────────
 interface FormData {
-  name:         string;
-  phone:        string;
-  email:        string;
-  houseNo:      string;
-  streetNo:     string;
-  area:         string;
-  instructions: string;
+  name:          string;
+  phone:         string;
+  email:         string;
+  houseNo:       string;
+  streetNo:      string;
+  area:          string;
+  instructions:  string;
   paymentMethod: "cash" | "bank" | "jazzcash" | "easypaisa";
 }
 
@@ -31,7 +30,6 @@ interface FormErrors {
   streetNo?: string;
 }
 
-// ── Payment Methods ────────────────────────────────────────
 const PAYMENT_METHODS = [
   {
     id:    "cash",
@@ -64,13 +62,13 @@ const PAYMENT_METHODS = [
 ] as const;
 
 export default function CheckoutPage() {
-  const router    = useRouter();
-  const items     = useCartStore((s: CartStore) => s.items);
+  const router     = useRouter();
+  const items      = useCartStore((s: CartStore) => s.items);
   const totalPrice = useCartStore((s: CartStore) => s.totalPrice());
-  const clearCart = useCartStore((s: CartStore) => s.clearCart);
+  const clearCart  = useCartStore((s: CartStore) => s.clearCart);
 
-  const DELIVERY_CHARGE = totalPrice >= 1000 ? 0 : 200;
-  const GRAND_TOTAL     = totalPrice + DELIVERY_CHARGE;
+  // ── No delivery charge or tax ──
+  const GRAND_TOTAL = totalPrice;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<FormData>({
@@ -83,10 +81,9 @@ export default function CheckoutPage() {
     instructions:  "",
     paymentMethod: "cash",
   });
-
   const [errors, setErrors] = useState<FormErrors>({});
 
-  // Redirect if cart is empty
+  // Empty cart redirect
   if (items.length === 0) {
     return (
       <div
@@ -110,22 +107,18 @@ export default function CheckoutPage() {
     );
   }
 
-  // ── Update form field ──
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user types
     if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
-  // ── Validate form ──
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
-
     if (!formData.name.trim())
       newErrors.name = "Name is required";
     if (!formData.phone.trim())
@@ -136,22 +129,18 @@ export default function CheckoutPage() {
       newErrors.houseNo = "House number is required";
     if (!formData.streetNo.trim())
       newErrors.streetNo = "Street number is required";
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // ── Submit Order ──
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validate()) {
       toast.error("Please fill in all required fields");
       return;
     }
 
     setIsSubmitting(true);
-
     try {
       const response = await fetch("/api/orders", {
         method:  "POST",
@@ -161,25 +150,28 @@ export default function CheckoutPage() {
             name:    formData.name,
             phone:   formData.phone,
             email:   formData.email,
-             address: `House ${formData.houseNo}, Street ${formData.streetNo}`,
+            address: `House ${formData.houseNo}, Street ${formData.streetNo}`,
             city:    "Karachi",
             area:    formData.area,
           },
-          items:         items,
-          paymentMethod: formData.paymentMethod,
-          instructions:  formData.instructions,
-          deliveryCharge: DELIVERY_CHARGE,
-          totalAmount:   GRAND_TOTAL,
+          items,
+          paymentMethod:  formData.paymentMethod,
+          instructions:   formData.instructions,
+          deliveryCharge: 0,
+          totalAmount:    GRAND_TOTAL,
         }),
       });
 
       const data = await response.json();
+      if (!response.ok) throw new Error(data.error ?? "Order failed");
 
-      if (!response.ok) throw new Error(data.error || "Order failed");
+      // ── Open WhatsApp with order details ──
+      if (data.whatsappLink) {
+        window.open(data.whatsappLink, "_blank");
+      }
 
-      // Success!
       clearCart();
-      toast.success("Order placed successfully! 🎉");
+      toast.success("Order placed! Opening WhatsApp... 📱");
       router.push(`/order-summary/${data.orderNumber}`);
 
     } catch (error) {
@@ -190,7 +182,6 @@ export default function CheckoutPage() {
     }
   };
 
-  // ── Input Style ──
   const inputStyle = {
     width:        "100%",
     padding:      "12px 16px",
@@ -200,7 +191,6 @@ export default function CheckoutPage() {
     color:        "#1F2937",
     fontSize:     "14px",
     outline:      "none",
-    transition:   "border-color 0.2s",
   };
 
   const errorStyle = {
@@ -210,11 +200,11 @@ export default function CheckoutPage() {
   };
 
   const labelStyle = {
-    display:      "block",
-    fontSize:     "12px",
-    fontWeight:   "600",
-    color:        "#374151",
-    marginBottom: "6px",
+    display:       "block",
+    fontSize:      "12px",
+    fontWeight:    "600" as const,
+    color:         "#374151",
+    marginBottom:  "6px",
     letterSpacing: "0.05em",
     textTransform: "uppercase" as const,
   };
@@ -226,7 +216,7 @@ export default function CheckoutPage() {
     >
       <div className="max-w-6xl mx-auto px-4 py-10">
 
-        {/* ── Header ── */}
+        {/* Header */}
         <motion.div
           className="mb-8"
           initial={{ opacity: 0, y: 20 }}
@@ -254,7 +244,7 @@ export default function CheckoutPage() {
             {/* ── LEFT: Form ── */}
             <div className="lg:col-span-2 flex flex-col gap-6">
 
-              {/* Personal Details Card */}
+              {/* Personal Details */}
               <motion.div
                 className="p-6 rounded-2xl"
                 style={{
@@ -287,14 +277,10 @@ export default function CheckoutPage() {
                       placeholder="Ahmed Khan"
                       style={{
                         ...inputStyle,
-                        borderColor: errors.name
-                          ? "#EF4444"
-                          : "rgba(0,0,0,0.1)",
+                        borderColor: errors.name ? "#EF4444" : "rgba(0,0,0,0.1)",
                       }}
                     />
-                    {errors.name && (
-                      <p style={errorStyle}>{errors.name}</p>
-                    )}
+                    {errors.name && <p style={errorStyle}>{errors.name}</p>}
                   </div>
 
                   {/* Phone */}
@@ -310,24 +296,18 @@ export default function CheckoutPage() {
                       placeholder="0300-1234567"
                       style={{
                         ...inputStyle,
-                        borderColor: errors.phone
-                          ? "#EF4444"
-                          : "rgba(0,0,0,0.1)",
+                        borderColor: errors.phone ? "#EF4444" : "rgba(0,0,0,0.1)",
                       }}
                     />
-                    {errors.phone && (
-                      <p style={errorStyle}>{errors.phone}</p>
-                    )}
+                    {errors.phone && <p style={errorStyle}>{errors.phone}</p>}
                   </div>
 
                   {/* Email */}
                   <div className="md:col-span-2">
                     <label style={labelStyle}>
                       Email Address
-                      <span
-                        className="ml-2 font-normal normal-case"
-                        style={{ color: "#9CA3AF" }}
-                      >
+                      <span className="ml-2 font-normal normal-case"
+                            style={{ color: "#9CA3AF" }}>
                         (optional)
                       </span>
                     </label>
@@ -343,7 +323,7 @@ export default function CheckoutPage() {
                 </div>
               </motion.div>
 
-             {/* Delivery Details Card */}
+              {/* Delivery Address */}
               <motion.div
                 className="p-6 rounded-2xl"
                 style={{
@@ -362,7 +342,7 @@ export default function CheckoutPage() {
                   </h2>
                 </div>
 
-                {/* City — Fixed to Karachi */}
+                {/* Fixed Karachi badge */}
                 <div
                   className="flex items-center gap-3 px-4 py-3 rounded-xl mb-4"
                   style={{
@@ -389,7 +369,6 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
                   {/* House No */}
                   <div>
                     <label style={labelStyle}>
@@ -403,14 +382,10 @@ export default function CheckoutPage() {
                       placeholder="e.g. A-12 or Flat 3B"
                       style={{
                         ...inputStyle,
-                        borderColor: errors.houseNo
-                          ? "#EF4444"
-                          : "rgba(0,0,0,0.1)",
+                        borderColor: errors.houseNo ? "#EF4444" : "rgba(0,0,0,0.1)",
                       }}
                     />
-                    {errors.houseNo && (
-                      <p style={errorStyle}>{errors.houseNo}</p>
-                    )}
+                    {errors.houseNo && <p style={errorStyle}>{errors.houseNo}</p>}
                   </div>
 
                   {/* Street No */}
@@ -426,24 +401,18 @@ export default function CheckoutPage() {
                       placeholder="e.g. Street 5 or Gali 3"
                       style={{
                         ...inputStyle,
-                        borderColor: errors.streetNo
-                          ? "#EF4444"
-                          : "rgba(0,0,0,0.1)",
+                        borderColor: errors.streetNo ? "#EF4444" : "rgba(0,0,0,0.1)",
                       }}
                     />
-                    {errors.streetNo && (
-                      <p style={errorStyle}>{errors.streetNo}</p>
-                    )}
+                    {errors.streetNo && <p style={errorStyle}>{errors.streetNo}</p>}
                   </div>
 
                   {/* Area */}
                   <div className="md:col-span-2">
                     <label style={labelStyle}>
                       Area / Sector
-                      <span
-                        className="ml-2 font-normal normal-case"
-                        style={{ color: "#9CA3AF" }}
-                      >
+                      <span className="ml-2 font-normal normal-case"
+                            style={{ color: "#9CA3AF" }}>
                         (optional)
                       </span>
                     </label>
@@ -457,14 +426,12 @@ export default function CheckoutPage() {
                     />
                   </div>
 
-                  {/* Delivery Instructions */}
+                  {/* Instructions */}
                   <div className="md:col-span-2">
                     <label style={labelStyle}>
                       Delivery Instructions
-                      <span
-                        className="ml-2 font-normal normal-case"
-                        style={{ color: "#9CA3AF" }}
-                      >
+                      <span className="ml-2 font-normal normal-case"
+                            style={{ color: "#9CA3AF" }}>
                         (optional)
                       </span>
                     </label>
@@ -480,7 +447,7 @@ export default function CheckoutPage() {
                 </div>
               </motion.div>
 
-              {/* Payment Method Card */}
+              {/* Payment Method */}
               <motion.div
                 className="p-6 rounded-2xl"
                 style={{
@@ -501,7 +468,7 @@ export default function CheckoutPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {PAYMENT_METHODS.map((method) => {
-                    const Icon      = method.icon;
+                    const Icon       = method.icon;
                     const isSelected = formData.paymentMethod === method.id;
                     return (
                       <motion.button
@@ -513,14 +480,10 @@ export default function CheckoutPage() {
                             paymentMethod: method.id as FormData["paymentMethod"],
                           }))
                         }
-                        className="flex items-center gap-3 p-4 rounded-xl border-2 text-left transition-all"
+                        className="flex items-center gap-3 p-4 rounded-xl border-2 text-left"
                         style={{
-                          borderColor: isSelected
-                            ? "#F97316"
-                            : "rgba(0,0,0,0.08)",
-                          background: isSelected
-                            ? "rgba(249,115,22,0.05)"
-                            : "white",
+                          borderColor: isSelected ? "#F97316" : "rgba(0,0,0,0.08)",
+                          background:  isSelected ? "rgba(249,115,22,0.05)" : "white",
                         }}
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.99 }}
@@ -532,33 +495,23 @@ export default function CheckoutPage() {
                           <Icon size={18} style={{ color: method.color }} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p
-                            className="font-semibold text-sm"
-                            style={{
-                              color: isSelected ? "#F97316" : "#1F2937",
-                            }}
-                          >
+                          <p className="font-semibold text-sm"
+                             style={{ color: isSelected ? "#F97316" : "#1F2937" }}>
                             {method.label}
                           </p>
-                          <p
-                            className="text-xs mt-0.5"
-                            style={{ color: "#9CA3AF" }}
-                          >
+                          <p className="text-xs mt-0.5" style={{ color: "#9CA3AF" }}>
                             {method.desc}
                           </p>
                         </div>
                         {isSelected && (
-                          <CheckCircle
-                            size={18}
-                            style={{ color: "#F97316", flexShrink: 0 }}
-                          />
+                          <CheckCircle size={18} style={{ color: "#F97316", flexShrink: 0 }} />
                         )}
                       </motion.button>
                     );
                   })}
                 </div>
 
-                {/* Payment instructions based on method */}
+                {/* Payment details */}
                 <AnimatePresence mode="wait">
                   {formData.paymentMethod !== "cash" && (
                     <motion.div
@@ -566,8 +519,8 @@ export default function CheckoutPage() {
                       className="mt-4 p-4 rounded-xl text-sm"
                       style={{
                         background: "rgba(249,115,22,0.06)",
-                        border: "1px solid rgba(249,115,22,0.15)",
-                        color: "#92400E",
+                        border:     "1px solid rgba(249,115,22,0.15)",
+                        color:      "#92400E",
                       }}
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
@@ -575,32 +528,32 @@ export default function CheckoutPage() {
                     >
                       {formData.paymentMethod === "bank" && (
                         <>
-                          <p className="font-bold mb-1">Bank Transfer Details:</p>
-                          <p>Bank: HBL / Meezan Bank</p>
-                          <p>Account: 1234-5678-9012</p>
-                          <p>Title: KarachiBites</p>
+                          <p className="font-bold mb-2">Bank Transfer Details:</p>
+                          <p>Bank: Meezan Bank</p>
+                          <p>Account: Your Account Number</p>
+                          <p>Title: Mama Soups</p>
                           <p className="mt-2 text-xs" style={{ color: "#9CA3AF" }}>
-                            Send screenshot of transfer to our WhatsApp after order.
+                            Send screenshot to our WhatsApp after placing order.
                           </p>
                         </>
                       )}
                       {formData.paymentMethod === "jazzcash" && (
                         <>
-                          <p className="font-bold mb-1">JazzCash Details:</p>
-                          <p>Number: 0300-1234567</p>
-                          <p>Name: KarachiBites</p>
+                          <p className="font-bold mb-2">JazzCash Details:</p>
+                          <p>Number: 0331-2287497</p>
+                          <p>Name: Mama Soups</p>
                           <p className="mt-2 text-xs" style={{ color: "#9CA3AF" }}>
-                            Send screenshot of payment to our WhatsApp after order.
+                            Send screenshot to our WhatsApp after placing order.
                           </p>
                         </>
                       )}
                       {formData.paymentMethod === "easypaisa" && (
                         <>
-                          <p className="font-bold mb-1">EasyPaisa Details:</p>
-                          <p>Number: 0300-1234567</p>
-                          <p>Name: KarachiBites</p>
+                          <p className="font-bold mb-2">EasyPaisa Details:</p>
+                          <p>Number: 0331-2287497</p>
+                          <p>Name: Mama Soups</p>
                           <p className="mt-2 text-xs" style={{ color: "#9CA3AF" }}>
-                            Send screenshot of payment to our WhatsApp after order.
+                            Send screenshot to our WhatsApp after placing order.
                           </p>
                         </>
                       )}
@@ -629,13 +582,10 @@ export default function CheckoutPage() {
                   Order Summary
                 </h2>
 
-                {/* Items list */}
+                {/* Items */}
                 <div className="flex flex-col gap-3 mb-4">
                   {items.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex justify-between text-sm"
-                    >
+                    <div key={item.id} className="flex justify-between text-sm">
                       <span style={{ color: "#6B7280" }}>
                         {item.name}
                         <span className="ml-1 text-xs">x{item.quantity}</span>
@@ -647,34 +597,37 @@ export default function CheckoutPage() {
                   ))}
                 </div>
 
-                <div
-                  className="h-px w-full my-3"
-                  style={{ background: "rgba(0,0,0,0.07)" }}
-                />
+                <div className="h-px w-full my-3"
+                     style={{ background: "rgba(0,0,0,0.07)" }} />
 
-                {/* Totals */}
+                {/* Total */}
                 <div className="flex flex-col gap-2 mb-5">
                   <div className="flex justify-between text-sm">
                     <span style={{ color: "#6B7280" }}>Subtotal</span>
                     <span style={{ color: "#1F2937" }}>Rs.{totalPrice}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span style={{ color: "#6B7280" }}>Delivery</span>
-                    <span style={{ color: DELIVERY_CHARGE === 0 ? "#16A34A" : "#1F2937" }}>
-                      {DELIVERY_CHARGE === 0 ? "FREE" : `Rs.${DELIVERY_CHARGE}`}
-                    </span>
-                  </div>
+
+                  {/* Delivery notice */}
                   <div
-                    className="h-px w-full my-1"
-                    style={{ background: "rgba(0,0,0,0.07)" }}
-                  />
+                    className="text-xs px-3 py-2 rounded-lg"
+                    style={{
+                      background: "rgba(249,115,22,0.06)",
+                      color:      "#92400E",
+                    }}
+                  >
+                    🚗 Delivery charge based on your area
+                  </div>
+
+                  <div className="h-px w-full my-1"
+                       style={{ background: "rgba(0,0,0,0.07)" }} />
+
                   <div className="flex justify-between font-bold">
                     <span style={{ color: "#1F2937" }}>Total</span>
                     <span style={{ color: "#F97316" }}>Rs.{GRAND_TOTAL}</span>
                   </div>
                 </div>
 
-                {/* Place Order Button */}
+                {/* Place Order */}
                 <motion.button
                   type="submit"
                   disabled={isSubmitting}
@@ -703,10 +656,14 @@ export default function CheckoutPage() {
                   ) : (
                     <>
                       <CheckCircle size={18} />
-                      Place Order
+                      Place Order & Open WhatsApp
                     </>
                   )}
                 </motion.button>
+
+                <p className="text-center text-xs mt-3" style={{ color: "#9CA3AF" }}>
+                  📱 WhatsApp will open with your order details
+                </p>
               </div>
             </motion.div>
           </div>

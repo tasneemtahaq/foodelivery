@@ -96,35 +96,36 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // ── Send WhatsApp notification ──────────────────────
+    // ── Build WhatsApp message ──
     const itemsList = order.orderItems
-      .map((item) => `• ${item.food.name} x${item.quantity} = Rs.${item.price * item.quantity}`)
+      .map((item) =>
+        `• ${item.food.name} x${item.quantity} = Rs.${item.price * item.quantity}`
+      )
       .join("\n");
 
-    const whatsappMessage =
-      `🔔 *NEW ORDER RECEIVED!*\n\n` +
-      `*Order #:* ${order.orderNumber}\n` +
-      `*Customer:* ${savedCustomer.name}\n` +
-      `*Phone:* ${savedCustomer.phone}\n` +
-      `*Address:* ${savedCustomer.address}${savedCustomer.area ? `, ${savedCustomer.area}` : ""}, ${savedCustomer.city}\n\n` +
-      `*Items:*\n${itemsList}\n\n` +
-      `*Delivery:* Rs.${deliveryCharge}\n` +
-      `*Total:* Rs.${totalAmount}\n` +
-      `*Payment:* ${paymentMethod}\n\n` +
-      `${instructions ? `*Instructions:* ${instructions}\n\n` : ""}` +
-      `⏰ Placed at: ${new Date().toLocaleString("en-PK")}`;
+    const message =
+      `🔔 *NEW ORDER — Mama Soups*\n\n` +
+      `*Order #:* ${order.orderNumber}\n\n` +
+      `👤 *Customer*\n` +
+      `Name: ${savedCustomer.name}\n` +
+      `Phone: ${savedCustomer.phone}\n` +
+      `Address: ${savedCustomer.address}` +
+      `${savedCustomer.area ? `, ${savedCustomer.area}` : ""}` +
+      `, ${savedCustomer.city}\n\n` +
+      `🛒 *Items*\n${itemsList}\n\n` +
+      `💰 *Total: Rs.${totalAmount}*\n` +
+      `Payment: ${paymentMethod}\n\n` +
+      `${instructions ? `📝 Notes: ${instructions}\n\n` : ""}` +
+      `⏰ ${new Date().toLocaleString("en-PK")}`;
 
-    const encodedMessage = encodeURIComponent(whatsappMessage);
-    const YOUR_WHATSAPP  = "923332287497"; // ← your number
-
-    // Open WhatsApp link (works when admin panel is open)
-    console.log(`\n📱 WhatsApp Order Alert:\nhttps://wa.me/${YOUR_WHATSAPP}?text=${encodedMessage}\n`);
+    const whatsappLink =
+      `https://wa.me/923312287497?text=${encodeURIComponent(message)}`;
 
     return NextResponse.json({
-      success:          true,
-      orderNumber:      order.orderNumber,
-      orderId:          order.id,
-      whatsappMessage:  whatsappMessage,
+      success:      true,
+      orderNumber:  order.orderNumber,
+      orderId:      order.id,
+      whatsappLink,
     });
 
   } catch (error) {
