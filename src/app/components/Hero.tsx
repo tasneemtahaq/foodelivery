@@ -53,7 +53,7 @@ export default function Hero() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr_1fr] gap-10 lg:gap-14 items-center">
 
           {/* ── LEFT: Text Content ── */}
-          <div className="flex flex-col gap-6 order-2 lg:order-1">
+         <div className="flex flex-col gap-6 order-2 lg:order-1 lg:translate-x-10">
 
             <motion.h1
               className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-[1.05] tracking-tight "

@@ -80,6 +80,7 @@ await prisma.admin.upsert({
         price:       100,
         isFeatured:  true,
         isAvailable: true,
+        image:       "/images/soup.jpg",
         categoryId:  soup.id,
       },
       {
@@ -88,6 +89,7 @@ await prisma.admin.upsert({
         price:       350,
         isFeatured:  true,
         isAvailable: true,
+        image:       "/images/soup.jpg",
         categoryId:  soup.id,
       },
       {
@@ -95,6 +97,7 @@ await prisma.admin.upsert({
         description: "Made from Desi Chicken Stock.",
         price:       170,
         isAvailable: true,
+        image:       "/images/yakhni.jpg",
         categoryId:  soup.id,
       },
       {
@@ -102,6 +105,31 @@ await prisma.admin.upsert({
         description: "Made from Desi Chicken Stock, serves 4 persons.",
         price:       500,
         isAvailable: true,
+        image:       "/images/yakhni.jpg",
+        categoryId:  soup.id,
+      },
+      {
+        name:        "Boiled Egg",
+        description: "Perfectly boiled egg served as a soup side or topping.",
+        price:       30,
+        isAvailable: true,
+        image:       "/images/egg.jpg",
+        categoryId:  soup.id,
+      },
+      {
+        name:        "Slims",
+        description: "Crispy slim crackers — perfect companion with your soup.",
+        price:       40,
+        isAvailable: true,
+        image:       "/images/slims.jpg",
+        categoryId:  soup.id,
+      },
+      {
+        name:        "Crackers",
+        description: "Light and crunchy crackers served with soup.",
+        price:       40,
+        isAvailable: true,
+        image:       "/images/crackers.jpg",
         categoryId:  soup.id,
       },
 
@@ -112,6 +140,7 @@ await prisma.admin.upsert({
         price:       120,
         isFeatured:  true,
         isAvailable: true,
+        image:       "/images/saltedfries.jpg",
         categoryId:  fries.id,
       },
       {
@@ -120,6 +149,7 @@ await prisma.admin.upsert({
         price:       120,
         isFeatured:  true,
         isAvailable: true,
+        image:       "/images/greenfries.jpg",
         categoryId:  fries.id,
       },
       {
@@ -127,6 +157,7 @@ await prisma.admin.upsert({
         description: "Loaded with cheddar cheese spice on crispy fries.",
         price:       120,
         isAvailable: true,
+        image:       "/images/friescheese.jpg",
         categoryId:  fries.id,
       },
       {
@@ -134,6 +165,7 @@ await prisma.admin.upsert({
         description: "Smoky BBQ seasoned fries with a tangy dipping sauce.",
         price:       120,
         isAvailable: true,
+        image:       "/images/friesbbq.jpg",
         categoryId:  fries.id,
       },
       {
@@ -141,6 +173,7 @@ await prisma.admin.upsert({
         description: "Fries drizzled with Salsa seasoning and tangy dipping sauce.",
         price:       120,
         isAvailable: true,
+        image:       "/images/friessalsa.jpg",
         categoryId:  fries.id,
       },
       {
@@ -148,6 +181,7 @@ await prisma.admin.upsert({
         description: "Chicken spice seasoned fries sauce.",
         price:       120,
         isAvailable: true,
+        image:       "/images/frieschicken.jpg",
         categoryId:  fries.id,
       },
       {
@@ -155,6 +189,7 @@ await prisma.admin.upsert({
         description: "Tangy chaat masala fries.",
         price:       120,
         isAvailable: true,
+        image:       "/images/chatpatafries.jpg",
         categoryId:  fries.id,
       },
 
@@ -165,6 +200,7 @@ await prisma.admin.upsert({
         price:       180,
         isFeatured:  true,
         isAvailable: true,
+        image:       "/images/panipuri.jpeg",
         categoryId:  puri.id,
       },
       {
@@ -172,6 +208,7 @@ await prisma.admin.upsert({
         description: "Single plate, 8 Pieces.",
         price:       180,
         isAvailable: true,
+        image:       "/images/meethipuri.jpeg",
         categoryId:  puri.id,
       },
       
@@ -180,9 +217,10 @@ await prisma.admin.upsert({
       
       {
         name:        "Lemon Soda",
-        description: "Fresh lemon with sparkling water and a pinch of salt.",
+        description: "Fresh lemon with sparkling water and a pinch of black salt.",
         price:       90,
         isAvailable: true,
+        image:       "/images/lemon.jpg",
         categoryId:  drinks.id,
       },
       // Drinks — Soda Flavours
@@ -192,6 +230,7 @@ await prisma.admin.upsert({
         price:       90,
         isAvailable: true,
         isFeatured:  false,
+        image:       "/images/blueberry.jpg",
         categoryId:  drinks.id,
       },
       {
@@ -199,6 +238,7 @@ await prisma.admin.upsert({
         description: "Light and fruity peach flavoured soda — sweet and refreshing.",
         price:       90,
         isAvailable: true,
+        image:       "/images/peach.jpg",
         categoryId:  drinks.id,
       },
       {
@@ -206,6 +246,7 @@ await prisma.admin.upsert({
         description: "Crisp and tangy apple flavoured sparkling soda.",
         price:       90,
         isAvailable: true,
+        image:       "/images/apple.jpg",
         categoryId:  drinks.id,
       },
       {
@@ -213,6 +254,7 @@ await prisma.admin.upsert({
         description: "Classic Vimto flavour with a sparkling fizzy twist.",
         price:       90,
         isAvailable: true,
+        image:       "/images/vimto.jpg",
         categoryId:  drinks.id,
       },
       {
@@ -220,6 +262,7 @@ await prisma.admin.upsert({
         description: "Tropical pineapple flavoured soda — sweet, tangy and fizzy.",
         price:       90,
         isAvailable: true,
+        image:       "/images/pineapple.jpg",
         categoryId:  drinks.id,
       },
       {
@@ -227,6 +270,7 @@ await prisma.admin.upsert({
         description: "Bright and zesty orange flavoured sparkling soda.",
         price:       90,
         isAvailable: true,
+        image:       "/images/orange.jpg",
         categoryId:  drinks.id,
       },
       {
@@ -234,6 +278,7 @@ await prisma.admin.upsert({
         description: "Sweet and tangy raspberry flavoured chilled soda.",
         price:       90,
         isAvailable: true,
+        image:       "/images/raspberry.jpg",
         categoryId:  drinks.id,
       },
       {
@@ -241,6 +286,7 @@ await prisma.admin.upsert({
         description: "Delicate rose flavoured soda — floral, sweet and refreshing.",
         price:       90,
         isAvailable: true,
+        image:       "/images/rose.jpg",
         categoryId:  drinks.id,
       },
       {
@@ -249,8 +295,19 @@ await prisma.admin.upsert({
         price:       90,
         isFeatured:  true,
         isAvailable: true,
+        image:       "/images/icecream.jpg",
         categoryId:  drinks.id,
       },
+      {
+        name:        "Lychee Soda",
+        description: "Sweet and floral lychee flavoured soda — refreshing and exotic.",
+        price:       90,
+        isFeatured:  true,
+        isAvailable: true,
+        image:       "/images/lychee.jpg",
+        categoryId:  drinks.id,
+      },
+      
     ],
   });
 

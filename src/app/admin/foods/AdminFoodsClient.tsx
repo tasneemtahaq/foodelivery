@@ -229,7 +229,7 @@ export default function AdminFoodsClient({
 
       {/* Foods Table */}
       <div
-        className="rounded-2xl overflow-hidden"
+       className="rounded-2xl overflow-x-auto"
         style={{
           background: "#1A1A1A",
           border: "1px solid rgba(255,255,255,0.06)",

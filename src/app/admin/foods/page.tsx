@@ -30,7 +30,7 @@ export default async function AdminFoodsPage() {
   return (
     <div className="flex min-h-screen">
       <AdminSidebar />
-      <main className="flex-1 ml-64 p-8 pt-10">
+      <main className="flex-1 md:ml-64 p-4 md:p-8 pt-20 md:pt-10">
         <AdminFoodsClient
           foods={foods}
           categories={categories}

@@ -186,7 +186,7 @@ export default function AdminOrdersClient({
           </p>
         </div>
       ) : (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 overflow-x-auto">
           {orders.map((order, i) => (
             <motion.div
               key={order.id}
