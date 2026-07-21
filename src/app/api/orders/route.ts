@@ -99,30 +99,6 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // ── Build WhatsApp message ──
-    const itemsList = order.orderItems
-      .map((item) =>
-        `• ${item.food.name} x${item.quantity} = Rs.${item.price * item.quantity}`
-      )
-      .join("\n");
-
-    const message =
-      `🔔 *NEW ORDER — Mama Soups*\n\n` +
-      `*Order #:* ${order.orderNumber}\n\n` +
-      `👤 *Customer*\n` +
-      `Name: ${savedCustomer.name}\n` +
-      `Phone: ${savedCustomer.phone}\n` +
-      `Address: ${savedCustomer.address}` +
-      `${savedCustomer.area ? `, ${savedCustomer.area}` : ""}` +
-      `, ${savedCustomer.city}\n\n` +
-      `🛒 *Items*\n${itemsList}\n\n` +
-      `💰 *Total: Rs.${totalAmount}*\n` +
-      `Payment: ${paymentMethod}\n\n` +
-      `${instructions ? `📝 Notes: ${instructions}\n\n` : ""}` +
-      `⏰ ${new Date().toLocaleString("en-PK")}`;
-
-    const whatsappLink =
-      `https://api.whatsapp.com/send?phone=923332287497&text=${encodeURIComponent(message)}`;
 
     // ── Send Email Notification ──
     const itemsHtml = order.orderItems
@@ -189,12 +165,7 @@ export async function POST(request: NextRequest) {
               <span style="font-weight:bold;font-size:20px;color:#F97316">Rs.${totalAmount}</span>
             </div>
 
-            <!-- Action Button -->
-            <div style="padding:24px;background:white;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px;text-align:center">
-              <a href="https://wa.me/923332287497?text=${encodeURIComponent(message)}"
-                 style="display:inline-block;background:linear-gradient(135deg,#25D366,#1ebe57);color:white;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:bold;margin-right:12px">
-                📱 Reply on WhatsApp
-              </a>
+           
               <p style="margin:16px 0 0;font-size:12px;color:#9CA3AF">
                 ${new Date().toLocaleString("en-PK")}
               </p>
@@ -204,22 +175,59 @@ export async function POST(request: NextRequest) {
       });
       console.log("✅ Email notification sent!");
     } catch (emailError) {
-      // Don't fail the order if email fails
       console.error("Email failed:", emailError);
     }
 
-    return NextResponse.json({
-      success:      true,
-      orderNumber:  order.orderNumber,
-      orderId:      order.id,
-      whatsappLink,
-    });
+    // ── Send Telegram Notification ──────────────────────
+    try {
+      const telegramMessage =
+        `🔔 *NEW ORDER — Mama Soups*\n\n` +
+        `📦 *Order #:* ${order.orderNumber}\n\n` +
+        `👤 *Customer*\n` +
+        `Name: ${savedCustomer.name}\n` +
+        `Phone: ${savedCustomer.phone}\n` +
+        `Address: ${savedCustomer.address}` +
+        `${savedCustomer.area ? `, ${savedCustomer.area}` : ""}` +
+        `, ${savedCustomer.city}\n\n` +
+        `🛒 *Items*\n` +
+        `${order.orderItems.map(i =>
+          `• ${i.food.name} x${i.quantity} = Rs.${i.price * i.quantity}`
+        ).join("\n")}\n\n` +
+        `💰 *Total: Rs.${totalAmount}*\n` +
+        `💳 Payment: ${paymentMethod}\n\n` +
+        `${instructions ? `📝 Notes: ${instructions}\n\n` : ""}` +
+        `⏰ ${new Date().toLocaleString("en-PK")}`;
+
+      const telegramRes = await fetch(
+        `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+        {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id:    process.env.TELEGRAM_CHAT_ID,
+            text:       telegramMessage,
+            parse_mode: "Markdown",
+          }),
+        }
+      );
+
+      if (telegramRes.ok) {
+        console.log("✅ Telegram notification sent!");
+      } else {
+        const err = await telegramRes.json();
+        console.error("Telegram error:", err);
+      }
+    } catch (telegramError) {
+      // Don't fail the order if Telegram fails
+      console.error("Telegram failed:", telegramError);
+    }
+
 
     return NextResponse.json({
       success:      true,
       orderNumber:  order.orderNumber,
       orderId:      order.id,
-      whatsappLink,
+      estimatedTime: order.estimatedTime,
     });
 
   } catch (error) {
