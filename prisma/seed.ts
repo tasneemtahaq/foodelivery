@@ -140,7 +140,7 @@ await prisma.admin.upsert({
         price:       120,
         isFeatured:  true,
         isAvailable: true,
-        image:       "/images/saltedfries.jpg",
+        image:       "/images/saltedfries.png",
         categoryId:  fries.id,
       },
       {
@@ -149,7 +149,7 @@ await prisma.admin.upsert({
         price:       120,
         isFeatured:  true,
         isAvailable: true,
-        image:       "/images/greenfries.jpg",
+        image:       "/images/greenfries.png",
         categoryId:  fries.id,
       },
       {
@@ -157,7 +157,7 @@ await prisma.admin.upsert({
         description: "Loaded with cheddar cheese spice on crispy fries.",
         price:       120,
         isAvailable: true,
-        image:       "/images/friescheese.jpg",
+        image:       "/images/friescheese.png",
         categoryId:  fries.id,
       },
       {
@@ -165,7 +165,7 @@ await prisma.admin.upsert({
         description: "Smoky BBQ seasoned fries with a tangy dipping sauce.",
         price:       120,
         isAvailable: true,
-        image:       "/images/friesbbq.jpg",
+        image:       "/images/friesbbq.png",
         categoryId:  fries.id,
       },
       {
@@ -173,7 +173,7 @@ await prisma.admin.upsert({
         description: "Fries drizzled with Salsa seasoning and tangy dipping sauce.",
         price:       120,
         isAvailable: true,
-        image:       "/images/friessalsa.jpg",
+        image:       "/images/friessalsa.png",
         categoryId:  fries.id,
       },
       {
@@ -189,7 +189,7 @@ await prisma.admin.upsert({
         description: "Tangy chaat masala fries.",
         price:       120,
         isAvailable: true,
-        image:       "/images/chatpatafries.jpg",
+        image:       "/images/chatmasalafries.png",
         categoryId:  fries.id,
       },
 
@@ -278,7 +278,7 @@ await prisma.admin.upsert({
         description: "Sweet and tangy raspberry flavoured chilled soda.",
         price:       90,
         isAvailable: true,
-        image:       "/images/raspberry.jpg",
+        image:       "/images/rasberry.jpg",
         categoryId:  drinks.id,
       },
       {
