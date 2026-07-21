@@ -4,8 +4,8 @@ import { Toaster } from "react-hot-toast";
 import NavbarWrapper from "./components/NavbarWrapper";
 
 export const metadata: Metadata = {
-  title:       "Mama Soups — Soups, Fries & Puris",
-  description: "Hot soups, crispy fries and fresh puris delivered to your door in Karachi.",
+  title:       "Mama Soups",
+  description: "Hot soups, and crazy flavoured treats delivered to your door in Karachi.",
 };
 
 export default function RootLayout({
