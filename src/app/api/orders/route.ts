@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
       `⏰ ${new Date().toLocaleString("en-PK")}`;
 
     const whatsappLink =
-      `https://api.whatsapp.com/send?phone=923312287497&text=${encodeURIComponent(message)}`;
+      `https://api.whatsapp.com/send?phone=923332287497&text=${encodeURIComponent(message)}`;
 
     // ── Send Email Notification ──
     const itemsHtml = order.orderItems
