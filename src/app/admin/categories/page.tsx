@@ -3,6 +3,8 @@ import AdminSidebar from "../components/AdminSidebar";
 import AdminCategoriesClient from "./AdminCategoriesClient";
 import { Prisma } from "@prisma/client";
 
+export const dynamic = "force-dynamic";
+
 export type AdminCategory = Prisma.CategoryGetPayload<{
   include: { _count: { select: { foods: true } } };
 }>;

@@ -4,6 +4,7 @@ import FeaturedFoods from "./components/FeaturedFoods";
 import Footer from "./components/Footer";
 import { Prisma } from "@prisma/client";
 
+export const dynamic = "force-dynamic";
 // ── Proper TypeScript types (no "any") ──
 type FeaturedFood = Prisma.FoodGetPayload<{
   include: { category: true };

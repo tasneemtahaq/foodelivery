@@ -3,6 +3,8 @@ import AdminSidebar from "../components/AdminSidebar";
 import AdminOrdersClient from "./AdminOrdersClient";
 import { Prisma } from "@prisma/client";
 
+export const dynamic = "force-dynamic";
+
 export type AdminOrder = Prisma.OrderGetPayload<{
   include: {
     customer:   true;

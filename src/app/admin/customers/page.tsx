@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import AdminSidebar from "../components/AdminSidebar";
 import { Prisma } from "@prisma/client";
 
+export const dynamic = "force-dynamic";
+
 type CustomerWithOrders = Prisma.CustomerGetPayload<{
   include: { _count: { select: { orders: true } } };
 }>;

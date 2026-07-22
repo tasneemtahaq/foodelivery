@@ -3,6 +3,8 @@ import MenuClient from "./MenuClient";
 import Footer from "../components/Footer";
 import { Prisma } from "@prisma/client";
 
+export const dynamic = "force-dynamic";
+
 export type MenuFood = Prisma.FoodGetPayload<{
   include: { category: true };
 }>;

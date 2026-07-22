@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import OrderSummaryClient from "./OrderSummaryClient";
 import Footer from "../../components/Footer";
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: Promise<{ orderNumber: string }>;
 }

@@ -1,5 +1,7 @@
 import AdminSidebar from "../components/AdminSidebar";
 
+export const dynamic = "force-dynamic";
+
 export default function AdminSettingsPage() {
   return (
     <div className="flex min-h-screen">

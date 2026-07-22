@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import AdminSidebar from "./components/AdminSidebar";
 import AdminDashboardClient from "./AdminDashboardClient";
 
+export const dynamic = "force-dynamic";
+
 async function getStats() {
   try {
     const [
