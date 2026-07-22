@@ -361,7 +361,7 @@ export default function CheckoutPage() {
                     </p>
                   </div>
                   <div
-                    className="ml-auto px-3 py-1 rounded-full text-xs font-bold"
+                    className="min-w-16 ml-auto px-3 py-1 rounded-full text-xs font-bold"
                     style={{ background: "#F97316", color: "white" }}
                   >
                     ✓ Fixed
@@ -656,14 +656,11 @@ export default function CheckoutPage() {
                   ) : (
                     <>
                       <CheckCircle size={18} />
-                      Place Order & Open WhatsApp
+                      Place Order
                     </>
                   )}
                 </motion.button>
 
-                <p className="text-center text-xs mt-3" style={{ color: "#9CA3AF" }}>
-                  📱 WhatsApp will open with your order details
-                </p>
               </div>
             </motion.div>
           </div>
