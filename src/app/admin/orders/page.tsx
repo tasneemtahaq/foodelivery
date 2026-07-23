@@ -1,5 +1,4 @@
 import { prisma } from "../../../lib/prisma";
-import AdminSidebar from "../components/AdminSidebar";
 import AdminOrdersClient from "./AdminOrdersClient";
 import { Prisma } from "@prisma/client";
 
@@ -27,12 +26,9 @@ export default async function AdminOrdersPage() {
     console.error("Admin orders error:", error);
   }
 
-  return (
-    <div className="flex min-h-screen">
-      <AdminSidebar />
-      <main className="flex-1 md:ml-64 p-4 md:p-8 pt-20 md:pt-10">
-        <AdminOrdersClient orders={orders} />
-      </main>
-    </div>
-  );
+ return (
+  <AdminOrdersClient
+    orders={orders}
+  />
+);
 }

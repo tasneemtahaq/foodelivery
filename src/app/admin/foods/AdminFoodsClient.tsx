@@ -229,13 +229,13 @@ export default function AdminFoodsClient({
 
       {/* Foods Table */}
       <div
-       className="rounded-2xl overflow-x-auto"
+          className="rounded-2xl w-full overflow-x-auto"
         style={{
           background: "#1A1A1A",
           border: "1px solid rgba(255,255,255,0.06)",
         }}
       >
-        <table className="w-full">
+        <table className="w-full min-w-150">
           <thead>
             <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
               {["Name", "Category", "Price", "Available", "Featured", "Actions"].map((h) => (

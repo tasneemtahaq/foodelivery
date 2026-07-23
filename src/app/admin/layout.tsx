@@ -3,6 +3,8 @@
 import { useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
+import AdminSidebar from "./components/AdminSidebar";
+
 
 export default function AdminLayout({
   children,
@@ -22,15 +24,12 @@ export default function AdminLayout({
     if (!hydrated) return;
     if (checked.current) return;
     checked.current = true;
-
     if (isLoginPage) return;
-
     if (!isLoggedIn || user?.role !== "admin") {
       router.push("/admin/login");
     }
   }, [hydrated, isLoggedIn, user, router, isLoginPage]);
 
-  // If on login page — show it directly
   if (isLoginPage) {
     return (
       <div className="min-h-screen" style={{ background: "#0F0F0F" }}>
@@ -39,7 +38,6 @@ export default function AdminLayout({
     );
   }
 
-  // Not hydrated yet or not admin — show loader
   if (!hydrated || !isLoggedIn || user?.role !== "admin") {
     return (
       <div
@@ -57,10 +55,29 @@ export default function AdminLayout({
     );
   }
 
-  // Admin is logged in — show admin panel
-  return (
-    <div className="min-h-screen" style={{ background: "#0F0F0F" }}>
+ return (
+  <div
+    style={{
+      display: "flex",
+      minHeight: "100vh",
+      background: "#0F0F0F",
+      overflowX: "hidden",
+    }}
+  >
+    <AdminSidebar />
+
+    <main
+      style={{
+        flex: 1,
+        minWidth: 0,
+        marginLeft: "256px",
+        padding: "32px 24px 24px",
+        boxSizing: "border-box",
+        overflowX: "hidden",
+      }}
+    >
       {children}
-    </div>
-  );
+    </main>
+  </div>
+);
 }

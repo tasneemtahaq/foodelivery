@@ -210,11 +210,17 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div
+     <div
       className="min-h-screen"
       style={{ background: "#f9fafb", paddingTop: "80px" }}
     >
-      <div className="max-w-6xl mx-auto px-4 py-10">
+      <div
+        style={{
+          maxWidth:  "1100px",
+          margin:    "0 auto",
+          padding:   "40px 32px",
+        }}
+      >
 
         {/* Header */}
         <motion.div
@@ -248,6 +254,7 @@ export default function CheckoutPage() {
               <motion.div
                 className="p-6 rounded-2xl"
                 style={{
+                  padding: "20px",
                   background: "white",
                   border: "1px solid rgba(0,0,0,0.07)",
                   boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
@@ -327,6 +334,7 @@ export default function CheckoutPage() {
               <motion.div
                 className="p-6 rounded-2xl"
                 style={{
+                  padding: "20px",
                   background: "white",
                   border: "1px solid rgba(0,0,0,0.07)",
                   boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
@@ -346,6 +354,7 @@ export default function CheckoutPage() {
                 <div
                   className="flex items-center gap-3 px-4 py-3 rounded-xl mb-4"
                   style={{
+                    padding: "12px 16px",
                     background: "rgba(249,115,22,0.06)",
                     border: "1.5px solid rgba(249,115,22,0.2)",
                   }}
@@ -361,10 +370,10 @@ export default function CheckoutPage() {
                     </p>
                   </div>
                   <div
-                    className="min-w-16 ml-auto px-3 py-1 rounded-full text-xs font-bold"
-                    style={{ background: "#F97316", color: "white" }}
+                    className="min-w-14 px-3 py-3 rounded-full text-xs font-bold"
+                    style={{padding: "2px 6px", background: "#F97316", color: "white" }}
                   >
-                    ✓ Fixed
+                    ✓  Fixed
                   </div>
                 </div>
 
@@ -451,6 +460,7 @@ export default function CheckoutPage() {
               <motion.div
                 className="p-6 rounded-2xl"
                 style={{
+                  padding: "20px",
                   background: "white",
                   border: "1px solid rgba(0,0,0,0.07)",
                   boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
@@ -573,6 +583,7 @@ export default function CheckoutPage() {
               <div
                 className="rounded-2xl p-6 sticky top-24"
                 style={{
+                  padding: "24px",
                   background: "white",
                   border: "1px solid rgba(0,0,0,0.07)",
                   boxShadow: "0 4px 20px rgba(0,0,0,0.06)",

@@ -64,11 +64,17 @@ if (items.length === 0) {
   }
 
   return (
-    <div
+     <div
       className="min-h-screen"
       style={{ background: "#f9fafb", paddingTop: "80px" }}
     >
-      <div className="max-w-7xl mx-auto px-4 py-10">
+      <div
+        style={{
+          maxWidth:  "1100px",
+          margin:    "0 auto",
+          padding:   "40px 32px",
+        }}
+      >
 
         {/* ── Header ── */}
         <motion.div
@@ -96,13 +102,13 @@ if (items.length === 0) {
           </Link>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
 
           {/* ── LEFT: Cart Items ── */}
-          <div className="lg:col-span-2 flex flex-col gap-4">
+          <div className="lg:col-span-3 flex flex-col gap-4">
 
             {/* Clear cart button */}
-            <div className="flex justify-end">
+            <div className="flex justify-end px-2">
               <button
                 onClick={clearCart}
                 className="text-xs font-medium px-4 py-2 rounded-lg border transition-all hover:bg-red-50"
@@ -223,28 +229,29 @@ if (items.length === 0) {
 
           {/* ── RIGHT: Order Summary ── */}
           <motion.div
-            className="lg:col-span-1"
+            className="lg:col-span-2 min-w-0"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
             <div
-              className="rounded-2xl p-6 sticky top-24"
+              className="rounded-2xl sticky top-24"
               style={{
+                padding:   "28px",
+                border:    "1px solid rgba(0,0,0,0.08)",
+                boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
                 background: "white",
-                border: "1px solid rgba(0,0,0,0.07)",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
               }}
             >
               {/* Summary Header */}
-              <div className="flex items-center gap-2 mb-6">
-                <ShoppingBag size={20} style={{ color: "#F97316" }} />
+              <div className="px-2 flex items-center gap-2 mb-6">
+                <ShoppingBag size={20} style={{ color: "#F97316" }}  />
                 <h2 className="font-bold text-lg" style={{ color: "#1F2937" }}>
                   Order Summary
                 </h2>
               </div>
 
-              {/* Price Breakdown */}
+              
               {/* Price Breakdown */}
               <div className="flex flex-col gap-3 mb-6">
 

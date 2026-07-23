@@ -43,7 +43,7 @@ export default function FeaturedFoods({ foods }: FeaturedFoodsProps) {
   return (
     <section
       className="py-20 px-4"
-      style={{ background: "#737373" }}
+      style={{padding: "12px 16px",  background: "#737373" }}
       id="featured"
     >
       <div className="max-w-7xl mx-auto">
@@ -57,7 +57,7 @@ export default function FeaturedFoods({ foods }: FeaturedFoodsProps) {
         >
           <p
             className="text-xs tracking-[0.3em] uppercase mb-3"
-            style={{ color: "#F59E0B" }}
+            style={{padding:"2px 4px", color: "#F59E0B" }}
           >
             Customer Favourites
           </p>
@@ -67,12 +67,13 @@ export default function FeaturedFoods({ foods }: FeaturedFoodsProps) {
         </motion.div>
 
         {/* 3 Food Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-10 flex-wrap">
           {featuredFoods.map((food, i) => (
             <motion.div
               key={food.id}
               className="rounded-2xl overflow-hidden group"
               style={{
+                padding: "9px 9px",
                 background: "#111111",
                 border: "1px solid rgba(255,255,255,0.07)",
               }}
@@ -85,7 +86,7 @@ export default function FeaturedFoods({ foods }: FeaturedFoodsProps) {
               {/* Image */}
               <div
                 className="relative h-52 overflow-hidden flex items-center justify-center text-6xl"
-                style={{ background: "rgba(245,158,11,0.05)" }}
+                style={{ padding:"9px 9px", background: "rgba(245,158,11,0.05)" }}
               >
                 {food.image ? (
                   <Image
@@ -174,8 +175,9 @@ export default function FeaturedFoods({ foods }: FeaturedFoodsProps) {
         >
           <Link
             href="/menu"
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-full font-bold text-black transition-all hover:scale-105"
+            className=" inline-flex items-center gap-2 px-8 py-10 rounded-full font-bold text-black transition-all hover:scale-105"
             style={{
+              padding: "4px 8px",
               background:  "#F59E0B",
               boxShadow:   "0 4px 20px rgba(245,158,11,0.35)",
             }}

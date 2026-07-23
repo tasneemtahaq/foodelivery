@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import AdminSidebar from "./components/AdminSidebar";
 import AdminDashboardClient from "./AdminDashboardClient";
 
 export const dynamic = "force-dynamic";
@@ -68,12 +67,7 @@ async function getStats() {
 export default async function AdminDashboard() {
   const stats = await getStats();
 
-  return (
-    <div className="flex min-h-screen">
-      <AdminSidebar />
-      <main className="flex-1 md:ml-64 p-4 md:p-8 pt-20 md:pt-10">
-        <AdminDashboardClient stats={stats} />
-      </main>
-    </div>
-  );
-}
+return (
+  <AdminDashboardClient stats={stats} />
+);
+};

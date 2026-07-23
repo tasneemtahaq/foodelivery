@@ -76,6 +76,18 @@ export default function AdminDashboardClient({ stats }: { stats: Stats }) {
   ];
 
   return (
+   
+  <div
+    style={{
+      width: "100%",
+      maxWidth: "100%",
+      minWidth: 0,
+      padding: "24px",
+      boxSizing: "border-box",
+      overflow: "hidden",
+      border: "2px solid red",
+    }}
+  >
     <div>
       {/* Header */}
       <motion.div
@@ -260,6 +272,7 @@ export default function AdminDashboardClient({ stats }: { stats: Stats }) {
           </div>
         )}
       </motion.div>
+    </div>
     </div>
   );
 }

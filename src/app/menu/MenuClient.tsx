@@ -2,12 +2,14 @@
 
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ShoppingCart, Tag, SlidersHorizontal } from "lucide-react";
+import {Search, ShoppingCart, Tag, SlidersHorizontal, Soup, CookingPot, GlassWater, UtensilsCrossed} from "lucide-react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import type { MenuFood, MenuCategory } from "./page";
 import { useCartStore } from "../../store/cartStore";
 import type { CartStore } from "../../store/cartStore";
+
+
 
 interface MenuClientProps {
   foods:      MenuFood[];
@@ -15,7 +17,9 @@ interface MenuClientProps {
 }
 
 export default function MenuClient({ foods, categories }: MenuClientProps) {
+  
   const [search,     setSearch]     = useState("");
+  const [showSearch, setShowSearch] = useState(false);
   const [activeCat,  setActiveCat]  = useState<number | null>(null);
   const [sortBy,     setSortBy]     = useState<"default" | "price_asc" | "price_desc">("default");
   const [showFilter, setShowFilter] = useState(false);
@@ -60,21 +64,80 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
       quantity: 1,
     });
     toast.success(`${food.name} added! 🛒`);
+  
   };
 
+
+const getCategoryIcon = (name: string) => {
+  const iconClass = "text-[#E26310]"; // Orange color
+
+  switch (name.toLowerCase()) {
+    case "soups":
+      return (
+        <Soup
+          size={34}
+          strokeWidth={1.5}
+          className={iconClass}
+        />
+      );
+
+    case "fries":
+      return (
+        <CookingPot
+          size={34}
+          strokeWidth={1}
+          className={iconClass}
+        />
+      );
+
+    case "puri":
+      return (
+        <UtensilsCrossed
+          size={34}
+          strokeWidth={1}
+          className={iconClass}
+        />
+      );
+
+    case "sodas":
+      return (
+        <GlassWater
+          size={34}
+          strokeWidth={1}
+          className={iconClass}
+        />
+      );
+
+    default:
+      return (
+        <UtensilsCrossed
+          size={34}
+          strokeWidth={1}
+          className={iconClass}
+        />
+      );
+  }
+};
+
   return (
-    <div className="w-full"
-    style={{paddingTop:"110px"}}>
-      
+    <div
+  className="w-full min-h-screen"
+  style={{
+    paddingTop: "110px",
+    background: "#120C08",
+  }}
+>
 
       {/* ── Page Header ── */}
       <div
-         className="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 px-4 sm:px-6 lg:px-8"
-        style={{
-          background: "linear-gradient(135deg, #fff7ed 0%, #ffffff 100%)",
-          borderBottom: "1px solid rgba(249,115,22,0.1)",
-        }}
-      >
+         className="max-w-full mx-auto flex flex-col items-center justify-center text-center px-6 py-24"
+           style={{
+           background:
+              "linear-gradient(rgba(18,12,8,.55), rgba(18,12,8,.55)), url('/images/menu-bg.jpg') center/cover no-repeat",
+               minHeight: "360px",
+               borderBottom: "1px solid rgba(216,139,42,.30)",
+             }}
+             >
         <motion.p
           className="text-xs tracking-[0.3em] uppercase mb-2"
           style={{ color: "#F97316" }}
@@ -85,16 +148,19 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
         </motion.p>
         <motion.h1
           className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight"
-          style={{ color: "#1F2937" }}
+          style={{ color: "#F8E9D2" }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          Our <span style={{ color: "#F97316" }}>Menu</span>
+          Our <span style={{ color: "#D88B2A" }}>Menu</span>
         </motion.h1>
         <motion.p
           className="text-base lg:text-lg leading-8 max-w-2xl mx-auto"
-          style={{ color: "#6B7280" }}
+         style={{
+              color: "#D6C5AF",
+              maxWidth: "650px",
+            }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -103,90 +169,189 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
         </motion.p>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+           <div className="max-w-7xl mx-auto px-6 lg:px-10 py-8 lg:py-12">
+  {/* Search */}
 
-        {/* ── Search + Filter Bar ── */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8 items-stretch">
+  <div className="flex justify-end mb-12 relative">
+  <div className="flex items-center gap-3">
 
-          {/* Search */}
-          <div className="relative w-full max-w-sm">
-            <Search
-              size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2"
-              style={{ color: "#9CA3AF" }}
-            />
+    {/* Search */}
+
+
+      {/* Search Button */}
+
+      <button
+        onClick={() => setShowSearch(!showSearch)}
+        className="w-12 h-12 rounded-full bg-[#2A1D16] border border-[#4A3528] flex items-center justify-center hover:bg-[#D88B2A] transition-all duration-300"
+      >
+        <Search
+          size={18}
+          className="text-[#F8E9D2]"
+        />
+      </button>
+
+      {/* Search Popup */}
+
+      <AnimatePresence>
+
+        {showSearch && (
+
+          <motion.div 
+             initial={{
+              opacity: 0,
+              scaleX: 0.7,
+              x: 20
+            }}
+
+            animate={{
+              opacity: 1,
+              scaleX: 1,
+              x: 0
+            }}exit={{
+              opacity: 0,
+              scaleX: 0.7,
+              x: 20
+            }}
+              transition={{
+              duration: .25
+            }}
+
+          >
+
             <input
-              type="text"
-              placeholder="Search foods..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-11 pr-5 py-3 rounded-lg text-base outline-none transition-all duration-300 focus:ring-4 focus:ring-orange-100"
-              style={{
-                background: "white",
-                border: "1px solid rgba(0,0,0,0.1)",
-                color: "#1F2937",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-              }}
-            />
-          </div>
 
-          {/* Sort Filter Toggle */}
+              autoFocus
+
+              type="text"
+
+              placeholder="Search menu..."
+
+              value={search}
+
+              onChange={(e)=>setSearch(e.target.value)}
+
+              className="w-75 sm:w-85
+              px-5
+              py-3
+              rounded-full
+              bg-[#2A1D16]
+              border
+              border-[#4A3528]
+              text-[#F8E9D2]
+              placeholder:text-[#B9A998]
+              outline-none
+              shadow-2xl
+              "
+
+            />
+
+          </motion.div>
+
+        )}
+
+      </AnimatePresence>
+
+    </div>
+
+    {/* Sort */}
+
+    <button
+      onClick={()=>setShowFilter(!showFilter)}
+      className="
+      w-12
+      h-12
+      rounded-full
+      bg-[#2A1D16]
+      border
+      border-[#4A3528]
+      flex
+      items-center
+      justify-center
+      hover:bg-[#D88B2A]
+      transition-all
+      duration-300
+      "
+    >
+      <SlidersHorizontal
+        size={18}
+        className="text-[#F8E9D2]"
+      />
+    </button>
+
+  </div>
+</div>
+
+
+       
+        {/* Sort Options */}
+
+<div className="relative flex justify-end mb-10">
+
+  <AnimatePresence>
+
+    {showFilter && (
+
+      <motion.div
+        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+        transition={{ duration: 0.2 }}
+        className="
+          absolute
+          right-5
+          mt-14
+          bg-[#2A1D16]
+          border
+          border-[#4A3528]
+          rounded-2xl
+          shadow-2xl
+          p-3
+          z-50
+          flex
+          flex-col
+          gap-2
+          min-w-55
+        "
+      >
+        {[
+          { label: "Default", value: "default" },
+          { label: "Price: Low → High", value: "price_asc" },
+          { label: "Price: High → Low", value: "price_desc" },
+        ].map((opt) => (
           <button
-            onClick={() => setShowFilter((s) => !s)}
-            className="flex items-center gap-2 px-5 py-3 rounded-2xl min-w-16 text-sm font-medium transition-all"
+            key={opt.value}
+            onClick={() => {
+              setSortBy(opt.value as typeof sortBy);
+              setShowFilter(false);
+            }}
+            className="px-4 py-3 rounded-xl text-left transition"
             style={{
-              background: showFilter ? "#F97316" : "white",
-              border: "1px solid rgba(0,0,0,0.1)",
-              color: showFilter ? "white" : "#374151",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+              background:
+                sortBy === opt.value ? "#D88B2A" : "transparent",
+              color: "#F8E9D2",
             }}
           >
-            <SlidersHorizontal size={16}/>
-            Sort
+            {opt.label}
           </button>
-        </div>
+        ))}
+      </motion.div>
 
-        {/* Sort Options */}
-        <AnimatePresence>
-          {showFilter && (
-            <motion.div
-              className="min-w-20 px-8 py-4 flex gap-2 rounded-2xl border transition-all"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{   opacity: 0, height: 0 }}
-            >
-              {[
-                { label: "Default",     value: "default"    },
-                { label: "Price: Low → High", value: "price_asc"  },
-                { label: "Price: High → Low", value: "price_desc" },
-              ].map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => setSortBy(opt.value as typeof sortBy)}
-                  className="min-w-20 px-8 py-4 rounded-xl text-xs font-medium border transition-all"
-                  style={{
-                    background: sortBy === opt.value ? "#F97316" : "white",
-                    borderColor: sortBy === opt.value ? "#F97316" : "rgba(0,0,0,0.1)",
-                    color: sortBy === opt.value ? "white" : "#374151",
-                  }}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+    )}
+
+  </AnimatePresence>
+
+</div>
 
         {/* ── Category Pills ── */}
-        <div className="flex gap-3 overflow-x-auto pb-2 mb-10 scrollbar-hide">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-5 mb-12">
           <button
             onClick={() => setActiveCat(null)}
-            className="min-w-20 px-5 py-2 rounded-full text-sm font-medium border transition-all"
+            className="h-24 rounded-2xl font-semibold text-lg transition-all duration-300 shadow-lg"
             style={{
-              background: activeCat === null ? "#F97316" : "white",
-              borderColor: activeCat === null ? "#F97316" : "rgba(0,0,0,0.1)",
-              color: activeCat === null ? "white" : "#374151",
-            }}
+              background: activeCat === null ? "#D88B2A" : "#2A1D16",
+              border: "1px solid #4A3528",
+              color: "#F8E9D2",
+             }}
           >
             All Items
           </button>
@@ -194,30 +359,40 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
             <button
               key={cat.id}
               onClick={() => setActiveCat(cat.id)}
-              className="min-w-24 px-8 py-4 rounded-full text-sm font-medium border transition-all"
+              className="h-24 rounded-2xl font-semibold text-lg transition-all duration-300 shadow-lg"
               style={{
-                background: activeCat === cat.id ? "#F97316" : "white",
-                borderColor: activeCat === cat.id ? "#F97316" : "rgba(0,0,0,0.1)",
-                color: activeCat === cat.id ? "white" : "#374151",
-              }}
+                   background: activeCat === cat.id ? "#D88B2A" : "#2A1D16",
+                   border: "1px solid #4A3528",
+                   color: "#F8E9D2",
+               }}
             >
-              {cat.name}
-              <span
-                className="ml-2 text-xs"
-                style={{
-                  color: activeCat === cat.id
-                    ? "rgba(255,255,255,0.8)"
-                    : "#9CA3AF",
-                }}
-              >
-                {cat._count.foods}
-              </span>
+              <div className="flex flex-col items-center justify-center gap-2">
+                 {getCategoryIcon(cat.name)}
+
+  <span>
+    {cat.name}
+  </span>
+
+  <span
+    className="text-xs"
+    style={{
+      color:
+        activeCat === cat.id
+          ? "rgba(255,255,255,.8)"
+          : "#B9A998",
+    }}
+  >
+    {cat._count.foods}
+  </span>
+         </div>
+             
             </button>
           ))}
         </div>
 
         {/* ── Results Count ── */}
-        <p className="text-sm mb-6" style={{ color: "#6B7280" }}>
+        <p className="text-sm mb-6" 
+        style={{ color: "#6B7280" }}>
           Showing <strong style={{ color: "#1F2937" }}>{filteredFoods.length}</strong> items
           {activeCat !== null && (
             <span> in <strong style={{ color: "#F97316" }}>
@@ -238,13 +413,13 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
             </p>
           </div>
         ) : (
-          <div className="grid xl:grid-cols-[1fr_320px] gap-8">
+          <div className="flex flex-col items-center gap-6">
             <AnimatePresence mode="popLayout">
               {filteredFoods.map((food, i) => (
                 <motion.div
                   key={food.id}
                   layout
-                  className="flex bg-white rounded-lg shadow-sm overflow-hidden"
+                  className="flex w-full max-w-5xl rounded-2xl overflow-hidden"
                   style={{
                     background: "white",
                     border: "1px solid rgba(0,0,0,0.07)",
@@ -344,6 +519,6 @@ export default function MenuClient({ foods, categories }: MenuClientProps) {
           </div>
         )}
       </div>
-    </div>
+  
   );
 }

@@ -46,7 +46,7 @@ useEffect(() => {
   return (
     <>
       <motion.nav
-  className={`fixed top-0 left-0 right-0 z-20 backdrop-blur-xl border-b transition-all duration-300 ${
+  className={`fixed top-0 left-0 right-0 z-20 card-blur-xl border-b transition-all duration-300 ${
     scrolled
             ? "bg-white/95 border-white/30 shadow-lg"
             : "bg-white/60 border-transparent"
@@ -134,7 +134,7 @@ useEffect(() => {
                 <button
                   onClick={() => { logout(); toast.success("Logged out!"); }}
                   className="px-5 py-2 rounded-full text-sm font-semibold border-2 transition-all hover:bg-red-50"
-                  style={{ borderColor: "#EF4444", color: "#EF4444" }}
+                  style={{ padding: "4px 8px", borderColor: "#EF4444", color: "#EF4444" }}
                 >
                   Logout
                 </button>
@@ -145,14 +145,14 @@ useEffect(() => {
                 <Link
                   href="/login"
                   className="px-6 py-2.5 rounded-full text-sm font-semibold transition-all hover:scale-105"
-                  style={{ background: "#F97316", color: "white" }}
+                  style={{ padding: "6px 10px", background: "#F97316", color: "white" }}
                 >
                   Sign In
                 </Link>
                 <Link
                   href="/register"
                   className="px-6 py-2.5 rounded-full text-sm font-semibold border-2 transition-all hover:bg-orange-50 hover:scale-105"
-                  style={{ borderColor: "#F97316", color: "#F97316" }}
+                  style={{ padding:"4px 8px", borderColor: "#F97316", color: "#F97316" }}
                 >
                   Sign Up
                 </Link>
