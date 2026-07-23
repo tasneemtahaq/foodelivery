@@ -116,6 +116,7 @@ export default function OrderSummaryClient({ order }: { order: Order }) {
         <motion.div
           className="inline-flex items-center gap-2 px-5 py-2 rounded-full mt-4 text-sm font-bold"
           style={{
+            padding: "3px 6px",
             background: "rgba(249,115,22,0.1)",
             border:     "1.5px solid rgba(249,115,22,0.3)",
             color:      "#F97316",
@@ -140,6 +141,7 @@ export default function OrderSummaryClient({ order }: { order: Order }) {
         <div
           className="p-4 rounded-2xl flex items-center gap-3"
           style={{
+            padding: "3px 6px",
             background: "white",
             border: "1px solid rgba(0,0,0,0.07)",
             boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
@@ -174,6 +176,7 @@ export default function OrderSummaryClient({ order }: { order: Order }) {
         <div
           className="p-4 rounded-2xl flex items-center gap-3"
           style={{
+            padding: "3px 6px",
             background: "white",
             border: "1px solid rgba(0,0,0,0.07)",
             boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
@@ -201,6 +204,7 @@ export default function OrderSummaryClient({ order }: { order: Order }) {
       <motion.div
         className="rounded-2xl p-6 mb-6"
         style={{
+          padding: "3px 6px",
           background: "white",
           border: "1px solid rgba(0,0,0,0.07)",
           boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
@@ -221,7 +225,7 @@ export default function OrderSummaryClient({ order }: { order: Order }) {
             <div
               key={item.id}
               className="flex items-center justify-between py-2"
-              style={{ borderBottom: "1px solid rgba(0,0,0,0.05)" }}
+              style={{ padding: "3px 6px", borderBottom: "1px solid rgba(0,0,0,0.05)" }}
             >
               <div className="flex items-center gap-3">
                 {/* Quantity badge */}
@@ -246,16 +250,16 @@ export default function OrderSummaryClient({ order }: { order: Order }) {
         <div className="mt-4 pt-4 flex flex-col gap-2"
              style={{ borderTop: "1px solid rgba(0,0,0,0.07)" }}>
           <div className="flex justify-between text-sm">
-            <span style={{ color: "#6B7280" }}>Subtotal</span>
-            <span style={{ color: "#1F2937" }}>Rs.{subtotal}</span>
+            <span style={{ padding: "3px 6px",color: "#6B7280" }}>Subtotal</span>
+            <span style={{ padding: "3px 6px",color: "#1F2937" }}>Rs.{subtotal}</span>
           </div>
-          <div className="flex justify-between text-sm">
-            <p>Delivery charges may apply</p>
-            
-          </div>
+          <div className="flex justify-between text-sm"
+          style={{padding: "3px 6px", borderTop: "1px solid rgba(0,0,0,0.07)" }}>
+           <p className="text-green-600 font-bold italic"> Delivery charges may apply</p>
+            </div>
           <div
             className="flex justify-between font-bold text-base pt-2"
-            style={{ borderTop: "1px solid rgba(0,0,0,0.07)" }}
+            style={{padding: "3px 6px", borderTop: "1px solid rgba(0,0,0,0.07)" }}
           >
             <span style={{ color: "#1F2937" }}>Total Paid</span>
             <span style={{ color: "#F97316" }}>Rs.{order.totalAmount}</span>
@@ -267,6 +271,7 @@ export default function OrderSummaryClient({ order }: { order: Order }) {
       <motion.div
         className="rounded-2xl p-6 mb-6"
         style={{
+          padding: "4px 8px",
           background: "white",
           border: "1px solid rgba(0,0,0,0.07)",
           boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
@@ -372,7 +377,8 @@ export default function OrderSummaryClient({ order }: { order: Order }) {
           <div
             className="text-xs pt-3 mt-1"
             style={{
-              color: "#9CA3AF",
+              padding: "4px 8px",
+              color: "#636660",
               borderTop: "1px solid rgba(0,0,0,0.06)",
             }}
           >
@@ -382,8 +388,10 @@ export default function OrderSummaryClient({ order }: { order: Order }) {
       </motion.div>
 
       {/* ── Action Buttons ── */}
+      
       <motion.div
-        className="flex flex-col sm:flex-row gap-3"
+        className=" flex flex-col sm:flex-row gap-3"
+        style={{ marginTop: "20px" }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}

@@ -42,8 +42,12 @@ export default function FeaturedFoods({ foods }: FeaturedFoodsProps) {
 
   return (
     <section
-      className="py-20 px-4"
-      style={{padding: "12px 16px",  background: "#737373" }}
+      className="pt-24 pb-24 px-4 mt-auto"
+      style={{
+        paddingLeft: "130px",
+        background: "#FFEDAA",
+        borderTop: "1px solid rgba(245,158,11,0.1)",
+      }}
       id="featured"
     >
       <div className="max-w-7xl mx-auto">

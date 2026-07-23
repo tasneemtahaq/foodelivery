@@ -13,9 +13,6 @@ import toast from "react-hot-toast";
 const NAV_LINKS = [
   { label: "Home",            href: "/"        },
   { label: "Find Food",       href: "/menu"    },
-  { label: "Tracking",        href: "#"        },
-  { label: "Find Restaurant", href: "#"        },
-  { label: "Location",        href: "#"        },
 ];
 
 export default function Navbar() {

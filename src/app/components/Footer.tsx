@@ -9,12 +9,13 @@ export default function Footer() {
     <footer
       className="pt-24 pb-24 px-4 mt-auto"
       style={{
+        marginTop: "20px",
         background: "#080808",
         borderTop: "1px solid rgba(245,158,11,0.1)",
       }}
     >
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 pb-10"
-           style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+           style={{ padding:"5px 10px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
 
         {/* Brand */}
         <div>
