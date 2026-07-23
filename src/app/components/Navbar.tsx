@@ -68,6 +68,22 @@ useEffect(() => {
             priority
              style={{ width: "auto", height: "40px", objectFit: "contain" }}
             />
+            <span
+  className="
+    text-lg
+    sm:text-xl
+    md:text-2xl
+    font-black
+    tracking-wide
+    whitespace-nowrap
+    leading-none
+  "
+  style={{
+    color: "#EA580C",
+  }}
+>
+  Mama Soups
+</span>
           </Link>
 
           {/* ── Desktop Nav Links ── */}
@@ -200,7 +216,7 @@ useEffect(() => {
                 >
                   <Link
                     href={link.href}
-                    className="text-2xl font-bold"
+                    className="text-lg font-bold"
                     style={{ color: pathname === link.href ? "#F97316" : "#1F2937" }}
                     onClick={() => setMenuOpen(false)}
                   >
@@ -213,7 +229,7 @@ useEffect(() => {
               <Link
                 href="/admin"
                 className="px-6 py-3 rounded-full font-bold text-white"
-                style={{ background: "#F97316" }}
+                style={{ padding:"3px 6px", background: "#F97316" }}
                 onClick={() => setMenuOpen(false)}
               >
                 Sign In
@@ -221,7 +237,7 @@ useEffect(() => {
               <Link
                 href="#"
                 className="px-6 py-3 rounded-full font-bold border-2"
-                style={{ borderColor: "#F97316", color: "#F97316" }}
+                style={{ padding:"2px 4px",borderColor: "#F97316", color: "#F97316" }}
                 onClick={() => setMenuOpen(false)}
               >
                 Sign Up
@@ -229,7 +245,103 @@ useEffect(() => {
             </div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence><AnimatePresence>
+  {menuOpen && (
+    <>
+      {/* Backdrop */}
+      <motion.div
+        className="fixed inset-0 z-40 bg-black/40 md:hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={() => setMenuOpen(false)}
+      />
+
+      {/* Drawer */}
+      <motion.div
+        className="fixed top-0 left-0 bottom-0 w-72 bg-white z-50 md:hidden shadow-2xl"
+        initial={{ x: "-100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "-100%" }}
+        transition={{ duration: 0.25 }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-5 border-b">
+          <Image
+            src="/images/logo.png"
+            alt="Logo"
+            width={45}
+            height={45}
+          />
+
+          <button onClick={() => setMenuOpen(false)}>
+            <X size={24} />
+          </button>
+        </div>
+
+        {/* Links */}
+        <div className="flex flex-col p-6 gap-5">
+
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setMenuOpen(false)}
+              className={`text-lg font-semibold transition ${
+                pathname === link.href
+                  ? "text-orange-500"
+                  : "text-gray-700"
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
+
+          <hr className="my-3" />
+
+          {isLoggedIn && user ? (
+            <>
+              <p className="font-semibold text-gray-700">
+                Hi, {user.name ?? user.email.split("@")[0]}
+              </p>
+
+              <button
+                onClick={() => {
+                logout();
+                toast.success("Logged out!");
+                setMenuOpen(false);
+                }}
+               className="w-32 h-6 rounded-lg bg-red-500 text-white text-sm font-semibold py-2"
+>
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="flex flex-col gap-3 mt-2">
+  <Link
+    href="/login"
+    onClick={() => setMenuOpen(false)}
+    className="w-30 h-6 text-center rounded-lg bg-orange-500 text-white text-sm font-semibold py-2"
+  >
+    Sign In
+  </Link>
+
+  <Link
+    href="/register"
+    onClick={() => setMenuOpen(false)}
+    className="w-30 h-6 text-center rounded-lg border border-orange-500 text-orange-500 text-sm font-semibold py-2"
+  >
+    Sign Up
+  </Link>
+</div>
+            </>
+          )}
+        </div>
+      </motion.div>
+    </>
+  )}
+</AnimatePresence>
     </>
   );
 }

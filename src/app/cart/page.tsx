@@ -127,7 +127,7 @@ if (items.length === 0) {
                 <motion.div
                   key={item.id}
                   layout
-                  className="flex items-center gap-4 p-4 rounded-2xl"
+                  className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-2xl"
                   style={{
                     background: "white",
                     border: "1px solid rgba(0,0,0,0.07)",
@@ -140,7 +140,7 @@ if (items.length === 0) {
                 >
                   {/* Food Image */}
                   <div
-                    className="relative w-20 h-20 rounded-xl overflow-hidden shrink-0 flex items-center justify-center text-3xl"
+                    className="relative w-full sm:w-20 h-44 sm:h-20 rounded-xl overflow-hidden shrink-0 flex items-center justify-center text-3xl"
                     style={{ background: "#fff7ed" }}
                   >
                     {item.image ? (
@@ -173,7 +173,7 @@ if (items.length === 0) {
                   </div>
 
                   {/* Quantity Controls */}
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto">
                     <motion.button
                       onClick={() => decreaseQty(item.id)}
                       className="w-8 h-8 rounded-lg flex items-center justify-center border transition-all"
@@ -205,7 +205,7 @@ if (items.length === 0) {
 
                   {/* Item Total */}
                   <div
-                    className="text-right shrink-0 min-w-17.5"
+                    className="w-full sm:w-auto text-left sm:text-right"
                   >
                     <p className="font-bold" style={{ color: "#1F2937" }}>
                       Rs.{item.price * item.quantity}
@@ -215,7 +215,7 @@ if (items.length === 0) {
                   {/* Remove Button */}
                   <motion.button
                     onClick={() => removeItem(item.id)}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all hover:bg-red-50"
+                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 self-end sm:self-auto transition-all hover:bg-red-50"
                     style={{ color: "#EF4444" }}
                     whileTap={{ scale: 0.9 }}
                     aria-label="Remove item"
@@ -305,7 +305,7 @@ if (items.length === 0) {
               {/* Checkout Button */}
               <Link href="/checkout">
                 <motion.div
-                  className="w-full py-4 rounded-xl font-bold text-white text-center flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3 md:py-4 rounded-xl font-bold text-white text-center flex items-center justify-center gap-2 cursor-pointer"
                   style={{
                     background: "linear-gradient(135deg, #F97316, #EA580C)",
                     boxShadow: "0 4px 20px rgba(249,115,22,0.35)",

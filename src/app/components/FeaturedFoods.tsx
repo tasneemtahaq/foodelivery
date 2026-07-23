@@ -42,12 +42,8 @@ export default function FeaturedFoods({ foods }: FeaturedFoodsProps) {
 
   return (
     <section
-      className="pt-24 pb-24 px-4 mt-auto"
-      style={{
-        paddingLeft: "130px",
-        background: "#FFEDAA",
-        borderTop: "1px solid rgba(245,158,11,0.1)",
-      }}
+      className="py-20 px-4"
+      style={{padding: "12px 16px",  background: "#464646" }}
       id="featured"
     >
       <div className="max-w-7xl mx-auto">
@@ -71,7 +67,7 @@ export default function FeaturedFoods({ foods }: FeaturedFoodsProps) {
         </motion.div>
 
         {/* 3 Food Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-10 flex-wrap">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-10 flex-wrap">
           {featuredFoods.map((food, i) => (
             <motion.div
               key={food.id}
