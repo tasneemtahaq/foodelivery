@@ -217,7 +217,7 @@ export default function Hero() {
 
           {/* Google Maps link */}
           <a
-            href="https://maps.google.com"
+            href="https://maps.app.goo.gl/2rJkU2XBVYdUdZvZA"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1 text-sm font-medium transition-opacity hover:opacity-80"
@@ -400,6 +400,7 @@ export default function Hero() {
                   sizes="400px"
                   className="object-cover"
                   priority
+                  loading="eager"
                 />
                 <div
                   className="absolute inset-0 rounded-full pointer-events-none"

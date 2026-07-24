@@ -30,6 +30,8 @@ interface FormErrors {
   streetNo?: string;
 }
 
+
+
 const PAYMENT_METHODS = [
   {
     id:    "cash",
@@ -108,7 +110,7 @@ export default function CheckoutPage() {
   }
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -129,6 +131,8 @@ export default function CheckoutPage() {
       newErrors.houseNo = "House number is required";
     if (!formData.streetNo.trim())
       newErrors.streetNo = "Street number is required";
+    if (!formData.area)
+      newErrors.streetNo = "Please select your area";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -416,23 +420,51 @@ export default function CheckoutPage() {
                     {errors.streetNo && <p style={errorStyle}>{errors.streetNo}</p>}
                   </div>
 
+                  
                   {/* Area */}
                   <div className="md:col-span-2">
                     <label style={labelStyle}>
-                      Area / Sector
-                      <span className="ml-2 font-normal normal-case"
-                            style={{ color: "#9CA3AF" }}>
-                        (optional)
-                      </span>
+                      Area <span style={{ color: "#EF4444" }}>*</span>
                     </label>
-                    <input
-                      type="text"
+                    <select
                       name="area"
                       value={formData.area}
                       onChange={handleChange}
-                      placeholder="e.g. DHA Phase 6, Gulshan Block 3, Clifton..."
-                      style={inputStyle}
-                    />
+                      style={{
+                        ...inputStyle,
+                        cursor: "pointer",
+                        color: formData.area ? "#1F2937" : "#9CA3AF",
+                      }}
+                    >
+                      <option value="" disabled>
+                        Select your area...
+                      </option>
+                      {[
+                        "Saddar",
+                        "Civil Lines",
+                        "Garden",
+                        "Lines Area",
+                        "Soldier Bazaar",
+                        "Jamshed Quarter",
+                        "PECHS",
+                        "Nursery",
+                        "Tariq Road",
+                        "Bahadurabad",
+                        "Clifton",
+                        "Boat Basin",
+                        "Bath Island",
+                        "Defence Phase 1",
+                        "Defence Phase 2",
+                        "Gizri (Selected Areas)",
+                      ].map((area) => (
+                        <option key={area} value={area}>
+                          {area}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-xs mt-1" style={{ color: "#9CA3AF" }}>
+                      We deliver within 8km radius only
+                    </p>
                   </div>
 
                   {/* Instructions */}
