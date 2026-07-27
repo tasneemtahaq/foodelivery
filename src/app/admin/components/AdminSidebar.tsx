@@ -7,12 +7,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import {
   LayoutDashboard, UtensilsCrossed, ShoppingBag,
-  Users, Settings, LogOut, Tag, Menu, X,
+  Users, Settings, LogOut, Tag, Menu, X, TrendingUp
 } from "lucide-react";
 
 const NAV_ITEMS = [
   { label: "Dashboard",  href: "/admin",            icon: LayoutDashboard },
   { label: "Orders",     href: "/admin/orders",     icon: ShoppingBag     },
+  { label: "Statistics", href: "/admin/statistics", icon: TrendingUp      },
   { label: "Foods",      href: "/admin/foods",      icon: UtensilsCrossed },
   { label: "Categories", href: "/admin/categories", icon: Tag             },
   { label: "Customers",  href: "/admin/customers",  icon: Users           },

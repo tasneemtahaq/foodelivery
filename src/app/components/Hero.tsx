@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Clock, MapPin, Star, ChevronDown } from "lucide-react";
+import { Clock, MapPin, Star, StarHalf, ChevronDown } from "lucide-react";
 
 // Karachi areas within 8km radius
 const AREAS = [
@@ -207,7 +207,7 @@ export default function Hero() {
           <div className="flex items-center gap-2 text-sm font-medium"
                style={{ color: "#16a34a" }}>
             <MapPin size={16} />
-            <span>Delivering within 8km radius</span>
+            <span> Check if We Deliver to Your Area </span>
           </div>
 
           <div
@@ -221,10 +221,9 @@ export default function Hero() {
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1 text-sm font-medium transition-opacity hover:opacity-80"
-            style={{ color: "#F97316" }}
+            style={{ color: "#FFA500" }}
           >
-            <Star size={14} />
-            Find us on Google Maps
+           ⭐ Find us on Google Maps
           </a>
         </motion.div>
 
@@ -264,7 +263,7 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.45 }}
             >
-              <p className="text-xs font-semibold uppercase tracking-wider mb-2"
+              <p className="text-md font-semibold uppercase tracking-wider mb-2"
                  style={{ color: "#9CA3AF" }}>
                 Select Your Area
               </p>
@@ -475,7 +474,7 @@ export default function Hero() {
 
             {/* Google Maps Rating */}
             <motion.a
-              href="https://maps.google.com"
+              href="https://maps.app.goo.gl/2rJkU2XBVYdUdZvZA"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 p-4 rounded-3xl transition-all hover:scale-102"
@@ -499,9 +498,14 @@ export default function Hero() {
                   Find Us on Google Maps
                 </p>
                 <div className="flex items-center gap-1 mt-0.5">
-                  {[1,2,3,4,5].map((s) => (
+                  {[1,2,3,4].map((s) => (
                     <Star key={s} size={10} fill="#F97316" style={{ color: "#F97316" }} />
                   ))}
+                   <StarHalf
+                      size={10}
+                      fill="#F97316"
+                      color="#F97316"
+                      />
                   <span className="text-xs ml-1" style={{ color: "#6B7280" }}>
                     Mama Soups
                   </span>

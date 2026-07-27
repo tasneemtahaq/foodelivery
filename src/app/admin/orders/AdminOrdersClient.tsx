@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
+import { ChevronDown, ChevronUp, RefreshCw, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import type { AdminOrder } from "./page";
 
@@ -148,6 +148,25 @@ export default function AdminOrdersClient({
     }
   };
 
+  // Delete order
+  const deleteOrder = async (orderId: number, orderNumber: string) => {
+    if (!confirm(`Delete order ${orderNumber}? This cannot be undone.`)) return;
+
+    try {
+      const res = await fetch(`/api/orders/${orderId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Failed to delete");
+
+      setOrders((prev) => prev.filter((o) => o.id !== orderId));
+      toast.success(`Order ${orderNumber} deleted!`);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete order");
+    }
+  };
+
   const getStatusColor = (status: string) =>
     STATUS_OPTIONS.find((s) => s.value === status)?.color ?? "#F59E0B";
 
@@ -278,6 +297,23 @@ export default function AdminOrdersClient({
                       </motion.div>
                     )}
                   </div>
+                </div>
+
+                {/* Delete button */}
+                <div onClick={(e) => e.stopPropagation()}>
+                  <motion.button
+                    onClick={() => deleteOrder(order.id, order.orderNumber)}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center"
+                    style={{
+                      background: "rgba(239,68,68,0.1)",
+                      color:      "#EF4444",
+                    }}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    title="Delete order"
+                  >
+                    <Trash2 size={14} />
+                  </motion.button>
                 </div>
 
                 {/* Expand toggle */}

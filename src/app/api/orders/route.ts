@@ -180,49 +180,92 @@ export async function POST(request: NextRequest) {
       console.error("Email failed:", emailError);
     }
 
-    // ── Send Telegram Notification ──────────────────────
-    try {
-      const telegramMessage =
-        `🔔 *NEW ORDER — Mama Soups*\n\n` +
-        `📦 *Order #:* ${order.orderNumber}\n\n` +
-        `👤 *Customer*\n` +
-        `Name: ${savedCustomer.name}\n` +
-        `Phone: ${savedCustomer.phone}\n` +
-        `Address: ${savedCustomer.address}` +
-        `${savedCustomer.area ? `, ${savedCustomer.area}` : ""}` +
-        `, ${savedCustomer.city}\n\n` +
-        `🛒 *Items*\n` +
-        `${order.orderItems.map(i =>
-          `• ${i.food.name} x${i.quantity} = Rs.${i.price * i.quantity}`
-        ).join("\n")}\n\n` +
-        `💰 *Total: Rs.${totalAmount}*\n` +
-        `💳 Payment: ${paymentMethod}\n\n` +
-        `${instructions ? `📝 Notes: ${instructions}\n\n` : ""}` +
-        `⏰ ${new Date().toLocaleString("en-PK")}`;
+   // ── Send Discord Notification ──────────────────────
+try {
+  const discordMessage = {
+    embeds: [
+      {
+        title: "🛍️ New Order Received - Mama Soups",
+        color: 0xF97316,
 
-      const telegramRes = await fetch(
-        `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-        {
-          method:  "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chat_id:    process.env.TELEGRAM_CHAT_ID,
-            text:       telegramMessage,
-            parse_mode: "Markdown",
-          }),
-        }
-      );
+        fields: [
+          {
+            name: "📦 Order Number",
+            value: order.orderNumber,
+            inline: true,
+          },
+          {
+            name: "💰 Total",
+            value: `Rs. ${totalAmount}`,
+            inline: true,
+          },
+          {
+            name: "💳 Payment",
+            value: paymentMethod,
+            inline: true,
+          },
+          {
+            name: "👤 Customer",
+            value: savedCustomer.name,
+            inline: false,
+          },
+          {
+            name: "📞 Phone",
+            value: savedCustomer.phone,
+            inline: true,
+          },
+          {
+            name: "📍 Address",
+            value: `${savedCustomer.address}${
+              savedCustomer.area ? `, ${savedCustomer.area}` : ""
+            }, ${savedCustomer.city}`,
+            inline: false,
+          },
+          {
+            name: "🛒 Items",
+            value: order.orderItems
+              .map(
+                (item) =>
+                  `• ${item.food.name} × ${item.quantity} — Rs.${item.price * item.quantity}`
+              )
+              .join("\n"),
+            inline: false,
+          },
+          ...(instructions
+            ? [
+                {
+                  name: "📝 Instructions",
+                  value: instructions,
+                  inline: false,
+                },
+              ]
+            : []),
+        ],
 
-      if (telegramRes.ok) {
-        console.log("✅ Telegram notification sent!");
-      } else {
-        const err = await telegramRes.json();
-        console.error("Telegram error:", err);
-      }
-    } catch (telegramError) {
-      // Don't fail the order if Telegram fails
-      console.error("Telegram failed:", telegramError);
-    }
+        footer: {
+          text: new Date().toLocaleString("en-PK"),
+        },
+      },
+    ],
+  };
+
+  const discordRes = await fetch(process.env.DISCORD_WEBHOOK_URL!, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(discordMessage),
+  });
+
+  if (discordRes.ok) {
+    console.log("✅ Discord notification sent!");
+  } else {
+    const errorText = await discordRes.text();
+    console.error("Discord error:", errorText);
+  }
+} catch (discordError) {
+  console.error("Discord notification failed:", discordError);
+}
 
 
     return NextResponse.json({
