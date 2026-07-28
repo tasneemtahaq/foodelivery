@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Pencil, Trash2, X, Check } from "lucide-react";
 import toast from "react-hot-toast";
 import type { AdminFood, AdminCategory } from "./page";
+import Image from "next/image";
 
 interface FoodForm {
   name:        string;
@@ -14,6 +15,7 @@ interface FoodForm {
   categoryId:  string;
   isAvailable: boolean;
   isFeatured:  boolean;
+  image:       string;
 }
 
 const EMPTY_FORM: FoodForm = {
@@ -24,6 +26,7 @@ const EMPTY_FORM: FoodForm = {
   categoryId:  "",
   isAvailable: true,
   isFeatured:  false,
+  image:       "",
 };
 
 export default function AdminFoodsClient({
@@ -48,7 +51,7 @@ export default function AdminFoodsClient({
   };
 
   // Open Edit modal
-  const openEdit = (food: AdminFood) => {
+ const openEdit = (food: AdminFood) => {
     setEditingFood(food);
     setForm({
       name:        food.name,
@@ -58,6 +61,7 @@ export default function AdminFoodsClient({
       categoryId:  String(food.categoryId),
       isAvailable: food.isAvailable,
       isFeatured:  food.isFeatured,
+      image:       food.image ?? "",
     });
     setShowModal(true);
   };
@@ -75,14 +79,15 @@ export default function AdminFoodsClient({
 
     try {
       const payload = {
-  name:        form.name.trim(),
-  description: form.description.trim(),
-  price:       form.price,
-  offerPrice:  form.offerPrice || null,
-  categoryId:  form.categoryId,
-  isAvailable: form.isAvailable,
-  isFeatured:  form.isFeatured,
-};
+        name:        form.name.trim(),
+        description: form.description.trim(),
+        price:       form.price,
+        offerPrice:  form.offerPrice || null,
+        categoryId:  form.categoryId,
+        isAvailable: form.isAvailable,
+        isFeatured:  form.isFeatured,
+        image:       form.image.trim() || null,
+      };
 
       if (editingFood) {
         // EDIT existing food
@@ -472,6 +477,85 @@ export default function AdminFoodsClient({
                       </option>
                     ))}
                   </select>
+                </div>
+
+                {/* Image Upload */}
+                <div>
+                  <label style={labelStyle}>Food Image</label>
+
+                  {/* Option 1: Upload from device */}
+                  <div className="flex flex-col gap-2">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        // Upload to server
+                        const uploadForm = new FormData();
+                        uploadForm.append("file", file);
+                        try {
+                          const res  = await fetch("/api/upload", {
+                            method: "POST",
+                            body:   uploadForm,
+                          });
+                          const data = await res.json();
+                          if (data.success) {
+                            setForm((p) => ({ ...p, image: data.imagePath }));
+                            toast.success(`Image uploaded: ${data.imagePath}`);
+                          } else {
+                            toast.error("Upload failed");
+                          }
+                        } catch {
+                          toast.error("Upload failed");
+                        }
+                      }}
+                      className="w-full text-xs rounded-lg p-2"
+                      style={{
+                        background: "rgba(255,255,255,0.05)",
+                        border:     "1px solid rgba(255,255,255,0.1)",
+                        color:      "#9CA3AF",
+                      }}
+                    />
+                    
+                    {/* Option 2: Manual path input */}
+                    <input
+                      type="text"
+                      value={form.image}
+                      onChange={(e) =>
+                        setForm((p) => ({ ...p, image: e.target.value }))
+                      }
+                      placeholder="/images/yourimage.jpg"
+                      style={inputStyle}
+                    />
+
+                    {/* Image preview */}
+                    {form.image && (
+                      <div className="relative w-full h-32 rounded-lg overflow-hidden"
+                           style={{ background: "rgba(255,255,255,0.05)" }}>
+                        <Image
+                          src={form.image}
+                          alt="Preview"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = "none";
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setForm((p) => ({ ...p, image: "" }))}
+                          className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs"
+                          style={{ background: "rgba(239,68,68,0.8)", color: "white" }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    )}
+
+                    <p className="text-xs" style={{ color: "#6B7280" }}>
+                      📁 Save image to <code style={{ color: "#F97316" }}>public/images/</code> folder first, then enter path above
+                    </p>
+                  </div>
                 </div>
 
                 {/* Toggles */}
