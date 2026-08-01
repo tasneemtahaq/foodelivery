@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -30,6 +30,11 @@ interface FormErrors {
   streetNo?: string;
 }
 
+interface DeliveryArea {
+  id:             number;
+  name:           string;
+  deliveryCharge: number;
+}
 
 
 const PAYMENT_METHODS = [
@@ -68,10 +73,12 @@ export default function CheckoutPage() {
   const items      = useCartStore((s: CartStore) => s.items);
   const totalPrice = useCartStore((s: CartStore) => s.totalPrice());
   const clearCart  = useCartStore((s: CartStore) => s.clearCart);
+  const [deliveryAreas,   setDeliveryAreas]   = useState<DeliveryArea[]>([]);
+  const [deliveryCharge,  setDeliveryCharge]  = useState<number>(0);
 
   // ── No delivery charge or tax ──
-  const GRAND_TOTAL = totalPrice;
-
+  const GRAND_TOTAL = totalPrice + deliveryCharge;
+ 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name:          "",
@@ -84,6 +91,12 @@ export default function CheckoutPage() {
     paymentMethod: "cash",
   });
   const [errors, setErrors] = useState<FormErrors>({});
+  
+  useEffect(() => {
+    fetch("/api/delivery-areas")
+      .then((r) => r.json())
+      .then((data) => setDeliveryAreas(data.areas ?? []));
+  }, []);
 
   // Empty cart redirect
   if (items.length === 0) {
@@ -429,16 +442,24 @@ export default function CheckoutPage() {
                     <select
                       name="area"
                       value={formData.area}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        const selected = deliveryAreas.find(
+                          (a) => a.name === e.target.value
+                        );
+                        setDeliveryCharge(selected?.deliveryCharge ?? 0);
+                        handleChange(e);
+                      }}
                       style={{
                         ...inputStyle,
                         cursor: "pointer",
                         color: formData.area ? "#1F2937" : "#9CA3AF",
                       }}
                     >
-                      <option value="" disabled>
-                        Select your area...
-                      </option>
+                      {deliveryAreas.map((area) => (
+                        <option key={area.id} value={area.name}>
+                          {area.name} — Rs.{area.deliveryCharge} delivery
+                        </option>
+                      ))}
                       {[
                         "Saddar",
                         "Civil Lines",
@@ -455,6 +476,8 @@ export default function CheckoutPage() {
                         "Bath Island",
                         "Defence Phase 1",
                         "Defence Phase 2",
+                        "Defence Phase 3",
+                        "Defence Phase 4",
                         "Gizri (Selected Areas)",
                       ].map((area) => (
                         <option key={area} value={area}>
@@ -651,14 +674,20 @@ export default function CheckoutPage() {
                   </div>
 
                   {/* Delivery notice */}
-                  <div
-                    className="text-xs px-3 py-2 rounded-lg"
-                    style={{
-                      background: "rgba(249,115,22,0.06)",
-                      color:      "#92400E",
-                    }}
-                  >
-                    🚗 Delivery charge based on your area
+                  {/* Delivery charge */}
+                  <div className="flex justify-between text-sm">
+                    <span style={{ color: "#6B7280" }}>
+                      Delivery
+                      {formData.area && (
+                        <span className="ml-1 text-xs">({formData.area})</span>
+                      )}
+                    </span>
+                    <span style={{ color: "#1F2937" }}>
+                      {deliveryCharge > 0
+                        ? `Rs.${deliveryCharge}`
+                        : <span style={{ color: "#9CA3AF" }}>Select area</span>
+                      }
+                    </span>
                   </div>
 
                   <div className="h-px w-full my-1"

@@ -97,3 +97,10 @@ model User {
   city      String   @default("Karachi")
   createdAt DateTime @default(now())
 }
+// ── DELIVERY AREAS ─────────────────────────────────────────
+model DeliveryArea {
+  id             Int     @id @default(autoincrement())
+  name           String  @unique
+  deliveryCharge Int
+  isActive       Boolean @default(true)
+}

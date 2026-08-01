@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import {
   LayoutDashboard, UtensilsCrossed, ShoppingBag,
-  Users, Settings, LogOut, Tag, Menu, X, TrendingUp
+  Users, Settings, LogOut, Tag, Menu, X, TrendingUp, Truck
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -17,6 +17,7 @@ const NAV_ITEMS = [
   { label: "Foods",      href: "/admin/foods",      icon: UtensilsCrossed },
   { label: "Categories", href: "/admin/categories", icon: Tag             },
   { label: "Customers",  href: "/admin/customers",  icon: Users           },
+  { label: "Delivery Areas", href: "/admin/delivery-areas", icon: Truck },
   { label: "Settings",   href: "/admin/settings",   icon: Settings        },
 ];
 

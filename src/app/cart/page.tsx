@@ -274,11 +274,7 @@ if (items.length === 0) {
                     color:      "#92400E",
                   }}
                 >
-                  <span className="mt-0.5">🚗</span>
-                  <span>
-                    Delivery charges will be calculated based on your area.
-                    Our team will confirm the exact amount when processing your order.
-                  </span>
+                  
                 </div>
 
                 {/* Divider */}

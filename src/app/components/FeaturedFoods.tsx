@@ -167,7 +167,7 @@ export default function FeaturedFoods({ foods }: FeaturedFoodsProps) {
 
         {/* View Full Menu Button */}
         <motion.div
-          className="text-center mt-4 mb-8"
+          className="text-center mt-10 mb-8"
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -175,7 +175,7 @@ export default function FeaturedFoods({ foods }: FeaturedFoodsProps) {
         >
           <Link
             href="/menu"
-            className=" inline-flex items-center gap-2 px-8 py-10 rounded-full font-bold text-black transition-all hover:scale-105"
+            className="inline-flex items-center gap-2 px-8 py-10 rounded-full font-bold text-black transition-all hover:scale-105"
             style={{
               padding: "4px 8px",
               background:  "#F59E0B",

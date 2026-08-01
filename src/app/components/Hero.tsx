@@ -23,6 +23,8 @@ const AREAS = [
   "Bath Island",
   "Defence Phase 1",
   "Defense Phase 2",
+  "Defense Phase 3",
+  "Defense Phase 4",
   "Gizri (Selected Areas)",
 ];
 
@@ -54,7 +56,7 @@ export default function Hero() {
 
   return (
     <section
-      className="relative overflow-hidden px-4 sm:px-6 lg:px-8 justify-items-center"
+      className="relative overflow-visible px-4 sm:px-6 lg:px-8 justify-items-center"
       style={{
         background:    "linear-gradient(135deg, #fff7ed 0%, #ffffff 50%, #fff7ed 100%)",
         paddingTop:    "100px",
@@ -124,30 +126,21 @@ export default function Hero() {
                         className="px-2 py-0.5 rounded-full text-xs font-black tracking-widest uppercase"
                         style={{ padding:"4px 8px", background: "rgba(255,255,255,0.25)", color: "white" }}
                       >
-                        Coming Soon
+                        Welcome to MamaSoups
                       </span>
-                      <motion.span
-                        className="px-2 py-0.5 rounded-full text-xs font-black"
-                        style={{padding:"4px 8px", background: "#fbbf24", color: "#000" }}
-                        animate={{ scale: [1, 1.05, 1] }}
-                        transition={{ duration: 1, repeat: Infinity }}
-                      >
-                        🎊 Grand Opening
-                      </motion.span>
+                     
                     </div>
                     <p className="text-white font-black text-lg mt-0.5">
-                      We&apos;re Launching{" "}
+                      Grand Opening{" "}
                       <span
                         className="px-2 py-0.5 rounded-lg"
                         style={{padding:"2px 4px", background: "rgba(255,255,255,0.2)" }}
                       >
-                        1st August 2026
+                        TODAY
                       </span>
                       ! 🎉
                     </p>
-                    <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.85)" }}>
-                      Mark your calendars — hot soups, crispy fries & puris are coming to your door!
-                    </p>
+                    
                   </div>
                 </div>
 
