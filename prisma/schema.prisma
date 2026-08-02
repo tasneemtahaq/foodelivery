@@ -4,8 +4,8 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url        = env("DATABASE_URL")
-  directUrl  = env("DIRECT_URL")
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Category {
@@ -64,9 +64,9 @@ model OrderItem {
   quantity Int
   price    Float
   orderId  Int
-  order    Order @relation(fields: [orderId], references: [id])
   foodId   Int
   food     Food  @relation(fields: [foodId], references: [id])
+  order    Order @relation(fields: [orderId], references: [id])
 }
 
 model Settings {
@@ -86,7 +86,7 @@ model Admin {
   password  String
   createdAt DateTime @default(now())
 }
-// ── USER (for customer login accounts) ────────────────────
+
 model User {
   id        Int      @id @default(autoincrement())
   name      String
@@ -97,7 +97,7 @@ model User {
   city      String   @default("Karachi")
   createdAt DateTime @default(now())
 }
-// ── DELIVERY AREAS ─────────────────────────────────────────
+
 model DeliveryArea {
   id             Int     @id @default(autoincrement())
   name           String  @unique

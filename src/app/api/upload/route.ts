@@ -49,6 +49,8 @@ export async function POST(request: NextRequest) {
       stream.end(buffer);
     });
 
+   console.log("✅ Cloudinary URL:", result.secure_url);
+
     return NextResponse.json({
       success:   true,
       imagePath: result.secure_url,

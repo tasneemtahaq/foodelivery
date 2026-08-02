@@ -121,24 +121,16 @@ export default function Hero() {
                   </motion.span>
 
                   <div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span
-                        className="px-2 py-0.5 rounded-full text-xs font-black tracking-widest uppercase"
-                        style={{ padding:"4px 8px", background: "rgba(255,255,255,0.25)", color: "white" }}
-                      >
-                        Welcome to MamaSoups
-                      </span>
-                     
-                    </div>
+                  
                     <p className="text-white font-black text-lg mt-0.5">
-                      Grand Opening{" "}
+                      Welcome to{" "}
                       <span
                         className="px-2 py-0.5 rounded-lg"
                         style={{padding:"2px 4px", background: "rgba(255,255,255,0.2)" }}
                       >
-                        TODAY
+                        MAMA SOUPS
                       </span>
-                      ! 🎉
+                      
                     </p>
                     
                   </div>

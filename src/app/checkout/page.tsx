@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  ArrowLeft, User, Phone, Mail, MapPin,
+  ArrowLeft, User, MapPin,
   CreditCard, Truck, Building2, Smartphone, CheckCircle,
 } from "lucide-react";
 import { useCartStore } from "../../store/cartStore";
@@ -174,7 +174,7 @@ export default function CheckoutPage() {
           items,
           paymentMethod:  formData.paymentMethod,
           instructions:   formData.instructions,
-          deliveryCharge: 0,
+          deliveryCharge: deliveryCharge,
           totalAmount:    GRAND_TOTAL,
         }),
       });
