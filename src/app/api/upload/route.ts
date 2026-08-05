@@ -10,46 +10,48 @@ cloudinary.config({
 });
 
 export async function POST(request: NextRequest) {
-  console.log("📤 Upload API called");
-  console.log("Cloud name:", process.env.CLOUDINARY_CLOUD_NAME);
-  console.log("API Key exists:", !!process.env.CLOUDINARY_API_KEY);
-  console.log("API Secret exists:", !!process.env.CLOUDINARY_API_SECRET);
-
   try {
+    // Check cloudinary config
+    if (!process.env.CLOUDINARY_CLOUD_NAME) {
+      return NextResponse.json(
+        { error: "Cloudinary not configured" },
+        { status: 500 }
+      );
+    }
+
     const formData = await request.formData();
     const file     = formData.get("file") as File;
 
-    console.log("File received:", file?.name, file?.size);
-
     if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+      return NextResponse.json(
+        { error: "No file provided" },
+        { status: 400 }
+      );
     }
 
+    // Convert to buffer
     const bytes  = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    console.log("Buffer size:", buffer.length);
+    // Upload to Cloudinary
+    const result = await new Promise<{ secure_url: string }>(
+      (resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream(
+            {
+              folder:        "mama-soups",
+              resource_type: "image",
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result as { secure_url: string });
+            }
+          )
+          .end(buffer);
+      }
+    );
 
-    const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        {
-          folder:  "mama-soups",
-          resource_type: "image",
-        },
-        (error, result) => {
-          if (error) {
-            console.error("Cloudinary error:", error);
-            reject(error);
-          } else {
-            console.log("✅ Cloudinary success:", result?.secure_url);
-            resolve(result as { secure_url: string });
-          }
-        }
-      );
-      stream.end(buffer);
-    });
-
-   console.log("✅ Cloudinary URL:", result.secure_url);
+    console.log("✅ Uploaded:", result.secure_url);
 
     return NextResponse.json({
       success:   true,
@@ -57,7 +59,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error("❌ Upload failed:", error);
+    console.error("❌ Upload error:", error);
     return NextResponse.json(
       { error: String(error) },
       { status: 500 }
