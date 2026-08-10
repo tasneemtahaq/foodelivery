@@ -57,12 +57,12 @@ export default function FeaturedFoods({ foods }: FeaturedFoodsProps) {
         >
           <p
             className="text-xs tracking-[0.3em] uppercase mb-3"
-            style={{padding:"2px 4px", color: "#F59E0B" }}
+            style={{padding:"2px 4px", color: "#FFFFFF" }}
           >
             Customer Favourites
           </p>
           <h2 className="text-4xl md:text-5xl font-bold text-white">
-            Featured <span style={{ color: "#F59E0B" }}>Foods</span>
+            Featured <span style={{ color: "#FFFFFF" }}>Foods</span>
           </h2>
         </motion.div>
 
@@ -175,13 +175,16 @@ export default function FeaturedFoods({ foods }: FeaturedFoodsProps) {
         >
           <Link
             href="/menu"
-            className="inline-flex items-center gap-2 px-8 py-10 rounded-full font-bold text-black transition-all hover:scale-105"
-            style={{
-              padding: "4px 8px",
-              background:  "#F59E0B",
-              boxShadow:   "0 4px 20px rgba(245,158,11,0.35)",
-            }}
-          >
+            className="inline-flex items-center gap-2 px-8 py-10 rounded-full font-bold text-white transition-all hover:scale-105"
+      
+      style={{
+        padding: "2px 6px",
+        background: "rgba(255,255,255,0.14)",
+        border: "1px solid rgba(255,255,255,0.22)",
+      }}
+    >
+    
+          
             View Full Menu →
           </Link>
         </motion.div>

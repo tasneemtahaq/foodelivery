@@ -182,11 +182,11 @@ export default function Hero() {
       ✨ FREE
     </motion.span>{" "}
     
-    <span className="font-bold text-white">
+    <span className="inline-flex items-center font-black text-white text-lg px-2 py-0.5 rounded-full mx-1">
       Greenchilli Fries
     </span>
   </motion.p>
-<span className="font-bold"> Offer Valid for Online Deliveries Only</span>
+<span className="font-bold" > Offer Valid for Online Deliveries Only</span>
 </div>
        </div>
                 
