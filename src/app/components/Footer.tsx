@@ -40,7 +40,7 @@ export default function Footer() {
           </div>
           <p className="text-sm leading-relaxed"
              style={{ color: "rgba(255,255,255,0.45)" }}>
-            Fresh, hot, delicious Soup delivered to your door anywhere in Karachi.
+            Fresh, hot, delicious Soup delivered to your door step, Launching all over Karachi soon!
           </p>
         </div>
 
