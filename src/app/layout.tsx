@@ -4,8 +4,22 @@ import { Toaster } from "react-hot-toast";
 import NavbarWrapper from "./components/NavbarWrapper";
 
 export const metadata: Metadata = {
-  title:       "Mama Soups",
-  description: "Hot soups, and crazy flavoured treats delivered to your door in Karachi.",
+  title: "Mama Soups | Best Soups in Karachi | Order Online",
+  description:
+    "Order hot, delicious soups and crazy flavoured treats from Mama Soups in Karachi. Explore our menu and order your favourite soup online.",
+  keywords: [
+    "soups in Karachi",
+    "best soup in Karachi",
+    "soup Karachi",
+    "chicken corn soup Karachi",
+    "soup delivery Karachi",
+    "order soup online Karachi",
+    "Mama Soups",
+  ],
+
+  verification: {
+    google: "cHFyG1G98G6-bax6SavFgXmnedB-EsyeISuvFnAUJbs",
+  },
 };
 
 export default function RootLayout({
@@ -16,7 +30,6 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>
-        {/* Navbar — hidden on admin pages */}
         <NavbarWrapper />
 
         <Toaster
@@ -24,11 +37,12 @@ export default function RootLayout({
           toastOptions={{
             style: {
               background: "#1A1A1A",
-              color:      "white",
-              border:     "1px solid rgba(249,115,22,0.3)",
+              color: "white",
+              border: "1px solid rgba(249,115,22,0.3)",
             },
           }}
         />
+
         <main>{children}</main>
       </body>
     </html>
