@@ -60,28 +60,36 @@ export default function SoupsInKarachiPage() {
         </div>
       </section>
 
-      {/* ABOUT */}
-      <section className="px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-5xl rounded-3xl border border-white/10 bg-white/3 p-8 sm:p-12">
+      {/* ABOUT / YAKHNI SOUP */}
+<section className="px-4 py-16 sm:px-6 lg:px-8">
+  <div className="mx-auto max-w-5xl">
 
-          <h2 className="text-3xl font-bold sm:text-4xl">
-            Looking for delicious soup in Karachi?
-          </h2>
+    <h2 className="text-3xl font-bold sm:text-4xl">
+      Delicious Yakhni Soup in Karachi
+    </h2>
 
-          <p className="mt-5 text-base leading-8 text-gray-300">
-            Mama Soups serves freshly prepared soups in Saddar, Karachi.
-            Our menu includes popular favourites such as chicken corn soup
-            and other hot and delicious options.
-          </p>
+    <p className="mt-5 text-base leading-8 text-gray-300">
+      Looking for a warm and comforting soup in Karachi? Mama Soup
+      serves freshly prepared Yakhni Soup in Saddar, Karachi. Our
+      yakhni is a delicious choice for anyone craving a hot and
+      satisfying bowl of soup.
+    </p>
 
-          <p className="mt-4 text-base leading-8 text-gray-300">
-            Whether you&apos;re looking for a warm meal in the evening or want
-            something delicious delivered to your home, Mama Soups makes
-            ordering soup simple and convenient.
-          </p>
+    <p className="mt-4 text-base leading-8 text-gray-300">
+      You can explore the Mama Soup menu and order online for a
+      convenient meal in Karachi.
+    </p>
 
-        </div>
-      </section>
+    <Link
+      href="/menu"
+      className="mt-7 inline-flex items-center gap-2 rounded-full bg-orange-500 px-6 py-3 font-bold text-white transition hover:bg-orange-400"
+    >
+      View Yakhni Soup & Menu
+      <ArrowRight className="h-5 w-5" />
+    </Link>
+
+  </div>
+</section>
 
       {/* LOCATION */}
       <section className="px-4 pb-20 sm:px-6 lg:px-8">

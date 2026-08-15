@@ -15,6 +15,10 @@ export const metadata: Metadata = {
     "soup delivery Karachi",
     "order soup online Karachi",
     "Mama Soups",
+    "French Fries",
+    "Flavoured Fries",
+    "Yakhi Soup",
+    "Flavoured Soda",
   ],
 
   verification: {
