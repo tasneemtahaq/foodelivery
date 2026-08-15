@@ -104,7 +104,7 @@ export default function Hero() {
                     className="absolute text-white/30 text-base sm:text-xl lg:text-2xl"
                     style={{ left, top: "20%" }}
                     animate={{ y: [-5, 5, -5], rotate: [0, 10, -10, 0] }}
-                    transition={{ duration: 2 + i * 0.3, repeat: Infinity }}
+                    transition={{ duration: 2 + i * 0.3 }}
                   >
                     ⭐
                   </motion.div>
@@ -117,7 +117,7 @@ export default function Hero() {
                   <motion.span
                     className="text-3xl"
                     animate={{ y: [0, -8, 0], rotate: [-5, 5, -5] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
+                    transition={{ duration: 1.5,  }}
                   >
                     🤍💚
                   </motion.span>
@@ -175,7 +175,6 @@ export default function Hero() {
       }}
       transition={{
         duration: 1.8,
-        repeat: Infinity,
         ease: "easeInOut",
       }}
     >
@@ -335,11 +334,7 @@ export default function Hero() {
                   </div>
                   <ChevronDown
                     size={16}
-                    style={{
-  color: "#01411C",
-  transform: showDropdown ? "rotate(180deg)" : "rotate(0deg)",
-  transition: "transform 0.2s",
-}}
+                    style={{color: "#01411C", transform: showDropdown ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s",}}
                   />
                 </button>
 
@@ -348,13 +343,13 @@ export default function Hero() {
                     <motion.div
                       className="absolute top-full left-0 right-0 mt-1 rounded-xl overflow-hidden z-50"
                       style={{
-  background: "rgba(255,255,255,0.98)",
-  border: "1px solid rgba(1,65,28,0.12)",
-  boxShadow: "0 15px 40px rgba(1,65,28,0.14)",
-  maxHeight: "min(260px, 45vh)",
-  overflowY: "auto",
-  backdropFilter: "blur(12px)",
-}}
+                           background: "rgba(255,255,255,0.98)",
+                           border: "1px solid rgba(1,65,28,0.12)",
+                           boxShadow: "0 15px 40px rgba(1,65,28,0.14)",
+                           maxHeight: "min(260px, 45vh)",
+                           overflowY: "auto",
+                           backdropFilter: "blur(12px)",
+                       }}
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0  }}
                       exit={{   opacity: 0, y: -10 }}
@@ -402,7 +397,7 @@ export default function Hero() {
                 style={{
                   padding:"4px 8px",
                   background:"linear-gradient(135deg, #01411C, #006B3C)",
-                   boxShadow:"0 7px 25px rgba(1,65,28,0.28)",
+                  boxShadow:"0 7px 25px rgba(1,65,28,0.28)",
                 }}
               >
                 Order Now
@@ -410,9 +405,7 @@ export default function Hero() {
               <Link
                 href="/menu"
                 className="w-full sm:w-auto px-7 sm:px-8 py-3.5 rounded-full font-bold text-sm text-center border-2 transition-all hover:bg-green-50"
-                style={{ padding:"3px 7px", borderColor: "#01411C",
-  color: "#01411C",
-  background: "rgba(255,255,255,0.8)", }}
+                style={{ padding:"3px 7px", borderColor: "#01411C", color: "#01411C", background: "rgba(255,255,255,0.8)", }}
               >
                 See Menu
               </Link>
@@ -429,14 +422,12 @@ export default function Hero() {
             >
               <motion.div
                 className="absolute rounded-full"
-                style={{
-  width: "clamp(260px, 75vw, 500px)",
-  height: "clamp(260px, 75vw, 500px)",
-  background:
-    "radial-gradient(circle, rgba(1,65,28,0.24) 0%, rgba(0,107,60,0.08) 48%, transparent 75%)",
-}}
+                style={{width: "clamp(260px, 75vw, 500px)",
+                        height: "clamp(260px, 75vw, 500px)",
+                        background:"radial-gradient(circle, rgba(1,65,28,0.24) 0%, rgba(0,107,60,0.08) 48%, transparent 75%)",
+                      }}
                 animate={{ scale: [1, 1.05, 1] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                transition={{ duration: 4, ease: "easeInOut" }}
               />
 
               <motion.div
@@ -446,7 +437,7 @@ export default function Hero() {
                   height: "clamp(220px, 32vw, 400px)",
                 }}
                 animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                transition={{ duration: 4, ease: "easeInOut" }}
               >
                 <Image
                   src="/images/soup.jpg"
@@ -459,13 +450,10 @@ export default function Hero() {
                 />
                 <div
                   className="absolute inset-0 rounded-full pointer-events-none"
-                  style={{
-  width: "clamp(260px, 75vw, 500px)",
-  height: "clamp(260px, 75vw, 500px)",
-  background:
-    "radial-gradient(circle, rgba(1,65,28,0.24) 0%, rgba(0,107,60,0.08) 48%, transparent 75%)",
-}}
-                />
+                  style={{ width: "clamp(260px, 75vw, 500px)", 
+                           height: "clamp(260px, 75vw, 500px)",
+                           background:"radial-gradient(circle, rgba(1,65,28,0.24) 0%, rgba(0,107,60,0.08) 48%, transparent 75%)",}}
+                      />
               </motion.div>
 
               {/* Steam */}
@@ -477,12 +465,12 @@ export default function Hero() {
                     width:      "6px",
                     height:     "6px",
                     background: "rgba(255,255,255,0.8)",
-boxShadow: "0 0 12px rgba(255,255,255,0.5)",
+                    boxShadow: "0 0 12px rgba(255,255,255,0.5)",
                     bottom:     "60%",
                     left:       `calc(50% + ${x})`,
                   }}
                   animate={{ y: [0, -60, -80], opacity: [0.6, 0.3, 0], scale: [1, 1.5, 0] }}
-                  transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.5, ease: "easeOut" }}
+                  transition={{ duration: 2.5, delay: i * 0.5, ease: "easeOut" }}
                 />
               ))}
             </motion.div>
@@ -491,30 +479,20 @@ boxShadow: "0 0 12px rgba(255,255,255,0.5)",
           {/* RIGHT: Food Cards */}
           <div className="flex flex-col gap-4 order-3">
             {FOOD_CARDS.map((card, i) => (
-              <motion.div
+              <div
                 key={card.title}
                 className="flex items-center gap-4 p-5 rounded-3xl w-full transition-all duration-300"
                 style={{
-                 background: card.highlighted
-  ? "linear-gradient(135deg, #01411C, #006B3C)"
-  : "rgba(255,255,255,0.94)",
-                  boxShadow: card.highlighted
-  ? "0 12px 35px rgba(1,65,28,0.25)"
-  : "0 8px 25px rgba(1,65,28,0.06)",
-                  border: card.highlighted
-  ? "none"
-  : "1px solid rgba(1,65,28,0.09)",
+                  background: card.highlighted ? "linear-gradient(135deg, #01411C, #006B3C)" : "rgba(255,255,255,0.94)",
+                  boxShadow: card.highlighted ? "0 12px 35px rgba(1,65,28,0.25)" : "0 8px 25px rgba(1,65,28,0.06)",
+                  border: card.highlighted ? "none": "1px solid rgba(1,65,28,0.09)",
                 }}
-                initial={{ opacity: 0, x: 40 }}
-                animate={{ opacity: 1, x: 0  }}
-                transition={{ delay: 0.3 + i * 0.15 }}
+               
               >
                 <div
                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center text-2xl sm:text-3xl shrink-0"
                   style={{
-                   background: card.highlighted
-  ? "rgba(255,255,255,0.16)"
-  : "rgba(1,65,28,0.06)",
+                   background: card.highlighted ? "rgba(255,255,255,0.16)": "rgba(1,65,28,0.06)",
                   }}
                 >
                   {card.emoji}
@@ -528,14 +506,12 @@ boxShadow: "0 0 12px rgba(255,255,255,0.5)",
                   </p>
                   <p
                     className="text-xs mt-1"
-                    style={{  color: card.highlighted
-  ? "rgba(255,255,255,0.78)"
-  : "#718078" }}
+                    style={{  color: card.highlighted ? "rgba(255,255,255,0.78)": "#718078" }}
                   >
                     {card.desc}
                   </p>
                 </div>
-              </motion.div>
+              </div>
             ))}
 
             {/* Google Maps Rating */}
@@ -544,21 +520,17 @@ boxShadow: "0 0 12px rgba(255,255,255,0.5)",
               target="_blank"
               rel="noopener noreferrer"
              className="flex items-center gap-3 p-3 sm:p-4 rounded-2xl sm:rounded-3xl transition-all hover:scale-[1.02]"
-            style={{
-  background:
-    "linear-gradient(135deg, rgba(255,255,255,0.98), rgba(244,250,246,0.95))",
-  border: "1px solid rgba(1,65,28,0.09)",
-  boxShadow: "0 8px 25px rgba(1,65,28,0.07)",
-}}
+            style={{background:"linear-gradient(135deg, rgba(255,255,255,0.98), rgba(244,250,246,0.95))",
+                    border: "1px solid rgba(1,65,28,0.09)",
+                    boxShadow: "0 8px 25px rgba(1,65,28,0.07)",
+                     }}
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0  }}
               transition={{ delay: 0.75 }}
             >
               <div
                 className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center text-2xl sm:text-3xl shrink-0"
-                style={{
-  background: "rgba(1,65,28,0.07)",
-}}
+                style={{ background: "rgba(1,65,28,0.07)"}}
               >
                 📍
               </div>
@@ -569,12 +541,12 @@ boxShadow: "0 0 12px rgba(255,255,255,0.5)",
                 <div className="flex items-center gap-1 mt-0.5">
                   {[1,2,3,4].map((s) => (
                     <Star key={s} size={10} fill="#0A8F4D"
-color="#0A8F4D"  />
+                          color="#0A8F4D"  />
                   ))}
                    <StarHalf
                       size={10}
                       fill="#0A8F4D"
-color="#0A8F4D"
+                      color="#0A8F4D"
                       />
                   <span className="text-xs ml-1" style={{ color: "#6B7280" }}>
                     Mama Soups

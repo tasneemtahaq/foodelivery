@@ -170,113 +170,65 @@ const getCategoryIcon = (name: string) => {
       </div>
 
            <div className="max-w-7xl mx-auto px-6 lg:px-10 py-8 lg:py-12">
-  {/* Search */}
+            {/* Search */}
 
-  <div className="flex justify-end mb-12 relative">
-  <div className="flex items-center gap-3">
-
-    {/* Search */}
+              <div className="flex justify-end mb-12 relative">
+                <div className="flex items-center gap-3">
 
 
-      {/* Search Button */}
 
-      <button
-        onClick={() => setShowSearch(!showSearch)}
-        className="w-12 h-12 rounded-full bg-[#2A1D16] border border-[#4A3528] flex items-center justify-center hover:bg-[#D88B2A] transition-all duration-300"
-      >
-        <Search
-          size={18}
-          className="text-[#F8E9D2]"
-        />
-      </button>
+              {/* Search Button */}
 
-      {/* Search Popup */}
+              <button
+                 onClick={() => setShowSearch(!showSearch)}
+                 className="w-12 h-12 rounded-full bg-[#2A1D16] border border-[#4A3528] flex items-center justify-center hover:bg-[#D88B2A] transition-all duration-300">
+                  <Search
+                    size={18}
+                     className="text-[#F8E9D2]"
+                  />
+              </button>
+ 
+              {/* Search Popup */}
 
-      <AnimatePresence>
+               <AnimatePresence>
 
-        {showSearch && (
+              {showSearch && (
 
-          <motion.div 
-             initial={{
-              opacity: 0,
-              scaleX: 0.7,
-              x: 20
-            }}
+                  <motion.div 
+                      initial={{ opacity: 0, scaleX: 0.7, x: 20}}
+                      animate={{ opacity: 1, scaleX: 1, x: 0}}
+                      exit={{ opacity: 0, scaleX: 0.7,x: 20}}
+                      transition={{duration: .25}}
+                      >
 
-            animate={{
-              opacity: 1,
-              scaleX: 1,
-              x: 0
-            }}exit={{
-              opacity: 0,
-              scaleX: 0.7,
-              x: 20
-            }}
-              transition={{
-              duration: .25
-            }}
+                  <input
+                      autoFocus
+                      type="text"
+                      placeholder="Search menu..."
+                      value={search}
+                      onChange={(e)=>setSearch(e.target.value)}
+                      className="w-75 sm:w-85 px-5 py-3 rounded-full bg-[#2A1D16] border border-[#4A3528] text-[#F8E9D2] placeholder:text-[#B9A998] outline-none shadow-2xl"
+                     />
 
-          >
+                  </motion.div>
 
-            <input
+                   )}
 
-              autoFocus
+                </AnimatePresence>
 
-              type="text"
+             </div>
 
-              placeholder="Search menu..."
+             {/* Sort */}
 
-              value={search}
-
-              onChange={(e)=>setSearch(e.target.value)}
-
-              className="w-75 sm:w-85
-              px-5
-              py-3
-              rounded-full
-              bg-[#2A1D16]
-              border
-              border-[#4A3528]
-              text-[#F8E9D2]
-              placeholder:text-[#B9A998]
-              outline-none
-              shadow-2xl
-              "
-
-            />
-
-          </motion.div>
-
-        )}
-
-      </AnimatePresence>
-
-    </div>
-
-    {/* Sort */}
-
-    <button
-      onClick={()=>setShowFilter(!showFilter)}
-      className="
-      w-12
-      h-12
-      rounded-full
-      bg-[#2A1D16]
-      border
-      border-[#4A3528]
-      flex
-      items-center
-      justify-center
-      hover:bg-[#D88B2A]
-      transition-all
-      duration-300
-      "
-    >
-      <SlidersHorizontal
-        size={18}
-        className="text-[#F8E9D2]"
-      />
-    </button>
+               <button
+                 onClick={()=>setShowFilter(!showFilter)}
+                 className="w-12 h-12 rounded-full bg-[#2A1D16]border border-[#4A3528] flex items-center justify-center hover:bg-[#D88B2A] transition-allduration-300"
+                >
+               <SlidersHorizontal
+                  size={18}
+                  className="text-[#F8E9D2]"
+               />
+              </button>
 
   </div>
 </div>
@@ -443,6 +395,7 @@ const getCategoryIcon = (name: string) => {
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-110"
                         sizes="(max-width: 768px) 100vw, 25vw"
+                        loading="lazy"
                       />
                     ) : (
                       <span>🍽️</span>

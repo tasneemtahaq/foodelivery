@@ -29,20 +29,23 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" data-scroll-behavior="smooth">
+      <head>
+        {/* Preconnect to speed up external resources */}
+        <link rel="preconnect" href="https://res.cloudinary.com" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+      </head>
       <body>
         <NavbarWrapper />
-
         <Toaster
           position="top-right"
           toastOptions={{
             style: {
               background: "#1A1A1A",
-              color: "white",
-              border: "1px solid rgba(249,115,22,0.3)",
+              color:      "white",
+              border:     "1px solid rgba(249,115,22,0.3)",
             },
           }}
         />
-
         <main>{children}</main>
       </body>
     </html>
