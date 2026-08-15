@@ -35,7 +35,44 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
       </head>
       <body>
-        <NavbarWrapper />
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Restaurant",
+        name: "Mama Soup",
+        url: "https://www.mamasoups.net",
+        telephone: "+923332287497",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "Hussaini Manzil, D'Cruz Ln, opp. F.T. Sweets",
+          addressLocality: "Karachi",
+          postalCode: "74400",
+          addressCountry: "PK",
+        },
+        servesCuisine: ["Chinese", "Soups"],
+        menu: "https://www.mamasoups.net/menu",
+        openingHoursSpecification: [
+          {
+            "@type": "OpeningHoursSpecification",
+            dayOfWeek: [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+            ],
+            opens: "17:00",
+            closes: "23:00",
+          },
+        ],
+      }),
+    }}
+  />
+
+  <NavbarWrapper />
         <Toaster
           position="top-right"
           toastOptions={{
