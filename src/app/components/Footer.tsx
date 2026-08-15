@@ -55,7 +55,9 @@ export default function Footer() {
               { label: "Home",  href: "/"      },
               { label: "Menu",  href: "/menu"  },
               { label: "Cart",  href: "/cart"  },
-            ].map((l) => (
+              { label: "About Us", href:"/soups-in-karachi"},
+ 
+           ].map((l) => (
               <li key={l.label}>
                 <Link href={l.href}
                   className="text-sm transition-colors duration-200 hover:text-amber-400"
