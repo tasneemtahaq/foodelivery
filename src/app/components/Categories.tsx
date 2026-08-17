@@ -12,8 +12,9 @@ interface Category {
 
 const CATEGORY_EMOJIS: Record<string, string> = {
   "Soups": "🥣",
-  "fries": "🍟",
-  "soda": "🥤",
+  "Fries": "🍟",
+  "Sodas": "🥤",
+  "Puri": "🥯",
   default: "🍽️",
 };
 
@@ -29,7 +30,7 @@ export default function Categories({
 
         {/* Header */}
         <motion.div
-          className="text-center mb-12"
+          className="text-center mb-24"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -44,7 +45,7 @@ export default function Categories({
         </motion.div>
 
         {/* Category Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 ">
           {categories.map((cat, i) => (
             <motion.div
               key={cat.id}
@@ -55,7 +56,7 @@ export default function Categories({
             >
               <Link
                 href={`/menu?category=${cat.id}`}
-                className="flex flex-col items-center gap-3 p-6 rounded-2xl text-center transition-all duration-300 group"
+                className="group flex min-h-47.5 flex-col items-center justify-center gap-3 rounded-2xl p-6 text-center transition-all duration-300"
                 style={{
                   background: "#111111",
                   border: "1px solid rgba(255,255,255,0.07)",

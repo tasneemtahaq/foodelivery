@@ -79,7 +79,7 @@ useEffect(() => {
     leading-none
   "
   style={{
-    color: "#01411C",
+    color: "#EA580C",
   }}
 >
   Mama Soups
@@ -95,13 +95,13 @@ useEffect(() => {
                   <Link
                     href={link.href}
                     className="text-sm font-medium tracking-wide transition-colors duration-200 relative group"
-                    style={{ color: isActive ? "#01411C" : "#374151" }}
+                    style={{ color: isActive ? "#F97316" : "#374151" }}
                   >
                     {link.label}
                     <span
                       className="absolute -bottom-1 left-0 h-0.5 rounded-full transition-all duration-300 group-hover:w-full"
                       style={{
-                        background: "#01411C",
+                        background: "#F97316",
                         width: isActive ? "100%" : "0%",
                       }}
                     />
@@ -119,14 +119,14 @@ useEffect(() => {
               <motion.div
                 className="relative flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium"
                 style={{ color: "#374151" }}
-                whileHover={{ color: "#01411C" }}
+                whileHover={{ color: "#F97316" }}
               >
                 <ShoppingCart size={20} />
                 {hasHydrated && totalItems > 0 && (
                   <motion.span
                     key={totalItems}
                     className="absolute -top-1 -right-1 w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center text-white"
-                    style={{ background: "#01411C" }}
+                    style={{ background: "#F97316" }}
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", stiffness: 400 }}
@@ -141,13 +141,13 @@ useEffect(() => {
             {isLoggedIn && user ? (
               // ── Logged in state ──
               <div className="flex items-center gap-3">
-                <span className="text-sm font-medium" style={{ color: "#01411C" }}>
+                <span className="text-sm font-medium" style={{ color: "#374151" }}>
                   Hi, {user.name ?? user.email.split("@")[0]}! 👋
                 </span>
                 <button
                   onClick={() => { logout(); toast.success("Logged out!"); }}
-                  className="px-5 py-2 rounded-full text-sm font-semibold border-2 transition-all hover:bg-green-500"
-                  style={{ padding: "4px 8px", borderColor: "#01411C", color: "#01411C" }}
+                  className="px-5 py-2 rounded-full text-sm font-semibold border-2 transition-all hover:bg-red-50"
+                  style={{ padding: "4px 8px", borderColor: "#EF4444", color: "#EF4444" }}
                 >
                   Logout
                 </button>
@@ -158,14 +158,14 @@ useEffect(() => {
                 <Link
                   href="/login"
                   className="px-6 py-2.5 rounded-full text-sm font-semibold transition-all hover:scale-105"
-                  style={{ padding: "6px 10px", background: "#01411C", color: "white" }}
+                  style={{ padding: "6px 10px", background: "#F97316", color: "white" }}
                 >
                   Sign In
                 </Link>
                 <Link
                   href="/register"
                   className="px-6 py-2.5 rounded-full text-sm font-semibold border-2 transition-all hover:bg-green-50 hover:scale-105"
-                  style={{ padding:"4px 8px", borderColor: "#01411C", color: "#01411C" }}
+                  style={{ padding:"4px 8px", borderColor: "#F97316", color: "#F97316" }}
                 >
                   Sign Up
                 </Link>
