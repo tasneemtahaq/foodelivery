@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import type { MenuFood, MenuCategory } from "./page";
 import { useCartStore } from "../../store/cartStore";
 import type { CartStore } from "../../store/cartStore";
+import AIAssistant from "../components/AIAssistant";
 
 
 
@@ -471,6 +472,15 @@ const getCategoryIcon = (name: string) => {
             </AnimatePresence>
           </div>
         )}
+        {/* AI Assistant */}
+      <AIAssistant menuItems={foods.map(f => ({
+        id:          f.id,
+        name:        f.name,
+        price:       f.price,
+        offerPrice:  f.offerPrice,
+        description: f.description,
+        category:    f.category.name,
+      }))} />
       </div>
   
   );

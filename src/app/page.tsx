@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import Hero from "./components/Hero";
 import Footer from "./components/Footer";
 import { Prisma } from "@prisma/client";
+import AIAssistant from "./components/AIAssistant";
 
 export const dynamic = "force-dynamic";
 
@@ -97,6 +98,16 @@ export default async function Home() {
       <FeaturedFoods foods={featuredFoods} />
 
       <Categories categories={categories} />
+
+      {/* AI Assistant */}
+      <AIAssistant menuItems={featuredFoods.map(f => ({
+        id:          f.id,
+        name:        f.name,
+        price:       f.price,
+        offerPrice:  f.offerPrice,
+        description: f.description,
+        category:    f.category.name,
+      }))} />
 
       <Footer />
     </div>
