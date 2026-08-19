@@ -1,32 +1,16 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Clock, MapPin, Star, StarHalf, ChevronDown } from "lucide-react";
+import { Clock, MapPin, Star, ChevronDown } from "lucide-react";
 
-// Karachi areas within 9km radius
-const AREAS = [
-  "Saddar",
-  "Civil lines",
-  "Garden",
-  "Lines Area",
-  "Soldier Bazaar",
-  "Jamshed Quarter",
-  "PECHS",
-  "Nursery",
-  "Tariq Road",
-  "Bahadurabad",
-  "Clifton",
-  "Boat Basin",
-  "Bath Island",
-  "Defence Phase 1",
-  "Defense Phase 2",
-  "Defense Phase 3",
-  "Defense Phase 4",
-  "Gizri (Selected Areas)",
-];
+interface DeliveryArea {
+  id:             number;
+  name:           string;
+  deliveryCharge: number;
+}
 
 const FOOD_CARDS = [
   {
@@ -50,104 +34,120 @@ const FOOD_CARDS = [
 ];
 
 export default function Hero() {
-  const [selectedArea, setSelectedArea]   = useState("");
-  const [showDropdown, setShowDropdown]   = useState(false);
-  
+  const [areas,        setAreas]        = useState<DeliveryArea[]>([]);
+  const [selectedArea, setSelectedArea] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+ 
+
+  useEffect(() => {
+    fetch("/api/delivery-areas")
+      .then((r) => r.json())
+      .then((data) => setAreas(data.areas ?? []));
+  }, []);
 
   return (
     <section
-      className="relative overflow-visible px-4 sm:px-6 lg:px-8 justify-items-center"
+      className="w-full overflow-hidden"
       style={{
         background:    "linear-gradient(135deg, #fff7ed 0%, #ffffff 50%, #fff7ed 100%)",
-        paddingTop:    "100px",
-        paddingBottom: "60px",
-        minHeight:     "100vh",
+        paddingTop:    "80px",
+        paddingBottom: "40px",
       }}
     >
-      {/* ── Orange glow ── */}
-      <div
-        className="absolute rounded-full pointer-events-none"
-        style={{
-          width:     "500px",
-          height:    "500px",
-          background: "radial-gradient(circle, rgba(249,115,22,0.15) 0%, transparent 70%)",
-          top:       "50%",
-          left:      "50%",
-          transform: "translate(-50%, -50%)",
-        }}
-      />
-
-      <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col gap-6">
+      <div className="w-full max-w-7xl mx-auto px-4">
 
        
 
-        {/* ── TIMING + INFO BAR ── */}
+        {/* ── Timing Bar ── */}
         <motion.div
-          className="flex flex-wrap items-center justify-center gap-4 px-4 py-3 rounded-2xl"
+          className="w-full flex flex-wrap items-center justify-center gap-x-4 gap-y-2 px-4 py-3 rounded-2xl mb-6"
           style={{
+            padding:  "2px 4px",
             background: "rgba(249,115,22,0.06)",
             border:     "1px solid rgba(249,115,22,0.2)",
           }}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
         >
-          <div className="flex items-center gap-2 text-sm font-medium"
+          <div className="flex items-center gap-1.5 text-xs font-medium"
                style={{ color: "#F97316" }}>
-            <Clock size={16} />
+            <Clock size={14} />
             <span>Mon–Sat: 5:00 PM – 10:30 PM</span>
           </div>
-
-          <div
-            className="w-px h-4 hidden sm:block"
-            style={{ background: "rgba(249,115,22,0.3)" }}
-          />
-
-          <div className="flex items-center gap-2 text-sm font-medium"
+          <div className="flex items-center gap-1.5 text-xs font-medium"
                style={{ color: "#dc2626" }}>
-            <span>🚫</span>
-            <span>Sundays: Closed</span>
+            <span>🚫 Sundays: Closed</span>
           </div>
-
-          <div
-            className="w-px h-4 hidden sm:block"
-            style={{ background: "rgba(249,115,22,0.3)" }}
-          />
-
-          <div className="flex items-center gap-2 text-sm font-medium"
+          <div className="flex items-center gap-1.5 text-xs font-medium"
                style={{ color: "#16a34a" }}>
-            <MapPin size={16} />
-            <span> Check if We Deliver to Your Area </span>
+            <MapPin size={14} />
+            <span>Delivering within 8km</span>
           </div>
-
-          <div
-            className="w-px h-4 hidden sm:block"
-            style={{ background: "rgba(249,115,22,0.3)" }}
-          />
-
-          {/* Google Maps link */}
           <a
-            href="https://maps.app.goo.gl/2rJkU2XBVYdUdZvZA"
+            href="https://maps.google.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-sm font-medium transition-opacity hover:opacity-80"
-            style={{ color: "#FFA500" }}
+            className="flex items-center gap-1 text-xs font-medium"
+            style={{ color: "#F97316" }}
           >
-           ⭐ Find us on Google Maps
+            <Star size={12} />
+            Find us on Google Maps
           </a>
         </motion.div>
 
-        {/* ── MAIN HERO GRID ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr_1fr] gap-10 lg:gap-14 items-center">
+        {/* ── Main Content ── */}
+        <div className="flex flex-col items-center gap-8 lg:grid lg:grid-cols-3 lg:gap-10 lg:items-center">
+
+          {/* CENTER: Soup Bowl — shows first on mobile */}
+          <div className="flex items-center justify-center order-1 lg:order-2 w-full">
+            <motion.div
+              className="relative flex items-center justify-center"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+            >
+              {/* Glow */}
+              <div
+                className="absolute rounded-full"
+                style={{
+                  width:      "280px",
+                  height:     "280px",
+                  background: "radial-gradient(circle, rgba(249,115,22,0.2) 0%, transparent 70%)",
+                }}
+              />
+
+              {/* Bowl image */}
+              <div
+                className="relative rounded-full overflow-hidden"
+                style={{ width: "220px", height: "220px" }}
+              >
+                <Image
+                  src="/images/soup.jpg"
+                  alt="Mama Soups"
+                  fill
+                  sizes="220px"
+                  className="object-cover"
+                  priority
+                />
+                <div
+                  className="absolute inset-0 rounded-full pointer-events-none"
+                  style={{
+                    background: "radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.12) 0%, transparent 45%)",
+                    boxShadow:  "inset 0 0 0 4px rgba(249,115,22,0.15)",
+                  }}
+                />
+              </div>
+            </motion.div>
+          </div>
 
           {/* LEFT: Text + Area Selector */}
-          <div className="flex flex-col gap-6 order-2 lg:order-1">
-
+          <div className="flex flex-col gap-5 order-2 lg:order-1 w-full text-center lg:text-left">
             <motion.h1
-              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-[1.05] tracking-tight"
+              className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight"
               style={{ color: "#1F2937" }}
-              initial={{ opacity: 0, x: -40 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
               TASTE THE SOUL
@@ -156,43 +156,43 @@ export default function Hero() {
             </motion.h1>
 
             <motion.p
-              className="text-base leading-relaxed max-w-xs"
+              className="text-sm leading-relaxed mx-auto lg:mx-0 max-w-xs"
               style={{ color: "#6B7280" }}
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.35 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
             >
-              Hot soups, crispy fries & fresh puris —
-              delivered straight to your door within
-              9km of our location.
+              Hot soups, crispy fries & fresh puris — delivered
+              straight to your door within 8km of our location.
             </motion.p>
 
-            {/* ── Area Selector ── */}
+            {/* Area Selector */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              className="w-full"
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45 }}
+              transition={{ delay: 0.4 }}
             >
-              <p className="text-md font-semibold uppercase tracking-wider mb-2"
+              <p className="text-xs font-semibold uppercase tracking-wider mb-2 text-left"
                  style={{ color: "#9CA3AF" }}>
                 Select Your Area
               </p>
-              <div className="relative">
+              <div className="relative w-full">
                 <button
                   onClick={() => setShowDropdown((s) => !s)}
-                  className="w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all"
+                  className="w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 text-sm font-medium"
                   style={{
-                    borderColor: selectedArea ? "#F97316" : "rgba(0,0,0,0.15)",
-                    background:  selectedArea ? "rgba(249,115,22,0.05)" : "white",
-                    color:       selectedArea ? "#F97316" : "#6B7280",
+                    borderColor: selectedArea ? "#F97316" : "rgba(0,0,0,0.12)",
+                    background:  selectedArea ? "rgba(249,115,22,0.04)" : "white",
+                    color:       selectedArea ? "#F97316" : "#9CA3AF",
                   }}
                 >
                   <div className="flex items-center gap-2">
-                    <MapPin size={16} style={{ color: "#F97316" }} />
+                    <MapPin size={15} style={{ color: "#F97316" }} />
                     {selectedArea || "Choose your area..."}
                   </div>
                   <ChevronDown
-                    size={16}
+                    size={15}
                     style={{
                       color:     "#F97316",
                       transform: showDropdown ? "rotate(180deg)" : "rotate(0deg)",
@@ -204,29 +204,33 @@ export default function Hero() {
                 <AnimatePresence>
                   {showDropdown && (
                     <motion.div
-                      className="absolute top-full left-0 right-0 mt-1 rounded-xl overflow-hidden z-50"
+                      className=" absolute left-0 right-0 mt-1 rounded-xl overflow-auto z-100"
                       style={{
+                        padding:    "4px 4px",
                         background: "white",
                         border:     "1px solid rgba(0,0,0,0.1)",
                         boxShadow:  "0 8px 32px rgba(0,0,0,0.12)",
-                        maxHeight:  "200px",
-                        overflowY:  "auto",
+                        maxHeight:  "180px",
+                        top:        "100%",
                       }}
-                      initial={{ opacity: 0, y: -10 }}
+                      initial={{ opacity: 0, y: -8 }}
                       animate={{ opacity: 1, y: 0  }}
-                      exit={{   opacity: 0, y: -10 }}
+                      exit={{   opacity: 0, y: -8  }}
                     >
-                      {AREAS.map((area) => (
+                      {areas.map((area) => (
                         <button
-                          key={area}
-                          className="w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-orange-50"
-                          style={{ color: "#1F2937" }}
+                          key={area.id}
+                          className="w-full text-left px-4 py-2.5 text-sm flex justify-between items-center hover:bg-orange-50"
+                          style={{padding: "2px 4px",  color: "#1F2937" }}
                           onClick={() => {
-                            setSelectedArea(area);
+                            setSelectedArea(area.name);
                             setShowDropdown(false);
                           }}
                         >
-                          {area}
+                          <span>{area.name}</span>
+                          <span className="text-xs" style={{ color: "#F97316" }}>
+                            Rs.{area.deliveryCharge}
+                          </span>
                         </button>
                       ))}
                     </motion.div>
@@ -241,125 +245,60 @@ export default function Hero() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                 >
-                  ✅ Great! We deliver to {selectedArea}
+                  ✅ We deliver to {selectedArea}!
                 </motion.p>
               )}
             </motion.div>
 
             {/* Buttons */}
             <motion.div
-              className="flex flex-wrap gap-3"
-              initial={{ opacity: 0, y: 20 }}
+              className="flex flex-wrap gap-3 justify-center lg:justify-start"
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
               <Link
                 href="/menu"
-                className="px-8 py-3.5 rounded-full text-sm font-bold text-white text-center transition-all hover:scale-105"
+                className="px-8 py-3 rounded-full text-sm font-bold text-white"
                 style={{
-                  padding:"4px 8px",
+                  padding:   "2px 4px",
                   background: "#F97316",
-                  boxShadow:  "0 4px 20px rgba(249,115,22,0.35)",
+                  boxShadow:  "0 4px 16px rgba(249,115,22,0.35)",
                 }}
               >
                 Order Now
               </Link>
               <Link
                 href="/menu"
-                className="px-8 py-3.5 rounded-full font-bold text-sm text-center border-2 transition-all hover:bg-orange-50"
-                style={{ padding:"3px 7px",borderColor: "#F97316", color: "#F97316" }}
+                className="px-8 py-3 rounded-full font-bold text-sm border-2"
+                style={{ padding:   "2px 4px",borderColor: "#F97316", color: "#F97316" }}
               >
                 See Menu
               </Link>
             </motion.div>
           </div>
 
-          {/* CENTER: Soup Bowl */}
-          <div className="flex items-center justify-center order-1 lg:order-2">
-            <motion.div
-              className="relative flex items-center justify-center"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.7 }}
-            >
-              <motion.div
-                className="absolute rounded-full"
-                style={{
-                  width:      "500px",
-                  height:     "500px",
-                  background: "radial-gradient(circle, rgba(249,115,22,0.25) 0%, rgba(249,115,22,0.05) 60%, transparent 80%)",
-                }}
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ duration: 4, ease: "easeInOut" }}
-              />
-
-              <motion.div
-                className="relative rounded-full overflow-hidden"
-                style={{
-                  width:  "clamp(220px, 32vw, 400px)",
-                  height: "clamp(220px, 32vw, 400px)",
-                }}
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <Image
-                  src="/images/soup.jpg"
-                  alt="Mama Soups"
-                  fill
-                  sizes="400px"
-                  className="object-cover"
-                  priority
-                  loading="eager"
-                />
-                <div
-                  className="absolute inset-0 rounded-full pointer-events-none"
-                  style={{
-                    background: "radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.12) 0%, transparent 45%)",
-                  }}
-                />
-              </motion.div>
-
-              {/* Steam */}
-              {["-20px", "0px", "20px"].map((x, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute rounded-full"
-                  style={{
-                    width:      "6px",
-                    height:     "6px",
-                    background: "rgba(249,115,22,0.4)",
-                    bottom:     "60%",
-                    left:       `calc(50% + ${x})`,
-                  }}
-                  animate={{ y: [0, -60, -80], opacity: [0.6, 0.3, 0], scale: [1, 1.5, 0] }}
-                  transition={{ duration: 2.5,  delay: i * 0.5, ease: "easeOut" }}
-                />
-              ))}
-            </motion.div>
-          </div>
-
           {/* RIGHT: Food Cards */}
-          <div className="flex flex-col gap-4 order-3">
+          <div className="flex flex-col gap-3 order-3 w-full">
             {FOOD_CARDS.map((card, i) => (
               <motion.div
                 key={card.title}
-                className="flex items-center gap-4 p-5 rounded-3xl w-full transition-all duration-300"
+                className="flex items-center gap-3 p-4 rounded-2xl w-full"
                 style={{
-                  background: card.highlighted ? "#F97316" : "#FFFFFF",
+                  background: card.highlighted ? "#F97316" : "white",
                   boxShadow:  card.highlighted
-                    ? "0 8px 30px rgba(249,115,22,0.35)"
-                    : "0 4px 20px rgba(0,0,0,0.08)",
-                  border: card.highlighted ? "none" : "1px solid rgba(0,0,0,0.06)",
+                    ? "0 8px 24px rgba(249,115,22,0.3)"
+                    : "0 4px 16px rgba(0,0,0,0.07)",
                 }}
-                initial={{ opacity: 0, x: 40 }}
+                initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0  }}
-                transition={{ delay: 0.3 + i * 0.15 }}
+                transition={{ delay: 0.3 + i * 0.12 }}
               >
                 <div
-                  className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl shrink-0"
+                  className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
                   style={{
                     background: card.highlighted
-                      ? "rgba(255,255,255,0.25)"
+                      ? "rgba(255,255,255,0.2)"
                       : "rgba(249,115,22,0.08)",
                   }}
                 >
@@ -367,13 +306,13 @@ export default function Hero() {
                 </div>
                 <div>
                   <p
-                    className="font-bold text-sm leading-tight"
-                    style={{ color: card.highlighted ? "#FFFFFF" : "#1F2937" }}
+                    className="font-bold text-sm"
+                    style={{ color: card.highlighted ? "white" : "#1F2937" }}
                   >
                     {card.title}
                   </p>
                   <p
-                    className="text-xs mt-1"
+                    className="text-xs mt-0.5"
                     style={{ color: card.highlighted ? "rgba(255,255,255,0.75)" : "#9CA3AF" }}
                   >
                     {card.desc}
@@ -382,23 +321,22 @@ export default function Hero() {
               </motion.div>
             ))}
 
-            {/* Google Maps Rating */}
+            {/* Google Maps */}
             <motion.a
-              href="https://maps.app.goo.gl/2rJkU2XBVYdUdZvZA"
+              href="https://maps.google.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 p-4 rounded-3xl transition-all hover:scale-102"
+              className="flex items-center gap-3 p-4 rounded-2xl w-full"
               style={{
                 background: "white",
-                border:     "1px solid rgba(0,0,0,0.06)",
-                boxShadow:  "0 4px 20px rgba(0,0,0,0.06)",
+                boxShadow:  "0 4px 16px rgba(0,0,0,0.07)",
               }}
-              initial={{ opacity: 0, x: 40 }}
+              initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0  }}
-              transition={{ delay: 0.75 }}
+              transition={{ delay: 0.6 }}
             >
               <div
-                className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl shrink-0"
+                className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0"
                 style={{ background: "rgba(249,115,22,0.08)" }}
               >
                 📍
@@ -407,23 +345,17 @@ export default function Hero() {
                 <p className="font-bold text-sm" style={{ color: "#1F2937" }}>
                   Find Us on Google Maps
                 </p>
-                <div className="flex items-center gap-1 mt-0.5">
-                  {[1,2,3,4].map((s) => (
+                <div className="flex items-center gap-0.5 mt-0.5">
+                  {[1,2,3,4,5].map((s) => (
                     <Star key={s} size={10} fill="#F97316" style={{ color: "#F97316" }} />
                   ))}
-                   <StarHalf
-                      size={10}
-                      fill="#F97316"
-                      color="#F97316"
-                      />
-                  <span className="text-xs ml-1" style={{ color: "#6B7280" }}>
+                  <span className="text-xs ml-1" style={{ color: "#9CA3AF" }}>
                     Mama Soups
                   </span>
                 </div>
               </div>
             </motion.a>
           </div>
-
         </div>
       </div>
     </section>
