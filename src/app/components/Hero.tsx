@@ -76,8 +76,8 @@ export default function Hero() {
             <span>Mon–Sat: 5:00 PM – 10:30 PM</span>
           </div>
           <div className="flex items-center gap-1.5 text-xs font-medium"
-               style={{ color: "#dc2626" }}>
-            <span>🚫 Sundays: Closed</span>
+               style={{ color: "#16a34a" }}>
+            <span>✅ Sundays: Open 5:00 PM – 11:30 PM</span>
           </div>
           <div className="flex items-center gap-1.5 text-xs font-medium"
                style={{ color: "#16a34a" }}>
