@@ -28,7 +28,9 @@ interface FormErrors {
   phone?:    string;
   houseNo?:  string;
   streetNo?: string;
+  area?:     string;
 }
+
 
 interface DeliveryArea {
   id:             number;
@@ -145,7 +147,7 @@ export default function CheckoutPage() {
     if (!formData.streetNo.trim())
       newErrors.streetNo = "Street number is required";
     if (!formData.area)
-      newErrors.streetNo = "Please select your area";
+      newErrors.area = "Please select your area";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -440,51 +442,58 @@ export default function CheckoutPage() {
                       Area <span style={{ color: "#EF4444" }}>*</span>
                     </label>
                     <select
-                      name="area"
-                      value={formData.area}
-                      onChange={(e) => {
-                        const selected = deliveryAreas.find(
-                          (a) => a.name === e.target.value
-                        );
-                        setDeliveryCharge(selected?.deliveryCharge ?? 0);
-                        handleChange(e);
-                      }}
-                      style={{
-                        ...inputStyle,
-                        cursor: "pointer",
-                        color: formData.area ? "#1F2937" : "#9CA3AF",
-                      }}
-                    >
-                      {deliveryAreas.map((area) => (
-                        <option key={area.id} value={area.name}>
-                          {area.name} — Rs.{area.deliveryCharge} delivery
-                        </option>
-                      ))}
-                      {[
-                        "Saddar",
-                        "Civil Lines",
-                        "Garden",
-                        "Lines Area",
-                        "Soldier Bazaar",
-                        "Jamshed Quarter",
-                        "PECHS",
-                        "Nursery",
-                        "Tariq Road",
-                        "Bahadurabad",
-                        "Clifton",
-                        "Boat Basin",
-                        "Bath Island",
-                        "Defence Phase 1",
-                        "Defence Phase 2",
-                        "Defence Phase 3",
-                        "Defence Phase 4",
-                        "Gizri (Selected Areas)",
-                      ].map((area) => (
-                        <option key={area} value={area}>
-                          {area}
-                        </option>
-                      ))}
-                    </select>
+                       name="area"
+                       value={formData.area}
+                       onChange={(e) => {
+                       const selected = deliveryAreas.find(
+                        (a) => a.name === e.target.value
+                      );
+                      setDeliveryCharge(selected?.deliveryCharge ?? 0);
+                      handleChange(e);
+                   }}
+                     style={{
+                     ...inputStyle,
+                      cursor: "pointer",
+                      color: formData.area ? "#1F2937" : "#9CA3AF",
+                    }}
+                   >
+                     {/* Placeholder */}
+                   <option value="" disabled>
+                      Select area
+                  </option>
+
+                  {deliveryAreas.map((area) => (
+                  <option key={area.id} value={area.name}>
+                  {area.name} — Rs.{area.deliveryCharge} delivery
+                  </option>
+                     ))}
+
+                 {[
+                  "Saddar",
+                  "Civil Lines",
+                  "Garden",
+                  "Lines Area",
+                  "Soldier Bazaar",
+                  "Jamshed Quarter",
+                  "PECHS",
+                  "Nursery",
+                  "Tariq Road",
+                  "Bahadurabad",
+                  "Clifton",
+                  "Boat Basin",
+                  "Bath Island",
+                  "Defence Phase 1",
+                  "Defence Phase 2",
+                  "Defence Phase 3",
+                  "Defence Phase 4",
+                  "Gizri (Selected Areas)",
+                     ].map((area) => (
+                      <option key={area} value={area}>
+                       {area}
+                      </option>
+                     ))}
+                  </select>
+                    {errors.area && <p style={errorStyle}>{errors.area}</p>}
                     <p className="text-xs mt-1" style={{ color: "#9CA3AF" }}>
                       We deliver within 8km radius only
                     </p>
@@ -594,9 +603,9 @@ export default function CheckoutPage() {
                       {formData.paymentMethod === "bank" && (
                         <>
                           <p className="font-bold mb-2">Bank Transfer Details:</p>
-                          <p>Bank: Meezan Bank</p>
-                          <p>Account: Your Account Number</p>
-                          <p>Title: Mama Soups</p>
+                          <p>Bank: Js Bank</p>
+                          <p>Account: 228576</p>
+                          <p>Title: Taha Saifuddin</p>
                           <p className="mt-2 text-xs" style={{ color: "#9CA3AF" }}>
                             Send screenshot to our WhatsApp after placing order.
                           </p>
@@ -606,7 +615,7 @@ export default function CheckoutPage() {
                         <>
                           <p className="font-bold mb-2">JazzCash Details:</p>
                           <p>Number: 0333-2287497</p>
-                          <p>Name: Mama Soups</p>
+                          <p>Name: Taha Saifuddin</p>
                           <p className="mt-2 text-xs" style={{ color: "#9CA3AF" }}>
                             Send screenshot to our WhatsApp after placing order.
                           </p>
@@ -616,7 +625,7 @@ export default function CheckoutPage() {
                         <>
                           <p className="font-bold mb-2">EasyPaisa Details:</p>
                           <p>Number: 0333-2287497</p>
-                          <p>Name: Mama Soups</p>
+                          <p>Name: Taha Saifuddin</p>
                           <p className="mt-2 text-xs" style={{ color: "#9CA3AF" }}>
                             Send screenshot to our WhatsApp after placing order.
                           </p>
