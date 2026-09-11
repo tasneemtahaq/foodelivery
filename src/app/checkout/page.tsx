@@ -12,6 +12,7 @@ import { useCartStore } from "../../store/cartStore";
 import type { CartStore } from "../../store/cartStore";
 import toast from "react-hot-toast";
 
+
 interface FormData {
   name:          string;
   phone:         string;
@@ -93,6 +94,10 @@ export default function CheckoutPage() {
     paymentMethod: "cash",
   });
   const [errors, setErrors] = useState<FormErrors>({});
+
+  const [screenshotUrl,     setScreenshotUrl]     = useState<string>("");
+  const [uploadingScreenshot, setUploadingScreenshot] = useState(false);
+  const [screenshotPreview,   setScreenshotPreview]   = useState<string>("");
   
   useEffect(() => {
     fetch("/api/delivery-areas")
@@ -131,6 +136,41 @@ export default function CheckoutPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+    const handleScreenshotUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Show local preview immediately
+    const reader = new FileReader();
+    reader.onload = () => setScreenshotPreview(reader.result as string);
+    reader.readAsDataURL(file);
+
+    setUploadingScreenshot(true);
+    try {
+      const form = new FormData();
+      form.append("file", file);
+
+      const res  = await fetch("/api/upload-payment", {
+        method: "POST",
+        body:   form,
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setScreenshotUrl(data.screenshotUrl);
+        toast.success("Screenshot uploaded! ✅");
+      } else {
+        toast.error("Upload failed — please try again");
+        setScreenshotPreview("");
+      }
+    } catch {
+      toast.error("Upload failed");
+      setScreenshotPreview("");
+    } finally {
+      setUploadingScreenshot(false);
     }
   };
 
@@ -173,9 +213,10 @@ export default function CheckoutPage() {
             city:    "Karachi",
             area:    formData.area,
           },
-          items,
-          paymentMethod:  formData.paymentMethod,
-          instructions:   formData.instructions,
+                    items,
+          paymentMethod:    formData.paymentMethod,
+          instructions:     formData.instructions,
+          screenshotUrl:    screenshotUrl || null,
           deliveryCharge: deliveryCharge,
           totalAmount:    GRAND_TOTAL,
         }),
@@ -468,35 +509,9 @@ export default function CheckoutPage() {
                   </option>
                      ))}
 
-                 {[
-                  "Saddar",
-                  "Civil Lines",
-                  "Garden",
-                  "Lines Area",
-                  "Soldier Bazaar",
-                  "Jamshed Quarter",
-                  "PECHS",
-                  "Nursery",
-                  "Tariq Road",
-                  "Bahadurabad",
-                  "Clifton",
-                  "Boat Basin",
-                  "Bath Island",
-                  "Defence Phase 1",
-                  "Defence Phase 2",
-                  "Defence Phase 3",
-                  "Defence Phase 4",
-                  "Gizri (Selected Areas)",
-                     ].map((area) => (
-                      <option key={area} value={area}>
-                       {area}
-                      </option>
-                     ))}
                   </select>
                     {errors.area && <p style={errorStyle}>{errors.area}</p>}
-                    <p className="text-xs mt-1" style={{ color: "#9CA3AF" }}>
-                      We deliver within 8km radius only
-                    </p>
+                    
                   </div>
 
                   {/* Instructions */}
@@ -586,51 +601,129 @@ export default function CheckoutPage() {
                 </div>
 
                 {/* Payment details */}
-                <AnimatePresence mode="wait">
+                                               <AnimatePresence mode="wait">
                   {formData.paymentMethod !== "cash" && (
                     <motion.div
                       key={formData.paymentMethod}
-                      className="mt-4 p-4 rounded-xl text-sm"
+                      className="mt-4 rounded-xl overflow-hidden text-sm"
                       style={{
+                        padding: "4px 4px",
                         background: "rgba(249,115,22,0.06)",
                         border:     "1px solid rgba(249,115,22,0.15)",
-                        color:      "#92400E",
                       }}
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{   opacity: 0, height: 0 }}
                     >
-                      {formData.paymentMethod === "bank" && (
-                        <>
-                          <p className="font-bold mb-2">Bank Transfer Details:</p>
-                          <p>Bank: Js Bank</p>
-                          <p>Account: 228576</p>
-                          <p>Title: Taha Saifuddin</p>
-                          <p className="mt-2 text-xs" style={{ color: "#9CA3AF" }}>
-                            Send screenshot to our WhatsApp after placing order.
-                          </p>
-                        </>
-                      )}
-                      {formData.paymentMethod === "jazzcash" && (
-                        <>
-                          <p className="font-bold mb-2">JazzCash Details:</p>
-                          <p>Number: 0333-2287497</p>
-                          <p>Name: Taha Saifuddin</p>
-                          <p className="mt-2 text-xs" style={{ color: "#9CA3AF" }}>
-                            Send screenshot to our WhatsApp after placing order.
-                          </p>
-                        </>
-                      )}
-                      {formData.paymentMethod === "easypaisa" && (
-                        <>
-                          <p className="font-bold mb-2">EasyPaisa Details:</p>
-                          <p>Number: 0333-2287497</p>
-                          <p>Name: Taha Saifuddin</p>
-                          <p className="mt-2 text-xs" style={{ color: "#9CA3AF" }}>
-                            Send screenshot to our WhatsApp after placing order.
-                          </p>
-                        </>
-                      )}
+                      {/* Payment details */}
+                      <div className="p-4" style={{ padding: "4px 4px",  color: "#92400E" }}>
+                        {formData.paymentMethod === "bank" && (
+                          <>
+                            <p className="font-bold mb-2">Bank Transfer Details:</p>
+                            <p>Bank: JS Bank</p>
+                            <p>Account: 228576 </p>
+                            <p>Title:Taha Saifuddin </p>
+                          </>
+                        )}
+                        {formData.paymentMethod === "jazzcash" && (
+                          <>
+                            <p className="font-bold mb-2">JazzCash Details:</p>
+                            <p>Number: 0333-2287497</p>
+                            <p>Name: Taha Saifuddin</p>
+                          </>
+                        )}
+                        {formData.paymentMethod === "easypaisa" && (
+                          <>
+                            <p className="font-bold mb-2">EasyPaisa Details:</p>
+                            <p>Number: 0333-2287497</p>
+                            <p>Name: Taha Saifuddin</p>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Screenshot Upload */}
+                      <div
+                        className="p-4"
+                        style={{ padding: "4px 4px", borderTop: "1px solid rgba(249,115,22,0.15)" }}
+                      >
+                        <p className="font-bold text-sm mb-3" style={{ color: "#92400E" }}>
+                          📸 Upload Payment Screenshot
+                        </p>
+
+                        {/* Upload box */}
+                        {!screenshotPreview ? (
+                          <label
+                            className="flex flex-col items-center justify-center gap-2 w-full py-6 rounded-xl cursor-pointer transition-all"
+                            style={{
+                              border:     "2px dashed rgba(249,115,22,0.4)",
+                              background: "rgba(249,115,22,0.03)",
+                            }}
+                          >
+                            <span className="text-3xl">📷</span>
+                            <p className="text-xs font-medium text-center"
+                               style={{ color: "#F97316" }}>
+                              {uploadingScreenshot
+                                ? "Uploading..."
+                                : "Tap to upload payment screenshot"}
+                            </p>
+                            <p className="text-xs" style={{ color: "#9CA3AF" }}>
+                              JPG, PNG or screenshot
+                            </p>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={handleScreenshotUpload}
+                              disabled={uploadingScreenshot}
+                            />
+                          </label>
+                        ) : (
+                          /* Preview */
+                          <div className="relative w-full rounded-xl overflow-hidden"
+                               style={{ border: "2px solid rgba(249,115,22,0.3)" }}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={screenshotPreview}
+                              alt="Payment screenshot"
+                              className="w-full object-contain"
+                              style={{ maxHeight: "200px", display: "block" }}
+                            />
+                            {/* Upload status */}
+                            <div
+                              className="absolute top-2 right-2 px-2 py-1 rounded-lg text-xs font-bold"
+                              style={{
+                                background: screenshotUrl
+                                  ? "rgba(16,185,129,0.9)"
+                                  : "rgba(249,115,22,0.9)",
+                                color: "white",
+                              }}
+                            >
+                              {screenshotUrl
+                                ? "✅ Uploaded"
+                                : uploadingScreenshot
+                                  ? "⏳ Uploading..."
+                                  : "❌ Failed"}
+                            </div>
+
+                            {/* Remove button */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setScreenshotPreview("");
+                                setScreenshotUrl("");
+                              }}
+                              className="absolute top-2 left-2 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
+                              style={{ background: "rgba(239,68,68,0.85)", color: "white" }}
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+
+                        <p className="text-sm mt-2" style={{ color: "#059669" }}>
+                          Upload your payment screenshot so we can verify your order quickly.
+                        </p>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -682,7 +775,7 @@ export default function CheckoutPage() {
                     <span style={{ color: "#1F2937" }}>Rs.{totalPrice}</span>
                   </div>
 
-                  {/* Delivery notice */}
+                 
                   {/* Delivery charge */}
                   <div className="flex justify-between text-sm">
                     <span style={{ color: "#6B7280" }}>
