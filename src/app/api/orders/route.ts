@@ -6,11 +6,12 @@ export const dynamic = "force-dynamic";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// ── Generate unique order number ──
 async function generateOrderNumber(): Promise<string> {
-  const count = await prisma.order.count();
-  const year  = new Date().getFullYear();
-  const num   = String(count + 1).padStart(3, "0");
-  return `ORD-${year}-${num}`;
+  const year      = new Date().getFullYear();
+  const timestamp = Date.now().toString().slice(-6);
+  const random    = Math.floor(Math.random() * 100).toString().padStart(2, "0");
+  return `ORD-${year}-${timestamp}${random}`;
 }
 
 export async function POST(request: NextRequest) {
@@ -22,10 +23,10 @@ export async function POST(request: NextRequest) {
       customer,
       items,
       paymentMethod,
-      instructions,
-      deliveryCharge,
+      instructions  = "",
+      deliveryCharge = 0,
       totalAmount,
-      screenshotUrl,
+      screenshotUrl  = null,
     } = body;
 
     // ── Validate ──
@@ -102,6 +103,8 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    console.log(`✅ Order created: ${order.orderNumber}`);
+
     // ── Send Email ──
     const itemsHtml = order.orderItems
       .map((item) => `
@@ -119,20 +122,14 @@ export async function POST(request: NextRequest) {
         subject: `🔔 New Order #${order.orderNumber} — Rs.${totalAmount}`,
         html: `
           <div style="font-family:sans-serif;max-width:600px;margin:0 auto">
-
-            <!-- Header -->
             <div style="background:linear-gradient(135deg,#F97316,#EA580C);padding:24px;border-radius:12px 12px 0 0;text-align:center">
               <h1 style="color:white;margin:0;font-size:24px">🍜 New Order Received!</h1>
               <p style="color:rgba(255,255,255,0.85);margin:8px 0 0">Mama Soups</p>
             </div>
-
-            <!-- Order Number -->
             <div style="background:#fff7ed;padding:16px;text-align:center;border-left:1px solid #fed7aa;border-right:1px solid #fed7aa">
               <p style="margin:0;font-size:14px;color:#92400e">Order Number</p>
               <p style="margin:4px 0 0;font-size:28px;font-weight:bold;color:#F97316">${order.orderNumber}</p>
             </div>
-
-            <!-- Customer Details -->
             <div style="padding:24px;background:white;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb">
               <h2 style="font-size:16px;color:#1F2937;margin:0 0 12px">👤 Customer Details</h2>
               <table style="width:100%">
@@ -145,16 +142,13 @@ export async function POST(request: NextRequest) {
                 <tr>
                   <td style="padding:4px 0;color:#6B7280;vertical-align:top">Screenshot:</td>
                   <td style="padding:4px 0">
-                    <a href="${screenshotUrl}" target="_blank"
-                       style="color:#F97316;font-weight:bold;text-decoration:none">
+                    <a href="${screenshotUrl}" target="_blank" style="color:#F97316;font-weight:bold;text-decoration:none">
                       📸 View Payment Screenshot →
                     </a>
                   </td>
                 </tr>` : ""}
               </table>
             </div>
-
-            <!-- Order Items -->
             <div style="padding:24px;background:white;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;border-top:1px solid #f0f0f0">
               <h2 style="font-size:16px;color:#1F2937;margin:0 0 12px">🛒 Order Items</h2>
               <table style="width:100%;border-collapse:collapse">
@@ -168,28 +162,20 @@ export async function POST(request: NextRequest) {
                 <tbody>${itemsHtml}</tbody>
               </table>
             </div>
-
-            <!-- Total -->
             <div style="padding:16px 24px;background:#fff7ed;border:1px solid #fed7aa;border-top:none">
               <div style="display:flex;justify-content:space-between;align-items:center">
                 <span style="font-weight:bold;color:#1F2937">Total Amount</span>
                 <span style="font-weight:bold;font-size:20px;color:#F97316">Rs.${totalAmount}</span>
               </div>
             </div>
-
-            <!-- Screenshot Preview -->
             ${screenshotUrl ? `
             <div style="padding:16px 24px;background:white;border:1px solid #e5e7eb;border-top:none">
               <p style="font-weight:bold;color:#1F2937;margin:0 0 8px">📸 Payment Screenshot:</p>
               <img src="${screenshotUrl}" alt="Payment Screenshot"
                    style="width:100%;max-height:300px;object-fit:contain;border-radius:8px;border:1px solid #e5e7eb" />
             </div>` : ""}
-
-            <!-- Footer -->
             <div style="padding:16px 24px;background:white;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px;text-align:center">
-              <p style="margin:0;font-size:12px;color:#9CA3AF">
-                ${new Date().toLocaleString("en-PK")}
-              </p>
+              <p style="margin:0;font-size:12px;color:#9CA3AF">${new Date().toLocaleString("en-PK")}</p>
             </div>
           </div>
         `,
@@ -201,82 +187,84 @@ export async function POST(request: NextRequest) {
 
     // ── Send Discord Notification ──
     try {
-      const discordMessage = {
-        embeds: [
-          {
-            title: "🛍️ New Order — Mama Soups",
-            color: 0xF97316,
-            fields: [
-              {
-                name:   "📦 Order Number",
-                value:  order.orderNumber,
-                inline: true,
-              },
-              {
-                name:   "💰 Total",
-                value:  `Rs.${totalAmount}`,
-                inline: true,
-              },
-              {
-                name:   "💳 Payment",
-                value:  paymentMethod,
-                inline: true,
-              },
-              {
-                name:   "👤 Customer",
-                value:  savedCustomer.name,
-                inline: true,
-              },
-              {
-                name:   "📞 Phone",
-                value:  savedCustomer.phone,
-                inline: true,
-              },
-              {
-                name:   "📍 Address",
-                value:  `${savedCustomer.address}${savedCustomer.area ? `, ${savedCustomer.area}` : ""}, ${savedCustomer.city}`,
-                inline: false,
-              },
-              {
-                name:   "🛒 Items",
-                value:  order.orderItems
-                  .map((item) =>
-                    `• ${item.food.name} × ${item.quantity} — Rs.${item.price * item.quantity}`
-                  )
-                  .join("\n"),
-                inline: false,
-              },
-              ...(instructions ? [{
-                name:   "📝 Instructions",
-                value:  instructions,
-                inline: false,
-              }] : []),
-              ...(screenshotUrl ? [{
-                name:   "📸 Payment Screenshot",
-                value:  `[View Screenshot](${screenshotUrl})`,
-                inline: false,
-              }] : []),
-            ],
-            // Show screenshot image directly in Discord
-            image: screenshotUrl ? { url: screenshotUrl } : undefined,
-            footer: {
-              text: new Date().toLocaleString("en-PK"),
-            },
-          },
-        ],
-      };
-
-      const discordRes = await fetch(process.env.DISCORD_WEBHOOK_URL!, {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify(discordMessage),
-      });
-
-      if (discordRes.ok) {
-        console.log("✅ Discord notification sent!");
+      const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+      if (!webhookUrl) {
+        console.log("⚠️ No Discord webhook URL in .env — skipping");
       } else {
-        const errorText = await discordRes.text();
-        console.error("Discord error:", errorText);
+        const discordMessage = {
+          embeds: [
+            {
+              title: "🛍️ New Order — Mama Soups",
+              color: 0xF97316,
+              fields: [
+                {
+                  name:   "📦 Order Number",
+                  value:  order.orderNumber,
+                  inline: true,
+                },
+                {
+                  name:   "💰 Total",
+                  value:  `Rs.${totalAmount}`,
+                  inline: true,
+                },
+                {
+                  name:   "💳 Payment",
+                  value:  paymentMethod,
+                  inline: true,
+                },
+                {
+                  name:   "👤 Customer",
+                  value:  savedCustomer.name,
+                  inline: true,
+                },
+                {
+                  name:   "📞 Phone",
+                  value:  savedCustomer.phone,
+                  inline: true,
+                },
+                {
+                  name:   "📍 Address",
+                  value:  `${savedCustomer.address}${savedCustomer.area ? `, ${savedCustomer.area}` : ""}, ${savedCustomer.city}`,
+                  inline: false,
+                },
+                {
+                  name:  "🛒 Items",
+                  value: order.orderItems
+                    .map((item) =>
+                      `• ${item.food.name} × ${item.quantity} — Rs.${item.price * item.quantity}`
+                    )
+                    .join("\n"),
+                  inline: false,
+                },
+                ...(instructions ? [{
+                  name:   "📝 Instructions",
+                  value:  instructions,
+                  inline: false,
+                }] : []),
+                ...(screenshotUrl ? [{
+                  name:   "📸 Payment Screenshot",
+                  value:  `[View Screenshot](${screenshotUrl})`,
+                  inline: false,
+                }] : []),
+              ],
+              image:  screenshotUrl ? { url: screenshotUrl } : undefined,
+              footer: { text: new Date().toLocaleString("en-PK") },
+            },
+          ],
+        };
+
+        const discordRes = await fetch(webhookUrl, {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify(discordMessage),
+        });
+
+        if (discordRes.ok) {
+          console.log("✅ Discord notification sent!");
+        } else {
+          const errorText = await discordRes.text();
+          console.error("Discord error:", errorText);
+        }
       }
     } catch (discordError) {
       console.error("Discord failed:", discordError);
@@ -290,9 +278,9 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error("Order API error:", error);
+    console.error("❌ Order API error:", error);
     return NextResponse.json(
-      { error: "Failed to place order. Please try again." },
+      { error: String(error) },
       { status: 500 }
     );
   }

@@ -204,7 +204,7 @@ export default function CheckoutPage() {
       const response = await fetch("/api/orders", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+                body: JSON.stringify({
           customer: {
             name:    formData.name,
             phone:   formData.phone,
@@ -213,10 +213,10 @@ export default function CheckoutPage() {
             city:    "Karachi",
             area:    formData.area,
           },
-                    items,
-          paymentMethod:    formData.paymentMethod,
-          instructions:     formData.instructions,
-          screenshotUrl:    screenshotUrl || null,
+          items,
+          paymentMethod:  formData.paymentMethod,
+          instructions:   formData.instructions,
+          screenshotUrl:  screenshotUrl || null,
           deliveryCharge: deliveryCharge,
           totalAmount:    GRAND_TOTAL,
         }),
@@ -225,13 +225,8 @@ export default function CheckoutPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error ?? "Order failed");
 
-      // ── Open WhatsApp with order details ──
-      if (data.whatsappLink) {
-        window.open(data.whatsappLink, "_blank");
-      }
-
-      clearCart();
-      toast.success("Order placed! Opening WhatsApp... 📱");
+           clearCart();
+      toast.success("Order placed successfully! 🎉");
       router.push(`/order-summary/${data.orderNumber}`);
 
     } catch (error) {
