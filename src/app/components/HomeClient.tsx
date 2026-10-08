@@ -150,7 +150,7 @@ export default function HomeClient({
               <div className="absolute inset-[12%] rounded-full bg-linear-to-br from-white/45 via-transparent to-[#f2b36f]/20 blur-[2px]" />
               <div className="relative h-full w-full overflow-hidden rounded-full border-4 border-white/75 shadow-[0_20px_60px_rgba(74,48,25,0.22)]">
                 <Image
-                  src="/images/soup.jpg"
+                  src="/images/soup.png"
                   alt="Mama Soups"
                   fill
                   priority
