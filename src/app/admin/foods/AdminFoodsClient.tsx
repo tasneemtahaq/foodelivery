@@ -537,6 +537,8 @@ export default function AdminFoodsClient({
                           src={form.image}
                           alt="Preview"
                           className="w-full h-full object-cover"
+                          width={400}
+                          height={200}
                           onError={(e) => {
                             (e.target as HTMLImageElement).style.display = "none";
                           }}

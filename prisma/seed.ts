@@ -80,7 +80,7 @@ await prisma.admin.upsert({
         price:       100,
         isFeatured:  true,
         isAvailable: true,
-        image:       "/images/soup.jpg",
+        image:       "/images/soup.png",
         categoryId:  soup.id,
       },
       {
@@ -89,7 +89,7 @@ await prisma.admin.upsert({
         price:       350,
         isFeatured:  true,
         isAvailable: true,
-        image:       "/images/soup.jpg",
+        image:       "/images/soup.png",
         categoryId:  soup.id,
       },
       {
@@ -97,7 +97,7 @@ await prisma.admin.upsert({
         description: "Made from Desi Chicken Stock.",
         price:       170,
         isAvailable: true,
-        image:       "/images/yakhni.jpg",
+        image:       "/images/yakhni.png",
         categoryId:  soup.id,
       },
       {
@@ -105,7 +105,7 @@ await prisma.admin.upsert({
         description: "Made from Desi Chicken Stock, serves 4 persons.",
         price:       500,
         isAvailable: true,
-        image:       "/images/yakhni.jpg",
+        image:       "/images/yakhni.png",
         categoryId:  soup.id,
       },
       {
@@ -113,7 +113,7 @@ await prisma.admin.upsert({
         description: "Perfectly boiled egg served as a soup side or topping.",
         price:       30,
         isAvailable: true,
-        image:       "/images/egg.jpg",
+        image:       "/images/egg.png",
         categoryId:  soup.id,
       },
       {
@@ -121,7 +121,7 @@ await prisma.admin.upsert({
         description: "Crispy slim crackers — perfect companion with your soup.",
         price:       40,
         isAvailable: true,
-        image:       "/images/slims.jpg",
+        image:       "/images/slims.png",
         categoryId:  soup.id,
       },
       {
@@ -129,7 +129,7 @@ await prisma.admin.upsert({
         description: "Light and crunchy crackers served with soup.",
         price:       40,
         isAvailable: true,
-        image:       "/images/crackers.jpg",
+        image:       "/images/crackers.png",
         categoryId:  soup.id,
       },
 
@@ -149,7 +149,7 @@ await prisma.admin.upsert({
         price:       120,
         isFeatured:  true,
         isAvailable: true,
-        image:       "/images/greenfries.png",
+        image:       "/images/friesgreen.png",
         categoryId:  fries.id,
       },
       {
@@ -181,7 +181,7 @@ await prisma.admin.upsert({
         description: "Chicken spice seasoned fries sauce.",
         price:       120,
         isAvailable: true,
-        image:       "/images/frieschicken.jpg",
+        image:       "/images/frieschicken.png",
         categoryId:  fries.id,
       },
       {
@@ -200,7 +200,7 @@ await prisma.admin.upsert({
         price:       180,
         isFeatured:  true,
         isAvailable: true,
-        image:       "/images/panipuri.jpeg",
+        image:       "/images/panipuri.png",
         categoryId:  puri.id,
       },
       {
@@ -208,7 +208,7 @@ await prisma.admin.upsert({
         description: "Single plate, 8 Pieces.",
         price:       180,
         isAvailable: true,
-        image:       "/images/meethipuri.jpeg",
+        image:       "/images/meethipuri.png",
         categoryId:  puri.id,
       },
       
@@ -220,7 +220,7 @@ await prisma.admin.upsert({
         description: "Fresh lemon with sparkling water and a pinch of black salt.",
         price:       90,
         isAvailable: true,
-        image:       "/images/lemon.jpg",
+        image:       "/images/lemon.png",
         categoryId:  drinks.id,
       },
       // Drinks — Soda Flavours
@@ -230,7 +230,7 @@ await prisma.admin.upsert({
         price:       90,
         isAvailable: true,
         isFeatured:  false,
-        image:       "/images/blueberry.jpg",
+        image:       "/images/blueberry.png",
         categoryId:  drinks.id,
       },
       {
@@ -238,7 +238,7 @@ await prisma.admin.upsert({
         description: "Light and fruity peach flavoured soda — sweet and refreshing.",
         price:       90,
         isAvailable: true,
-        image:       "/images/peach.jpg",
+        image:       "/images/peach.png",
         categoryId:  drinks.id,
       },
       {
@@ -246,7 +246,7 @@ await prisma.admin.upsert({
         description: "Crisp and tangy apple flavoured sparkling soda.",
         price:       90,
         isAvailable: true,
-        image:       "/images/apple.jpg",
+        image:       "/images/apple.png",
         categoryId:  drinks.id,
       },
       {
@@ -254,7 +254,7 @@ await prisma.admin.upsert({
         description: "Classic Vimto flavour with a sparkling fizzy twist.",
         price:       90,
         isAvailable: true,
-        image:       "/images/vimto.jpg",
+        image:       "/images/vimto.png",
         categoryId:  drinks.id,
       },
       {
@@ -262,7 +262,7 @@ await prisma.admin.upsert({
         description: "Tropical pineapple flavoured soda — sweet, tangy and fizzy.",
         price:       90,
         isAvailable: true,
-        image:       "/images/pineapple.jpg",
+        image:       "/images/pineapple.png",
         categoryId:  drinks.id,
       },
       {
@@ -270,7 +270,7 @@ await prisma.admin.upsert({
         description: "Bright and zesty orange flavoured sparkling soda.",
         price:       90,
         isAvailable: true,
-        image:       "/images/orange.jpg",
+        image:       "/images/orange.png",
         categoryId:  drinks.id,
       },
       {
@@ -278,7 +278,7 @@ await prisma.admin.upsert({
         description: "Sweet and tangy raspberry flavoured chilled soda.",
         price:       90,
         isAvailable: true,
-        image:       "/images/rasberry.jpg",
+        image:       "/images/rasberry.png",
         categoryId:  drinks.id,
       },
       {
@@ -286,7 +286,7 @@ await prisma.admin.upsert({
         description: "Delicate rose flavoured soda — floral, sweet and refreshing.",
         price:       90,
         isAvailable: true,
-        image:       "/images/rose.jpg",
+        image:       "/images/rose.png",
         categoryId:  drinks.id,
       },
       {
@@ -295,7 +295,7 @@ await prisma.admin.upsert({
         price:       90,
         isFeatured:  true,
         isAvailable: true,
-        image:       "/images/icecream.jpg",
+        image:       "/images/icecream.png",
         categoryId:  drinks.id,
       },
       {
@@ -304,7 +304,7 @@ await prisma.admin.upsert({
         price:       90,
         isFeatured:  true,
         isAvailable: true,
-        image:       "/images/lychee.jpg",
+        image:       "/images/lychee.png",
         categoryId:  drinks.id,
       },
       
