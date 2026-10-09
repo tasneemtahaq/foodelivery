@@ -68,7 +68,7 @@ export default function HomeClient({
         width: "100%",
         minWidth: 0,
         margin: 0,
-                        background: `
+        background: `
           radial-gradient(circle at 8% 8%, rgba(120, 180, 125, 0.92) 0%, rgba(120, 180, 125, 0) 28%),
           radial-gradient(circle at 92% 10%, rgba(100, 165, 108, 0.88) 0%, rgba(100, 165, 108, 0) 28%),
           radial-gradient(circle at 5% 92%, rgba(110, 175, 118, 0.85) 0%, rgba(110, 175, 118, 0) 26%),
@@ -117,22 +117,42 @@ export default function HomeClient({
                The Best Soup In Town, Now Serving at Your Comfort. Order Now and Savor the Flavor, Crafted with Fresh Ingredients and Love.
               </p>
 
-              <div className="mt-6 flex items-center justify-center gap-3"
-              
-              >
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
                 <Link
                   href="/menu"
-                  className="rounded-full bg-white/70 px-6 py-2.5 text-[12px] font-medium text-[#6c5a49] shadow-[0_8px_24px_rgba(77,57,33,0.08)] backdrop-blur-md transition hover:-translate-y-0.5 hover:bg-white/85"
-                  style={{ padding: "4px" }}
+                  className="transition hover:-translate-y-0.5"
+                  style={{
+                    padding:       "7px 17px",
+                    borderRadius:  "999px",
+                    background:    "linear-gradient(135deg, #F97316, #EA580C)",
+                    color:         "white",
+                    fontSize:      "14px",
+                    fontWeight:    700,
+                    letterSpacing: "0.04em",
+                    boxShadow:     "0 12px 30px rgba(249,115,22,0.5)",
+                  }}
                 >
-                  Food Menu
+                  View Menu
                 </Link>
-                 <a
+
+                <a
                   href="https://maps.google.com/?q=Mama+Soups+Hussaini+Manzil+Saddar+Karachi"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-full bg-white/45 px-6 py-2.5 text-[12px] font-medium text-[#6c5a49] shadow-[0_8px_24px_rgba(77,57,33,0.06)] backdrop-blur-md transition hover:-translate-y-0.5 hover:bg-white/65 flex items-center gap-2"
-                  style={{ padding: "4px" }}
+                  className="transition hover:-translate-y-0.5"
+                  style={{
+                    display:       "inline-flex",
+                    alignItems:    "center",
+                    gap:           "8px",
+                    padding:       "6px 16px",
+                    borderRadius:  "999px",
+                    background:    "box-blur(0px, 2px, 4px, rgba(1, 1, 1, 0.5))",
+                    border:        "2px solid #F97316",
+                    color:         "#EA580C",
+                    fontSize:      "14px",
+                    fontWeight:    700,
+                    letterSpacing: "0.04em",
+                  }}
                 >
                   ⭐ Google Reviews
                 </a>
@@ -270,7 +290,7 @@ export default function HomeClient({
                     onClick={() => handleAdd(food)}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.92 }}
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-[#dc7830] text-white shadow-md"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F97316] text-white shadow-md"
                     aria-label={`Add ${food.name} to cart`}
                   >
                     <ShoppingCart size={20} />

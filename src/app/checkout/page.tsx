@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -11,7 +12,7 @@ import {
 import { useCartStore } from "../../store/cartStore";
 import type { CartStore } from "../../store/cartStore";
 import toast from "react-hot-toast";
-
+import { pageStyle, glass } from "../../lib/theme";
 
 interface FormData {
   name:          string;
@@ -32,56 +33,121 @@ interface FormErrors {
   area?:     string;
 }
 
-
 interface DeliveryArea {
   id:             number;
   name:           string;
   deliveryCharge: number;
 }
 
-
 const PAYMENT_METHODS = [
-  {
-    id:    "cash",
-    label: "Cash on Delivery",
-    desc:  "Pay when your order arrives",
-    icon:  Truck,
-    color: "#16A34A",
-  },
-  {
-    id:    "bank",
-    label: "Bank Transfer",
-    desc:  "Transfer to our bank account",
-    icon:  Building2,
-    color: "#2563EB",
-  },
-  {
-    id:    "jazzcash",
-    label: "JazzCash",
-    desc:  "Pay via JazzCash mobile wallet",
-    icon:  Smartphone,
-    color: "#DC2626",
-  },
-  {
-    id:    "easypaisa",
-    label: "EasyPaisa",
-    desc:  "Pay via EasyPaisa mobile wallet",
-    icon:  Smartphone,
-    color: "#059669",
-  },
+  { id: "cash",      label: "Cash on Delivery", desc: "Pay when your order arrives",    icon: Truck,      color: "#16A34A" },
+  { id: "bank",      label: "Bank Transfer",    desc: "Transfer to our bank account",   icon: Building2,  color: "#2563EB" },
+  { id: "jazzcash",  label: "JazzCash",         desc: "Pay via JazzCash mobile wallet", icon: Smartphone, color: "#DC2626" },
+  { id: "easypaisa", label: "EasyPaisa",        desc: "Pay via EasyPaisa mobile wallet", icon: Smartphone, color: "#059669" },
 ] as const;
+
+// ── Small reusable pieces (kept OUTSIDE the main component) ──
+
+function Card({
+  title,
+  icon,
+  children,
+}: {
+  title:    string;
+  icon:     ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <div style={{ ...glass, padding: "26px" }}>
+      <div
+        style={{
+          display:      "flex",
+          alignItems:   "center",
+          gap:          "10px",
+          marginBottom: "20px",
+        }}
+      >
+        {icon}
+        <h2 style={{ fontSize: "20px", fontWeight: 500, color: "#171717" }}>
+          {title}
+        </h2>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function Field({
+  label,
+  required,
+  optional,
+  error,
+  full,
+  children,
+}: {
+  label:     string;
+  required?: boolean;
+  optional?: boolean;
+  error?:    string;
+  full?:     boolean;
+  children:  ReactNode;
+}) {
+  return (
+    <div style={{ gridColumn: full ? "1 / -1" : undefined }}>
+      <label
+        style={{
+          display:       "block",
+          fontSize:      "11px",
+          fontWeight:    600,
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          color:         "#6c5a49",
+          marginBottom:  "7px",
+        }}
+      >
+        {label}
+        {required && <span style={{ color: "#dc2626" }}> *</span>}
+        {optional && (
+          <span
+            style={{
+              marginLeft:    "8px",
+              fontWeight:    400,
+              textTransform: "none",
+              letterSpacing: 0,
+              color:         "#9a9189",
+            }}
+          >
+            (optional)
+          </span>
+        )}
+      </label>
+      {children}
+      {error && (
+        <p style={{ color: "#dc2626", fontSize: "12px", marginTop: "5px" }}>
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+const gridTwo: CSSProperties = {
+  display:             "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+  gap:                 "16px",
+};
 
 export default function CheckoutPage() {
   const router     = useRouter();
   const items      = useCartStore((s: CartStore) => s.items);
   const totalPrice = useCartStore((s: CartStore) => s.totalPrice());
   const clearCart  = useCartStore((s: CartStore) => s.clearCart);
-  const [deliveryAreas,   setDeliveryAreas]   = useState<DeliveryArea[]>([]);
-  const [deliveryCharge,  setDeliveryCharge]  = useState<number>(0);
 
-  // ── No delivery charge or tax ──
+  const [deliveryAreas,  setDeliveryAreas]  = useState<DeliveryArea[]>([]);
+  const [deliveryCharge, setDeliveryCharge] = useState<number>(0);
+
   const GRAND_TOTAL = totalPrice + deliveryCharge;
- 
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name:          "",
@@ -95,37 +161,64 @@ export default function CheckoutPage() {
   });
   const [errors, setErrors] = useState<FormErrors>({});
 
-  const [screenshotUrl,     setScreenshotUrl]     = useState<string>("");
+  const [screenshotUrl,       setScreenshotUrl]       = useState<string>("");
   const [uploadingScreenshot, setUploadingScreenshot] = useState(false);
   const [screenshotPreview,   setScreenshotPreview]   = useState<string>("");
-  
+
   useEffect(() => {
     fetch("/api/delivery-areas")
       .then((r) => r.json())
       .then((data) => setDeliveryAreas(data.areas ?? []));
   }, []);
 
-  // Empty cart redirect
+  // ── Empty cart ──
   if (items.length === 0) {
     return (
-      <div
-        className="min-h-screen flex flex-col items-center justify-center"
-        style={{ background: "#f9fafb", paddingTop: "80px" }}
+      <main
+        style={{
+          ...pageStyle,
+          display:        "flex",
+          alignItems:     "center",
+          justifyContent: "center",
+        }}
       >
-        <div className="text-center">
-          <div className="text-7xl mb-4">🛒</div>
-          <h2 className="text-xl font-bold mb-4" style={{ color: "#1F2937" }}>
+        <div
+          style={{
+            ...glass,
+            padding:   "48px 32px",
+            textAlign: "center",
+            maxWidth:  "420px",
+            width:     "100%",
+          }}
+        >
+          <div style={{ fontSize: "64px", marginBottom: "16px" }}>🛒</div>
+          <h2
+            style={{
+              fontSize:     "24px",
+              fontWeight:   500,
+              color:        "#171717",
+              marginBottom: "24px",
+            }}
+          >
             Your cart is empty!
           </h2>
           <Link
             href="/menu"
-            className="px-6 py-3 rounded-xl font-bold text-white inline-block"
-            style={{ background: "#F97316" }}
+            style={{
+              display:      "inline-block",
+              padding:      "13px 28px",
+              borderRadius: "999px",
+              background:   "linear-gradient(135deg, #F97316, #EA580C)",
+              color:        "white",
+              fontSize:     "13px",
+              fontWeight:   600,
+              boxShadow:    "0 8px 22px rgba(249,115,22,0.4)",
+            }}
           >
             Go to Menu
           </Link>
         </div>
-      </div>
+      </main>
     );
   }
 
@@ -139,11 +232,12 @@ export default function CheckoutPage() {
     }
   };
 
-    const handleScreenshotUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleScreenshotUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Show local preview immediately
     const reader = new FileReader();
     reader.onload = () => setScreenshotPreview(reader.result as string);
     reader.readAsDataURL(file);
@@ -204,7 +298,7 @@ export default function CheckoutPage() {
       const response = await fetch("/api/orders", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
+        body: JSON.stringify({
           customer: {
             name:    formData.name,
             phone:   formData.phone,
@@ -225,10 +319,9 @@ export default function CheckoutPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error ?? "Order failed");
 
-           clearCart();
+      clearCart();
       toast.success("Order placed successfully! 🎉");
       router.push(`/order-summary/${data.orderNumber}`);
-
     } catch (error) {
       console.error("Order error:", error);
       toast.error("Something went wrong. Please try again.");
@@ -237,142 +330,127 @@ export default function CheckoutPage() {
     }
   };
 
-  const inputStyle = {
+  // ── Input look (frosted, rounded) ──
+  const inputStyle: CSSProperties = {
     width:        "100%",
     padding:      "12px 16px",
-    borderRadius: "12px",
-    border:       "1.5px solid rgba(0,0,0,0.1)",
-    background:   "white",
-    color:        "#1F2937",
+    borderRadius: "14px",
+    border:       "1px solid rgba(137,115,95,0.3)",
+    background:   "rgba(255,255,255,0.75)",
+    color:        "#171717",
     fontSize:     "14px",
     outline:      "none",
   };
 
-  const errorStyle = {
-    color:     "#EF4444",
-    fontSize:  "12px",
-    marginTop: "4px",
-  };
-
-  const labelStyle = {
-    display:       "block",
-    fontSize:      "12px",
-    fontWeight:    "600" as const,
-    color:         "#374151",
-    marginBottom:  "6px",
-    letterSpacing: "0.05em",
-    textTransform: "uppercase" as const,
-  };
+  const errorBorder = (hasError?: string): CSSProperties =>
+    hasError ? { borderColor: "#dc2626" } : {};
 
   return (
-     <div
-      className="min-h-screen"
-      style={{ background: "#f9fafb", paddingTop: "80px" }}
-    >
-      <div
-        style={{
-          maxWidth:  "1100px",
-          margin:    "0 auto",
-          padding:   "40px 32px",
-        }}
-      >
+    <main style={pageStyle}>
+      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
 
-        {/* Header */}
+        {/* ── Heading ── */}
         <motion.div
-          className="mb-8"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
+          style={{ marginBottom: "32px" }}
         >
           <Link
             href="/cart"
-            className="inline-flex items-center gap-2 text-sm font-medium mb-4"
-            style={{ color: "#F97316" }}
+            style={{
+              display:        "inline-flex",
+              alignItems:     "center",
+              gap:            "8px",
+              padding:        "10px 20px",
+              borderRadius:   "999px",
+              background:     "rgba(255,255,255,0.6)",
+              backdropFilter: "blur(10px)",
+              fontSize:       "12px",
+              fontWeight:     600,
+              color:          "#6c5a49",
+              marginBottom:   "22px",
+            }}
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft size={14} />
             Back to Cart
           </Link>
-          <h1 className="text-3xl font-bold" style={{ color: "#1F2937" }}>
+          <p
+            style={{
+              fontSize:      "11px",
+              fontWeight:    500,
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              color:         "#89735f",
+              marginBottom:  "10px",
+            }}
+          >
+            Almost there
+          </p>
+          <h1
+            style={{
+              fontSize:      "40px",
+              fontWeight:    500,
+              letterSpacing: "-1px",
+              color:         "#171717",
+            }}
+          >
             Checkout
           </h1>
-          <p className="text-sm mt-1" style={{ color: "#6B7280" }}>
+          <p style={{ fontSize: "13px", color: "#4a4640", marginTop: "6px" }}>
             Fill in your details to complete the order
           </p>
         </motion.div>
 
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div
+            style={{
+              display:    "flex",
+              flexWrap:   "wrap",
+              gap:        "24px",
+              alignItems: "flex-start",
+            }}
+          >
 
-            {/* ── LEFT: Form ── */}
-            <div className="lg:col-span-2 flex flex-col gap-6">
+            {/* ════════ LEFT: form cards ════════ */}
+            <div
+              style={{
+                flex:          "2 1 480px",
+                minWidth:      0,
+                display:       "flex",
+                flexDirection: "column",
+                gap:           "24px",
+              }}
+            >
 
-              {/* Personal Details */}
-              <motion.div
-                className="p-6 rounded-2xl"
-                style={{
-                  padding: "20px",
-                  background: "white",
-                  border: "1px solid rgba(0,0,0,0.07)",
-                  boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
-                }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
+              {/* Personal details */}
+              <Card
+                title="Personal Details"
+                icon={<User size={19} style={{ color: "#F97316" }} />}
               >
-                <div className="flex items-center gap-2 mb-5">
-                  <User size={18} style={{ color: "#F97316" }} />
-                  <h2 className="font-bold text-lg" style={{ color: "#1F2937" }}>
-                    Personal Details
-                  </h2>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Name */}
-                  <div>
-                    <label style={labelStyle}>
-                      Full Name <span style={{ color: "#EF4444" }}>*</span>
-                    </label>
+                <div style={gridTwo}>
+                  <Field label="Full Name" required error={errors.name}>
                     <input
                       type="text"
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="Ahmed Khan"
-                      style={{
-                        ...inputStyle,
-                        borderColor: errors.name ? "#EF4444" : "rgba(0,0,0,0.1)",
-                      }}
+                      style={{ ...inputStyle, ...errorBorder(errors.name) }}
                     />
-                    {errors.name && <p style={errorStyle}>{errors.name}</p>}
-                  </div>
+                  </Field>
 
-                  {/* Phone */}
-                  <div>
-                    <label style={labelStyle}>
-                      Phone Number <span style={{ color: "#EF4444" }}>*</span>
-                    </label>
+                  <Field label="Phone Number" required error={errors.phone}>
                     <input
                       type="tel"
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
                       placeholder="0300-1234567"
-                      style={{
-                        ...inputStyle,
-                        borderColor: errors.phone ? "#EF4444" : "rgba(0,0,0,0.1)",
-                      }}
+                      style={{ ...inputStyle, ...errorBorder(errors.phone) }}
                     />
-                    {errors.phone && <p style={errorStyle}>{errors.phone}</p>}
-                  </div>
+                  </Field>
 
-                  {/* Email */}
-                  <div className="md:col-span-2">
-                    <label style={labelStyle}>
-                      Email Address
-                      <span className="ml-2 font-normal normal-case"
-                            style={{ color: "#9CA3AF" }}>
-                        (optional)
-                      </span>
-                    </label>
+                  <Field label="Email Address" optional full>
                     <input
                       type="email"
                       name="email"
@@ -381,143 +459,112 @@ export default function CheckoutPage() {
                       placeholder="ahmed@email.com"
                       style={inputStyle}
                     />
-                  </div>
+                  </Field>
                 </div>
-              </motion.div>
+              </Card>
 
-              {/* Delivery Address */}
-              <motion.div
-                className="p-6 rounded-2xl"
-                style={{
-                  padding: "20px",
-                  background: "white",
-                  border: "1px solid rgba(0,0,0,0.07)",
-                  boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
-                }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
+              {/* Delivery address */}
+              <Card
+                title="Delivery Address"
+                icon={<MapPin size={19} style={{ color: "#F97316" }} />}
               >
-                <div className="flex items-center gap-2 mb-5">
-                  <MapPin size={18} style={{ color: "#F97316" }} />
-                  <h2 className="font-bold text-lg" style={{ color: "#1F2937" }}>
-                    Delivery Address
-                  </h2>
-                </div>
-
-                {/* Fixed Karachi badge */}
+                {/* Karachi badge */}
                 <div
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl mb-4"
                   style={{
-                    padding: "12px 16px",
-                    background: "rgba(249,115,22,0.06)",
-                    border: "1.5px solid rgba(249,115,22,0.2)",
+                    display:      "flex",
+                    alignItems:   "center",
+                    gap:          "12px",
+                    padding:      "12px 16px",
+                    borderRadius: "16px",
+                    background:   "rgba(198,129,41,0.1)",
+                    border:       "1px solid rgba(198,129,41,0.25)",
+                    marginBottom: "18px",
                   }}
                 >
                   <MapPin size={16} style={{ color: "#F97316" }} />
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider"
-                       style={{ color: "#9CA3AF" }}>
+                  <div style={{ flex: 1 }}>
+                    <p
+                      style={{
+                        fontSize:      "10px",
+                        fontWeight:    600,
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                        color:         "#9a9189",
+                      }}
+                    >
                       Delivering in
                     </p>
-                    <p className="font-bold" style={{ color: "#F97316" }}>
+                    <p style={{ fontSize: "14px", fontWeight: 700, color: "#F97316" }}>
                       Karachi only
                     </p>
                   </div>
-                  <div
-                    className="min-w-14 px-3 py-3 rounded-full text-xs font-bold"
-                    style={{padding: "2px 6px", background: "#F97316", color: "white" }}
+                  <span
+                    style={{
+                      padding:      "3px 10px",
+                      borderRadius: "999px",
+                      background:   "#F97316",
+                      color:        "white",
+                      fontSize:     "11px",
+                      fontWeight:   700,
+                    }}
                   >
-                    ✓  Fixed
-                  </div>
+                    ✓ Fixed
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* House No */}
-                  <div>
-                    <label style={labelStyle}>
-                      House / Flat No. <span style={{ color: "#EF4444" }}>*</span>
-                    </label>
+                <div style={gridTwo}>
+                  <Field label="House / Flat No." required error={errors.houseNo}>
                     <input
                       type="text"
                       name="houseNo"
                       value={formData.houseNo}
                       onChange={handleChange}
                       placeholder="e.g. A-12 or Flat 3B"
-                      style={{
-                        ...inputStyle,
-                        borderColor: errors.houseNo ? "#EF4444" : "rgba(0,0,0,0.1)",
-                      }}
+                      style={{ ...inputStyle, ...errorBorder(errors.houseNo) }}
                     />
-                    {errors.houseNo && <p style={errorStyle}>{errors.houseNo}</p>}
-                  </div>
+                  </Field>
 
-                  {/* Street No */}
-                  <div>
-                    <label style={labelStyle}>
-                      Street / Gali No. <span style={{ color: "#EF4444" }}>*</span>
-                    </label>
+                  <Field label="Street / Gali No." required error={errors.streetNo}>
                     <input
                       type="text"
                       name="streetNo"
                       value={formData.streetNo}
                       onChange={handleChange}
                       placeholder="e.g. Street 5 or Gali 3"
+                      style={{ ...inputStyle, ...errorBorder(errors.streetNo) }}
+                    />
+                  </Field>
+
+                  <Field label="Area" required error={errors.area} full>
+                    <select
+                      name="area"
+                      value={formData.area}
+                      onChange={(e) => {
+                        const selected = deliveryAreas.find(
+                          (a) => a.name === e.target.value
+                        );
+                        setDeliveryCharge(selected?.deliveryCharge ?? 0);
+                        handleChange(e);
+                      }}
                       style={{
                         ...inputStyle,
-                        borderColor: errors.streetNo ? "#EF4444" : "rgba(0,0,0,0.1)",
+                        ...errorBorder(errors.area),
+                        cursor: "pointer",
+                        color:  formData.area ? "#171717" : "#9a9189",
                       }}
-                    />
-                    {errors.streetNo && <p style={errorStyle}>{errors.streetNo}</p>}
-                  </div>
+                    >
+                      <option value="" disabled>
+                        Select area
+                      </option>
+                      {deliveryAreas.map((area) => (
+                        <option key={area.id} value={area.name}>
+                          {area.name} — Rs.{area.deliveryCharge} delivery
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
 
-                  
-                  {/* Area */}
-                  <div className="md:col-span-2">
-                    <label style={labelStyle}>
-                      Area <span style={{ color: "#EF4444" }}>*</span>
-                    </label>
-                    <select
-                       name="area"
-                       value={formData.area}
-                       onChange={(e) => {
-                       const selected = deliveryAreas.find(
-                        (a) => a.name === e.target.value
-                      );
-                      setDeliveryCharge(selected?.deliveryCharge ?? 0);
-                      handleChange(e);
-                   }}
-                     style={{
-                     ...inputStyle,
-                      cursor: "pointer",
-                      color: formData.area ? "#1F2937" : "#9CA3AF",
-                    }}
-                   >
-                     {/* Placeholder */}
-                   <option value="" disabled>
-                      Select area
-                  </option>
-
-                  {deliveryAreas.map((area) => (
-                  <option key={area.id} value={area.name}>
-                  {area.name} — Rs.{area.deliveryCharge} delivery
-                  </option>
-                     ))}
-
-                  </select>
-                    {errors.area && <p style={errorStyle}>{errors.area}</p>}
-                    
-                  </div>
-
-                  {/* Instructions */}
-                  <div className="md:col-span-2">
-                    <label style={labelStyle}>
-                      Delivery Instructions
-                      <span className="ml-2 font-normal normal-case"
-                            style={{ color: "#9CA3AF" }}>
-                        (optional)
-                      </span>
-                    </label>
+                  <Field label="Delivery Instructions" optional full>
                     <textarea
                       name="instructions"
                       value={formData.instructions}
@@ -526,36 +573,27 @@ export default function CheckoutPage() {
                       rows={3}
                       style={{ ...inputStyle, resize: "none" }}
                     />
-                  </div>
+                  </Field>
                 </div>
-              </motion.div>
+              </Card>
 
-              {/* Payment Method */}
-              <motion.div
-                className="p-6 rounded-2xl"
-                style={{
-                  padding: "20px",
-                  background: "white",
-                  border: "1px solid rgba(0,0,0,0.07)",
-                  boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
-                }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+              {/* Payment method */}
+              <Card
+                title="Payment Method"
+                icon={<CreditCard size={19} style={{ color: "#F97316" }} />}
               >
-                <div className="flex items-center gap-2 mb-5">
-                  <CreditCard size={18} style={{ color: "#F97316" }} />
-                  <h2 className="font-bold text-lg" style={{ color: "#1F2937" }}>
-                    Payment Method
-                  </h2>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div
+                  style={{
+                    display:             "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
+                    gap:                 "12px",
+                  }}
+                >
                   {PAYMENT_METHODS.map((method) => {
                     const Icon       = method.icon;
                     const isSelected = formData.paymentMethod === method.id;
                     return (
-                      <motion.button
+                      <button
                         key={method.id}
                         type="button"
                         onClick={() =>
@@ -564,133 +602,217 @@ export default function CheckoutPage() {
                             paymentMethod: method.id as FormData["paymentMethod"],
                           }))
                         }
-                        className="flex items-center gap-3 p-4 rounded-xl border-2 text-left"
                         style={{
-                          borderColor: isSelected ? "#F97316" : "rgba(0,0,0,0.08)",
-                          background:  isSelected ? "rgba(249,115,22,0.05)" : "white",
+                          display:      "flex",
+                          alignItems:   "center",
+                          gap:          "12px",
+                          padding:      "14px",
+                          borderRadius: "20px",
+                          textAlign:    "left",
+                          cursor:       "pointer",
+                          background:   isSelected
+                            ? "rgba(255,255,255,0.95)"
+                            : "rgba(255,255,255,0.45)",
+                          border: isSelected
+                            ? "1.5px solid #F97316"
+                            : "1.5px solid transparent",
+                          boxShadow: isSelected
+                            ? "0 8px 20px rgba(249,115,22,0.18)"
+                            : "none",
                         }}
-                        whileHover={{ scale: 1.01 }}
-                        whileTap={{ scale: 0.99 }}
                       >
-                        <div
-                          className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
-                          style={{ background: `${method.color}15` }}
+                        <span
+                          style={{
+                            width:          "42px",
+                            height:         "42px",
+                            borderRadius:   "12px",
+                            display:        "flex",
+                            alignItems:     "center",
+                            justifyContent: "center",
+                            flexShrink:     0,
+                            background:     `${method.color}18`,
+                          }}
                         >
-                          <Icon size={18} style={{ color: method.color }} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-sm"
-                             style={{ color: isSelected ? "#F97316" : "#1F2937" }}>
+                          <Icon size={19} style={{ color: method.color }} />
+                        </span>
+                        <span style={{ flex: 1, minWidth: 0 }}>
+                          <span
+                            style={{
+                              display:    "block",
+                              fontSize:   "13px",
+                              fontWeight: 600,
+                              color:      isSelected ? "#F97316" : "#222",
+                            }}
+                          >
                             {method.label}
-                          </p>
-                          <p className="text-xs mt-0.5" style={{ color: "#9CA3AF" }}>
+                          </span>
+                          <span
+                            style={{
+                              display:   "block",
+                              marginTop: "2px",
+                              fontSize:  "11px",
+                              color:     "#9a9189",
+                            }}
+                          >
                             {method.desc}
-                          </p>
-                        </div>
+                          </span>
+                        </span>
                         {isSelected && (
-                          <CheckCircle size={18} style={{ color: "#F97316", flexShrink: 0 }} />
+                          <CheckCircle
+                            size={18}
+                            style={{ color: "#F97316", flexShrink: 0 }}
+                          />
                         )}
-                      </motion.button>
+                      </button>
                     );
                   })}
                 </div>
 
-                {/* Payment details */}
-                                               <AnimatePresence mode="wait">
+                {/* Account details + screenshot upload */}
+                <AnimatePresence mode="wait">
                   {formData.paymentMethod !== "cash" && (
                     <motion.div
                       key={formData.paymentMethod}
-                      className="mt-4 rounded-xl overflow-hidden text-sm"
-                      style={{
-                        padding: "4px 4px",
-                        background: "rgba(249,115,22,0.06)",
-                        border:     "1px solid rgba(249,115,22,0.15)",
-                      }}
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
-                      exit={{   opacity: 0, height: 0 }}
+                      exit={{ opacity: 0, height: 0 }}
+                      style={{
+                        marginTop:    "18px",
+                        borderRadius: "20px",
+                        overflow:     "hidden",
+                        background:   "rgba(249,115,22,0.1)",
+                        border:       "1px solid rgba(249,115,22,0.25)",
+                      }}
                     >
-                      {/* Payment details */}
-                      <div className="p-4" style={{ padding: "4px 4px",  color: "#92400E" }}>
+                      <div
+                        style={{
+                          padding:    "16px 18px",
+                          fontSize:   "13px",
+                          lineHeight: 1.7,
+                          color:      "#7a5320",
+                        }}
+                      >
                         {formData.paymentMethod === "bank" && (
                           <>
-                            <p className="font-bold mb-2">Bank Transfer Details:</p>
+                            <p style={{ fontWeight: 700, marginBottom: "4px" }}>
+                              Bank Transfer Details:
+                            </p>
                             <p>Bank: JS Bank</p>
-                            <p>Account: 228576 </p>
-                            <p>Title:Taha Saifuddin </p>
+                            <p>Account: 228576</p>
+                            <p>Title: Taha Saifuddin</p>
                           </>
                         )}
                         {formData.paymentMethod === "jazzcash" && (
                           <>
-                            <p className="font-bold mb-2">JazzCash Details:</p>
+                            <p style={{ fontWeight: 700, marginBottom: "4px" }}>
+                              JazzCash Details:
+                            </p>
                             <p>Number: 0333-2287497</p>
                             <p>Name: Taha Saifuddin</p>
                           </>
                         )}
                         {formData.paymentMethod === "easypaisa" && (
                           <>
-                            <p className="font-bold mb-2">EasyPaisa Details:</p>
+                            <p style={{ fontWeight: 700, marginBottom: "4px" }}>
+                              EasyPaisa Details:
+                            </p>
                             <p>Number: 0333-2287497</p>
                             <p>Name: Taha Saifuddin</p>
                           </>
                         )}
                       </div>
 
-                      {/* Screenshot Upload */}
                       <div
-                        className="p-4"
-                        style={{ padding: "4px 4px", borderTop: "1px solid rgba(249,115,22,0.15)" }}
+                        style={{
+                          padding:   "16px 18px",
+                          borderTop: "1px solid rgba(249,115,22,0.25)",
+                        }}
                       >
-                        <p className="font-bold text-sm mb-3" style={{ color: "#92400E" }}>
+                        <p
+                          style={{
+                            fontSize:     "13px",
+                            fontWeight:   700,
+                            color:        "#7a5320",
+                            marginBottom: "12px",
+                          }}
+                        >
                           📸 Upload Payment Screenshot
                         </p>
 
-                        {/* Upload box */}
                         {!screenshotPreview ? (
                           <label
-                            className="flex flex-col items-center justify-center gap-2 w-full py-6 rounded-xl cursor-pointer transition-all"
                             style={{
-                              border:     "2px dashed rgba(249,115,22,0.4)",
-                              background: "rgba(249,115,22,0.03)",
+                              display:        "flex",
+                              flexDirection:  "column",
+                              alignItems:     "center",
+                              justifyContent: "center",
+                              gap:            "6px",
+                              width:          "100%",
+                              padding:        "26px 12px",
+                              borderRadius:   "18px",
+                              border:         "2px dashed rgba(249,115,22,0.5)",
+                              background:     "rgba(255,255,255,0.45)",
+                              cursor:         "pointer",
                             }}
                           >
-                            <span className="text-3xl">📷</span>
-                            <p className="text-xs font-medium text-center"
-                               style={{ color: "#F97316" }}>
+                            <span style={{ fontSize: "30px" }}>📷</span>
+                            <span
+                              style={{
+                                fontSize:   "12px",
+                                fontWeight: 600,
+                                color:      "#F97316",
+                              }}
+                            >
                               {uploadingScreenshot
                                 ? "Uploading..."
                                 : "Tap to upload payment screenshot"}
-                            </p>
-                            <p className="text-xs" style={{ color: "#9CA3AF" }}>
+                            </span>
+                            <span style={{ fontSize: "11px", color: "#9a9189" }}>
                               JPG, PNG or screenshot
-                            </p>
+                            </span>
                             <input
                               type="file"
                               accept="image/*"
-                              className="hidden"
                               onChange={handleScreenshotUpload}
                               disabled={uploadingScreenshot}
+                              style={{ display: "none" }}
                             />
                           </label>
                         ) : (
-                          /* Preview */
-                          <div className="relative w-full rounded-xl overflow-hidden"
-                               style={{ border: "2px solid rgba(249,115,22,0.3)" }}>
+                          <div
+                            style={{
+                              position:     "relative",
+                              width:        "100%",
+                              borderRadius: "18px",
+                              overflow:     "hidden",
+                              border:       "2px solid rgba(249,115,22,0.4)",
+                              background:   "white",
+                            }}
+                          >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                               src={screenshotPreview}
                               alt="Payment screenshot"
-                              className="w-full object-contain"
-                              style={{ maxHeight: "200px", display: "block" }}
-                            />
-                            {/* Upload status */}
-                            <div
-                              className="absolute top-2 right-2 px-2 py-1 rounded-lg text-xs font-bold"
                               style={{
-                                background: screenshotUrl
-                                  ? "rgba(16,185,129,0.9)"
-                                  : "rgba(249,115,22,0.9)",
-                                color: "white",
+                                width:     "100%",
+                                maxHeight: "220px",
+                                objectFit: "contain",
+                                display:   "block",
+                              }}
+                            />
+                            <span
+                              style={{
+                                position:     "absolute",
+                                top:          "8px",
+                                right:        "8px",
+                                padding:      "4px 10px",
+                                borderRadius: "10px",
+                                fontSize:     "11px",
+                                fontWeight:   700,
+                                color:        "white",
+                                background:   screenshotUrl
+                                  ? "rgba(16,185,129,0.92)"
+                                  : "rgba(249,115,22,0.92)",
                               }}
                             >
                               {screenshotUrl
@@ -698,143 +820,242 @@ export default function CheckoutPage() {
                                 : uploadingScreenshot
                                   ? "⏳ Uploading..."
                                   : "❌ Failed"}
-                            </div>
-
-                            {/* Remove button */}
+                            </span>
                             <button
                               type="button"
                               onClick={() => {
                                 setScreenshotPreview("");
                                 setScreenshotUrl("");
                               }}
-                              className="absolute top-2 left-2 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
-                              style={{ background: "rgba(239,68,68,0.85)", color: "white" }}
+                              aria-label="Remove screenshot"
+                              style={{
+                                position:       "absolute",
+                                top:            "8px",
+                                left:           "8px",
+                                width:          "28px",
+                                height:         "28px",
+                                borderRadius:   "50%",
+                                border:         "none",
+                                background:     "rgba(220,38,38,0.9)",
+                                color:          "white",
+                                fontSize:       "12px",
+                                fontWeight:     700,
+                                cursor:         "pointer",
+                              }}
                             >
                               ✕
                             </button>
                           </div>
                         )}
 
-                        <p className="text-sm mt-2" style={{ color: "#059669" }}>
-                          Upload your payment screenshot so we can verify your order quickly.
+                        <p
+                          style={{
+                            marginTop: "10px",
+                            fontSize:  "12px",
+                            color:     "#2f7d4f",
+                          }}
+                        >
+                          Upload your payment screenshot so we can verify your
+                          order quickly.
                         </p>
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </motion.div>
+              </Card>
             </div>
 
-            {/* ── RIGHT: Order Summary ── */}
-            <motion.div
-              className="lg:col-span-1"
+            {/* ════════ RIGHT: order summary ════════ */}
+            <motion.aside
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.15 }}
+              style={{
+                ...glass,
+                flex:     "1 1 320px",
+                minWidth: 0,
+                padding:  "28px",
+                position: "sticky",
+                top:      "110px",
+              }}
             >
-              <div
-                className="rounded-2xl p-6 sticky top-24"
+              <h2
                 style={{
-                  padding: "24px",
-                  background: "white",
-                  border: "1px solid rgba(0,0,0,0.07)",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
+                  fontSize:     "20px",
+                  fontWeight:   500,
+                  color:        "#171717",
+                  marginBottom: "18px",
                 }}
               >
-                <h2 className="font-bold text-lg mb-4" style={{ color: "#1F2937" }}>
-                  Order Summary
-                </h2>
+                Order Summary
+              </h2>
 
-                {/* Items */}
-                <div className="flex flex-col gap-3 mb-4">
-                  {items.map((item) => (
-                    <div key={item.id} className="flex justify-between text-sm">
-                      <span style={{ color: "#6B7280" }}>
-                        {item.name}
-                        <span className="ml-1 text-xs">x{item.quantity}</span>
+              {/* Items */}
+              <div
+                style={{
+                  display:       "flex",
+                  flexDirection: "column",
+                  gap:           "10px",
+                  marginBottom:  "16px",
+                }}
+              >
+                {items.map((item) => (
+                  <div
+                    key={item.id}
+                    style={{
+                      display:        "flex",
+                      justifyContent: "space-between",
+                      gap:            "12px",
+                      fontSize:       "13px",
+                    }}
+                  >
+                    <span style={{ color: "#4a4640" }}>
+                      {item.name}
+                      <span
+                        style={{
+                          marginLeft: "6px",
+                          fontSize:   "11px",
+                          color:      "#9a9189",
+                        }}
+                      >
+                        ×{item.quantity}
                       </span>
-                      <span className="font-medium" style={{ color: "#1F2937" }}>
-                        Rs.{item.price * item.quantity}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="h-px w-full my-3"
-                     style={{ background: "rgba(0,0,0,0.07)" }} />
-
-                {/* Total */}
-                <div className="flex flex-col gap-2 mb-5">
-                  <div className="flex justify-between text-sm">
-                    <span style={{ color: "#6B7280" }}>Subtotal</span>
-                    <span style={{ color: "#1F2937" }}>Rs.{totalPrice}</span>
-                  </div>
-
-                 
-                  {/* Delivery charge */}
-                  <div className="flex justify-between text-sm">
-                    <span style={{ color: "#6B7280" }}>
-                      Delivery
-                      {formData.area && (
-                        <span className="ml-1 text-xs">({formData.area})</span>
-                      )}
                     </span>
-                    <span style={{ color: "#1F2937" }}>
-                      {deliveryCharge > 0
-                        ? `Rs.${deliveryCharge}`
-                        : <span style={{ color: "#9CA3AF" }}>Select area</span>
-                      }
+                    <span style={{ fontWeight: 600, color: "#222", whiteSpace: "nowrap" }}>
+                      Rs.{item.price * item.quantity}
                     </span>
                   </div>
-
-                  <div className="h-px w-full my-1"
-                       style={{ background: "rgba(0,0,0,0.07)" }} />
-
-                  <div className="flex justify-between font-bold">
-                    <span style={{ color: "#1F2937" }}>Total</span>
-                    <span style={{ color: "#F97316" }}>Rs.{GRAND_TOTAL}</span>
-                  </div>
-                </div>
-
-                {/* Place Order */}
-                <motion.button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2"
-                  style={{
-                    background: isSubmitting
-                      ? "#9CA3AF"
-                      : "linear-gradient(135deg, #F97316, #EA580C)",
-                    boxShadow: isSubmitting
-                      ? "none"
-                      : "0 4px 20px rgba(249,115,22,0.35)",
-                    cursor: isSubmitting ? "not-allowed" : "pointer",
-                  }}
-                  whileHover={!isSubmitting ? { scale: 1.02 } : {}}
-                  whileTap={!isSubmitting ? { scale: 0.98 } : {}}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <motion.div
-                        className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      />
-                      Placing Order...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle size={18} />
-                      Place Order
-                    </>
-                  )}
-                </motion.button>
-
+                ))}
               </div>
-            </motion.div>
+
+              <div
+                style={{
+                  height:       "1px",
+                  background:   "rgba(137,115,95,0.25)",
+                  marginBottom: "16px",
+                }}
+              />
+
+              {/* Subtotal + delivery */}
+              <div
+                style={{
+                  display:        "flex",
+                  justifyContent: "space-between",
+                  fontSize:       "14px",
+                  color:          "#4a4640",
+                  marginBottom:   "10px",
+                }}
+              >
+                <span>Subtotal</span>
+                <span style={{ color: "#222" }}>Rs.{totalPrice}</span>
+              </div>
+
+              <div
+                style={{
+                  display:        "flex",
+                  justifyContent: "space-between",
+                  fontSize:       "14px",
+                  color:          "#4a4640",
+                  marginBottom:   "16px",
+                }}
+              >
+                <span>
+                  Delivery
+                  {formData.area && (
+                    <span style={{ marginLeft: "6px", fontSize: "11px" }}>
+                      ({formData.area})
+                    </span>
+                  )}
+                </span>
+                <span style={{ color: "#222" }}>
+                  {deliveryCharge > 0 ? (
+                    `Rs.${deliveryCharge}`
+                  ) : (
+                    <span style={{ color: "#9a9189" }}>Select area</span>
+                  )}
+                </span>
+              </div>
+
+              <div
+                style={{
+                  height:       "1px",
+                  background:   "rgba(137,115,95,0.25)",
+                  marginBottom: "16px",
+                }}
+              />
+
+              <div
+                style={{
+                  display:        "flex",
+                  justifyContent: "space-between",
+                  alignItems:     "baseline",
+                  marginBottom:   "24px",
+                }}
+              >
+                <span style={{ fontSize: "16px", fontWeight: 600, color: "#171717" }}>
+                  Total
+                </span>
+                <span style={{ fontSize: "24px", fontWeight: 700, color: "#F97316" }}>
+                  Rs.{GRAND_TOTAL}
+                </span>
+              </div>
+
+              {/* Place order */}
+              <motion.button
+                type="submit"
+                disabled={isSubmitting}
+                whileHover={!isSubmitting ? { scale: 1.02 } : {}}
+                whileTap={!isSubmitting ? { scale: 0.98 } : {}}
+                style={{
+                  width:          "100%",
+                  padding:        "15px",
+                  borderRadius:   "999px",
+                  border:         "none",
+                  display:        "flex",
+                  alignItems:     "center",
+                  justifyContent: "center",
+                  gap:            "10px",
+                  fontSize:       "13px",
+                  fontWeight:     700,
+                  letterSpacing:  "0.1em",
+                  textTransform:  "uppercase",
+                  color:          "white",
+                  cursor:         isSubmitting ? "not-allowed" : "pointer",
+                  background:     isSubmitting
+                    ? "#b8b0a6"
+                    : "linear-gradient(135deg, #F97316, #EA580C)",
+                  boxShadow:      isSubmitting
+                    ? "none"
+                    : "0 8px 22px rgba(249,115,22,0.4)",
+                }}
+              >
+                {isSubmitting ? (
+                  <>
+                    <motion.span
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      style={{
+                        width:        "18px",
+                        height:       "18px",
+                        borderRadius: "50%",
+                        border:       "2px solid white",
+                        borderTopColor: "transparent",
+                        display:      "inline-block",
+                      }}
+                    />
+                    Placing Order...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle size={17} />
+                    Place Order
+                  </>
+                )}
+              </motion.button>
+            </motion.aside>
           </div>
         </form>
       </div>
-    </div>
+    </main>
   );
 }

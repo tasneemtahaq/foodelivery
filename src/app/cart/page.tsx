@@ -3,10 +3,12 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, ArrowRight } from "lucide-react";
+import {
+  Trash2, Plus, Minus, ShoppingBag, ArrowLeft, ArrowRight, Truck,
+} from "lucide-react";
 import { useCartStore } from "../../store/cartStore";
 import type { CartStore } from "../../store/cartStore";
-import Footer from "../components/Footer";
+import { pageStyle, glass } from "../../lib/theme";
 
 export default function CartPage() {
   const items       = useCartStore((s: CartStore) => s.items);
@@ -17,317 +19,464 @@ export default function CartPage() {
   const totalPrice  = useCartStore((s: CartStore) => s.totalPrice());
   const hasHydrated = useCartStore((s: CartStore) => s.hasHydrated);
 
- const GRAND_TOTAL = totalPrice;
-
-  // ── Empty Cart ──
+  // ── Loading (cart is being read from the browser) ──
   if (!hasHydrated) {
-  return (
-    <div
-      className="min-h-screen flex items-center justify-center"
-      style={{ background: "#f9fafb", paddingTop: "80px" }}
-    >
-      Loading...
-    </div>
-  );
-}
-
-// Empty Cart
-if (items.length === 0) {
     return (
-      <div
-        className="min-h-screen flex flex-col items-center justify-center px-4"
-        style={{ background: "#f9fafb", paddingTop: "80px" }}
+      <main
+        style={{
+          ...pageStyle,
+          display:        "flex",
+          alignItems:     "center",
+          justifyContent: "center",
+        }}
+      >
+        <p style={{ color: "#6c5a49", fontSize: "14px" }}>Loading your cart...</p>
+      </main>
+    );
+  }
+
+  // ── Empty cart ──
+  if (items.length === 0) {
+    return (
+      <main
+        style={{
+          ...pageStyle,
+          display:        "flex",
+          alignItems:     "center",
+          justifyContent: "center",
+        }}
       >
         <motion.div
-          className="text-center"
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
+          style={{
+            ...glass,
+            padding:   "48px 32px",
+            textAlign: "center",
+            maxWidth:  "420px",
+            width:     "100%",
+          }}
         >
-          <div className="text-8xl mb-6">🛒</div>
-          <h2 className="text-2xl font-bold mb-2" style={{ color: "#1F2937" }}>
+          <div style={{ fontSize: "64px", marginBottom: "16px" }}>🛒</div>
+          <h2
+            style={{
+              fontSize:     "24px",
+              fontWeight:   500,
+              color:        "#171717",
+              marginBottom: "8px",
+            }}
+          >
             Your cart is empty
           </h2>
-          <p className="mb-8 text-sm" style={{ color: "#6B7280" }}>
+          <p style={{ fontSize: "13px", color: "#6c5a49", marginBottom: "28px" }}>
             Add some delicious items from our menu!
           </p>
           <Link
             href="/menu"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white"
-            style={{ background: "#F97316" }}
+            style={{
+              display:      "inline-flex",
+              alignItems:   "center",
+              gap:          "8px",
+              padding:      "13px 28px",
+              borderRadius: "999px",
+              background:   "linear-gradient(135deg, #F97316, #EA580C)",
+              color:        "white",
+              fontSize:     "13px",
+              fontWeight:   600,
+              boxShadow:    "0 8px 22px rgba(249,115,22,0.4)",
+            }}
           >
-            <ArrowLeft size={18} />
+            <ArrowLeft size={16} />
             Browse Menu
           </Link>
         </motion.div>
-      </div>
+      </main>
     );
   }
 
   return (
-     <div
-      className="min-h-screen"
-      style={{ background: "#f9fafb", paddingTop: "80px" }}
-    >
-      <div
-        style={{
-          maxWidth:  "1100px",
-          margin:    "0 auto",
-          padding:   "40px 32px",
-        }}
-      >
+    <main style={pageStyle}>
+      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
 
-        {/* ── Header ── */}
+        {/* ── Heading ── */}
         <motion.div
-          className="mb-8 flex items-center justify-between flex-wrap gap-4"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
+          style={{
+            display:        "flex",
+            alignItems:     "flex-end",
+            justifyContent: "space-between",
+            flexWrap:       "wrap",
+            gap:            "16px",
+            marginBottom:   "32px",
+          }}
         >
           <div>
-            <h1 className="text-3xl font-bold" style={{ color: "#1F2937" }}>
-              Your <span style={{ color: "#F97316" }}>Cart</span>
+            <p
+              style={{
+                fontSize:      "11px",
+                fontWeight:    500,
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color:         "#89735f",
+                marginBottom:  "10px",
+              }}
+            >
+              Review your order
+            </p>
+            <h1
+              style={{
+                fontSize:      "40px",
+                fontWeight:    500,
+                letterSpacing: "-1px",
+                color:         "#171717",
+              }}
+            >
+              Your Cart
             </h1>
-            <p className="text-sm mt-1" style={{ color: "#6B7280" }}>
+            <p style={{ fontSize: "13px", color: "#4a4640", marginTop: "6px" }}>
               {items.length} item{items.length > 1 ? "s" : ""} in your cart
             </p>
           </div>
 
-          {/* Back to menu */}
           <Link
             href="/menu"
-            className="inline-flex items-center gap-2 text-sm font-medium"
-            style={{ color: "#F97316" }}
+            style={{
+              display:        "inline-flex",
+              alignItems:     "center",
+              gap:            "8px",
+              padding:        "10px 20px",
+              borderRadius:   "999px",
+              background:     "rgba(255,255,255,0.6)",
+              backdropFilter: "blur(10px)",
+              fontSize:       "12px",
+              fontWeight:     600,
+              color:          "#6c5a49",
+            }}
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft size={14} />
             Continue Shopping
           </Link>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+        {/* ── Two columns (stack on small screens) ── */}
+        <div
+          style={{
+            display:    "flex",
+            flexWrap:   "wrap",
+            gap:        "24px",
+            alignItems: "flex-start",
+          }}
+        >
 
-          {/* ── LEFT: Cart Items ── */}
-          <div className="lg:col-span-3 flex flex-col gap-4">
-
-            {/* Clear cart button */}
-            <div className="flex justify-end px-2">
+          {/* LEFT: items */}
+          <div
+            style={{
+              flex:          "2 1 460px",
+              minWidth:      0,
+              display:       "flex",
+              flexDirection: "column",
+              gap:           "14px",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
               <button
+                type="button"
                 onClick={clearCart}
-                className="text-xs font-medium px-4 py-2 rounded-lg border transition-all hover:bg-red-50"
                 style={{
-                  color: "#EF4444",
-                  borderColor: "rgba(239,68,68,0.3)",
+                  padding:      "8px 18px",
+                  borderRadius: "999px",
+                  background:   "rgba(255,255,255,0.6)",
+                  border:       "1px solid rgba(220,38,38,0.35)",
+                  fontSize:     "11px",
+                  fontWeight:   600,
+                  color:        "#dc2626",
+                  cursor:       "pointer",
                 }}
               >
                 Clear Cart
               </button>
             </div>
 
-            {/* Cart Items List */}
             <AnimatePresence>
               {items.map((item) => (
                 <motion.div
                   key={item.id}
                   layout
-                  className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-2xl"
-                  style={{
-                    background: "white",
-                    border: "1px solid rgba(0,0,0,0.07)",
-                    boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
-                  }}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{    opacity: 0, x:  20, height: 0 }}
-                  transition={{ duration: 0.3 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.25 }}
+                  style={{
+                    ...glass,
+                    borderRadius: "26px",
+                    padding:      "16px 20px",
+                    display:      "flex",
+                    alignItems:   "center",
+                    flexWrap:     "wrap",
+                    gap:          "16px",
+                  }}
                 >
-                  {/* Food Image */}
+                  {/* Image */}
                   <div
-                    className="relative w-full sm:w-20 h-44 sm:h-20 rounded-xl overflow-hidden shrink-0 flex items-center justify-center text-3xl"
-                    style={{ background: "#fff7ed" }}
+                    style={{
+                      position:       "relative",
+                      width:          "84px",
+                      height:         "84px",
+                      borderRadius:   "50%",
+                      overflow:       "hidden",
+                      flexShrink:     0,
+                      border:         "3px solid rgba(255,255,255,0.9)",
+                      boxShadow:      "0 8px 20px rgba(0,0,0,0.13)",
+                      background:     "#eee9df",
+                      display:        "flex",
+                      alignItems:     "center",
+                      justifyContent: "center",
+                      fontSize:       "30px",
+                    }}
                   >
                     {item.image ? (
                       <Image
                         src={item.image}
                         alt={item.name}
                         fill
+                        sizes="84px"
                         className="object-cover"
-                        sizes="80px"
                       />
                     ) : (
-                      <span>🍽️</span>
+                      "🍜"
                     )}
                   </div>
 
-                  {/* Food Info */}
-                  <div className="flex-1 min-w-0">
+                  {/* Name + price each */}
+                  <div style={{ flex: "1 1 140px", minWidth: 0 }}>
                     <h3
-                      className="font-bold text-base truncate"
-                      style={{ color: "#1F2937" }}
+                      style={{
+                        fontSize:   "16px",
+                        fontWeight: 600,
+                        color:      "#222",
+                      }}
                     >
                       {item.name}
                     </h3>
                     <p
-                      className="text-sm font-semibold mt-1"
-                      style={{ color: "#F97316" }}
+                      style={{
+                        marginTop:  "4px",
+                        fontSize:   "13px",
+                        fontWeight: 600,
+                        color:      "#c68129",
+                      }}
                     >
                       Rs.{item.price} each
                     </p>
                   </div>
 
-                  {/* Quantity Controls */}
-                  <div className="flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto">
-                    <motion.button
+                  {/* Quantity */}
+                  <div
+                    style={{
+                      display:      "flex",
+                      alignItems:   "center",
+                      gap:          "12px",
+                      height:       "42px",
+                      padding:      "0 12px",
+                      borderRadius: "999px",
+                      background:   "rgba(255,255,255,0.75)",
+                      border:       "1px solid rgba(137,115,95,0.3)",
+                    }}
+                  >
+                    <button
+                      type="button"
                       onClick={() => decreaseQty(item.id)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center border transition-all"
-                      style={{
-                        borderColor: "rgba(249,115,22,0.3)",
-                        color: "#F97316",
-                      }}
-                      whileTap={{ scale: 0.9 }}
+                      aria-label="Decrease quantity"
+                      style={{ background: "none", border: "none", cursor: "pointer", color: "#6c5a49" }}
                     >
-                      <Minus size={14} />
-                    </motion.button>
-
+                      <Minus size={15} />
+                    </button>
                     <span
-                      className="w-8 text-center font-bold text-sm"
-                      style={{ color: "#1F2937" }}
+                      style={{
+                        minWidth:   "18px",
+                        textAlign:  "center",
+                        fontSize:   "14px",
+                        fontWeight: 700,
+                        color:      "#222",
+                      }}
                     >
                       {item.quantity}
                     </span>
-
-                    <motion.button
+                    <button
+                      type="button"
                       onClick={() => increaseQty(item.id)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-white"
-                      style={{ background: "#F97316" }}
-                      whileTap={{ scale: 0.9 }}
+                      aria-label="Increase quantity"
+                      style={{ background: "none", border: "none", cursor: "pointer", color: "#c68129" }}
                     >
-                      <Plus size={14} />
-                    </motion.button>
+                      <Plus size={15} />
+                    </button>
                   </div>
 
-                  {/* Item Total */}
-                  <div
-                    className="w-full sm:w-auto text-left sm:text-right"
+                  {/* Line total */}
+                  <p
+                    style={{
+                      minWidth:   "80px",
+                      textAlign:  "right",
+                      fontSize:   "16px",
+                      fontWeight: 700,
+                      color:      "#222",
+                    }}
                   >
-                    <p className="font-bold" style={{ color: "#1F2937" }}>
-                      Rs.{item.price * item.quantity}
-                    </p>
-                  </div>
+                    Rs.{item.price * item.quantity}
+                  </p>
 
-                  {/* Remove Button */}
-                  <motion.button
+                  {/* Remove */}
+                  <button
+                    type="button"
                     onClick={() => removeItem(item.id)}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 self-end sm:self-auto transition-all hover:bg-red-50"
-                    style={{ color: "#EF4444" }}
-                    whileTap={{ scale: 0.9 }}
                     aria-label="Remove item"
+                    style={{
+                      width:          "38px",
+                      height:         "38px",
+                      borderRadius:   "50%",
+                      display:        "flex",
+                      alignItems:     "center",
+                      justifyContent: "center",
+                      background:     "rgba(220,38,38,0.08)",
+                      border:         "none",
+                      color:          "#dc2626",
+                      cursor:         "pointer",
+                    }}
                   >
                     <Trash2 size={16} />
-                  </motion.button>
+                  </button>
                 </motion.div>
               ))}
             </AnimatePresence>
           </div>
 
-          {/* ── RIGHT: Order Summary ── */}
-          <motion.div
-            className="lg:col-span-2 min-w-0"
+          {/* RIGHT: summary */}
+          <motion.aside
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.15 }}
+            style={{
+              ...glass,
+              flex:     "1 1 320px",
+              minWidth: 0,
+              padding:  "28px",
+              position: "sticky",
+              top:      "110px",
+            }}
           >
             <div
-              className="rounded-2xl sticky top-24"
               style={{
-                padding:   "28px",
-                border:    "1px solid rgba(0,0,0,0.08)",
-                boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
-                background: "white",
+                display:      "flex",
+                alignItems:   "center",
+                gap:          "10px",
+                marginBottom: "22px",
               }}
             >
-              {/* Summary Header */}
-              <div className="px-2 flex items-center gap-2 mb-6">
-                <ShoppingBag size={20} style={{ color: "#F97316" }}  />
-                <h2 className="font-bold text-lg" style={{ color: "#1F2937" }}>
-                  Order Summary
-                </h2>
-              </div>
-
-              
-              {/* Price Breakdown */}
-              <div className="flex flex-col gap-3 mb-6">
-
-                <div className="flex justify-between text-sm">
-                  <span style={{ color: "#6B7280" }}>
-                    Subtotal ({items.length} items)
-                  </span>
-                  <span className="font-medium" style={{ color: "#1F2937" }}>
-                    Rs.{totalPrice}
-                  </span>
-                </div>
-
-
-                {/* Delivery notice */}
-                <div
-                  className="flex items-start gap-2 px-3 py-2.5 rounded-xl text-xs"
-                  style={{
-                    background: "rgba(249,115,22,0.06)",
-                    border:     "1px solid rgba(249,115,22,0.15)",
-                    color:      "#92400E",
-                  }}
-                >
-                  
-                </div>
-
-                {/* Divider */}
-                <div
-                  className="h-px w-full my-1"
-                  style={{ background: "rgba(0,0,0,0.07)" }}
-                />
-
-                {/* Grand Total */}
-                <div className="flex justify-between">
-                  <span className="font-bold" style={{ color: "#1F2937" }}>
-                    Total
-                  </span>
-                  <span
-                    className="font-bold text-xl"
-                    style={{ color: "#F97316" }}
-                  >
-                    Rs.{GRAND_TOTAL}
-                  </span>
-                </div>
-              </div>
-
-
-              {/* Checkout Button */}
-              <Link href="/checkout">
-                <motion.div
-                  className="w-full py-3 md:py-4 rounded-xl font-bold text-white text-center flex items-center justify-center gap-2 cursor-pointer"
-                  style={{
-                    background: "linear-gradient(135deg, #F97316, #EA580C)",
-                    boxShadow: "0 4px 20px rgba(249,115,22,0.35)",
-                  }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Proceed to Checkout
-                  <ArrowRight size={18} />
-                </motion.div>
-              </Link>
-
-              {/* Continue Shopping */}
-              <Link
-                href="/menu"
-                className="block text-center text-sm mt-4 font-medium transition-colors hover:opacity-80"
-                style={{ color: "#6B7280" }}
-              >
-                ← Continue Shopping
-              </Link>
+              <ShoppingBag size={20} style={{ color: "#c68129" }} />
+              <h2 style={{ fontSize: "20px", fontWeight: 500, color: "#171717" }}>
+                Order Summary
+              </h2>
             </div>
-          </motion.div>
+
+            <div
+              style={{
+                display:        "flex",
+                justifyContent: "space-between",
+                fontSize:       "14px",
+                color:          "#4a4640",
+                marginBottom:   "16px",
+              }}
+            >
+              <span>Subtotal ({items.length} item{items.length > 1 ? "s" : ""})</span>
+              <span style={{ fontWeight: 600, color: "#222" }}>Rs.{totalPrice}</span>
+            </div>
+
+            {/* Delivery notice */}
+            <div
+              style={{
+                display:      "flex",
+                alignItems:   "flex-start",
+                gap:          "10px",
+                padding:      "12px 14px",
+                borderRadius: "16px",
+                background:   "rgba(249,115,22,0.1)",
+                border:       "1px solid rgba(249,115,22,0.25)",
+                fontSize:     "12px",
+                lineHeight:   1.5,
+                color:        "#7a5320",
+                marginBottom: "18px",
+              }}
+            >
+              <Truck size={16} style={{ flexShrink: 0, marginTop: "1px" }} />
+              <span>
+                Delivery charge is added at checkout, once you select your area.
+              </span>
+            </div>
+
+            <div
+              style={{
+                height:       "1px",
+                background:   "rgba(137,115,95,0.25)",
+                marginBottom: "18px",
+              }}
+            />
+
+            <div
+              style={{
+                display:        "flex",
+                justifyContent: "space-between",
+                alignItems:     "baseline",
+                marginBottom:   "24px",
+              }}
+            >
+              <span style={{ fontSize: "16px", fontWeight: 600, color: "#171717" }}>
+                Total
+              </span>
+              <span style={{ fontSize: "24px", fontWeight: 700, color: "#F97316" }}>
+                Rs.{totalPrice}
+              </span>
+            </div>
+
+            <Link
+              href="/checkout"
+              style={{
+                display:        "flex",
+                alignItems:     "center",
+                justifyContent: "center",
+                gap:            "10px",
+                width:          "100%",
+                padding:        "15px",
+                borderRadius:   "999px",
+                background:     "linear-gradient(135deg, #F97316, #EA580C)",
+                color:          "white",
+                fontSize:       "13px",
+                fontWeight:     700,
+                letterSpacing:  "0.1em",
+                textTransform:  "uppercase",
+                boxShadow:      "0 8px 22px rgba(249,115,22,0.4)",
+              }}
+            >
+              Proceed to Checkout
+              <ArrowRight size={16} />
+            </Link>
+
+            <Link
+              href="/menu"
+              style={{
+                display:   "block",
+                textAlign: "center",
+                marginTop: "16px",
+                fontSize:  "12px",
+                fontWeight: 500,
+                color:     "#6c5a49",
+              }}
+            >
+              ← Continue Shopping
+            </Link>
+          </motion.aside>
         </div>
       </div>
-
-      <Footer />
-    </div>
+    </main>
   );
 }

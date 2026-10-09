@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   Search, Heart, ShoppingCart, Clock, Tag, Minus, Plus, Check,
+  ChevronLeft, ChevronRight,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useCartStore } from "@/store/cartStore";
@@ -50,6 +51,31 @@ export default function MenuClient({ foods }: { foods: Food[] }) {
   const [showAll,        setShowAll]        = useState(false);
   const [quantity,       setQuantity]       = useState(1);
   const [favorites,      setFavorites]      = useState<number[]>([]);
+  
+  const listRef = useRef<HTMLDivElement>(null);
+
+  // Scrolls the item list left or right (used by the arrow buttons on phones)
+  const scrollList = (direction: "left" | "right") => {
+    listRef.current?.scrollBy({
+      left:     direction === "left" ? -240 : 240,
+      behavior: "smooth",
+    });
+  };
+
+  // Look of the round orange arrow buttons
+  const arrowButtonStyle = {
+    width:          "46px",
+    height:         "46px",
+    borderRadius:   "50%",
+    display:        "flex",
+    alignItems:     "center",
+    justifyContent: "center",
+    background:     "linear-gradient(135deg, #F97316, #EA580C)",
+    color:          "white",
+    border:         "none",
+    boxShadow:      "0 8px 20px rgba(249,115,22,0.4)",
+    cursor:         "pointer",
+  } as const;
 
   // Category names taken from your foods automatically
   const categoryNames = useMemo(
@@ -282,7 +308,10 @@ export default function MenuClient({ foods }: { foods: Food[] }) {
             </h2>
 
             {/* Item list (scrolls sideways on phones, up/down on desktop) */}
-            <div className="flex gap-3 overflow-x-auto pb-2 lg:max-h-[430px] lg:flex-col lg:overflow-x-visible lg:overflow-y-auto lg:pr-1">
+                        <div
+              ref={listRef}
+              className="flex gap-3 overflow-x-auto pb-2 lg:max-h-107.5 lg:flex-col lg:overflow-x-visible lg:overflow-y-auto lg:pr-1"
+            >
               {filtered.length === 0 && (
                 <p style={{ fontSize: "13px", color: "#6c5a49", padding: "12px 4px" }}>
                   No items found. Try a different search.
@@ -296,7 +325,7 @@ export default function MenuClient({ foods }: { foods: Food[] }) {
                     key={food.id}
                     type="button"
                     onClick={() => pickFood(food.id)}
-                    className="min-w-[220px] lg:min-w-0"
+                    className="min-w-55 lg:min-w-0"
                     style={{
                       display:      "flex",
                       alignItems:   "center",
@@ -307,14 +336,14 @@ export default function MenuClient({ foods }: { foods: Food[] }) {
                       cursor:       "pointer",
                       flexShrink:   0,
                       background:   isSelected
-                        ? "rgba(255,255,255,0.95)"
-                        : "rgba(255,255,255,0.4)",
+                        ? "white"
+                        : "rgba(255,255,255,0.85)",
                       border: isSelected
-                        ? "1.5px solid #c68129"
-                        : "1.5px solid transparent",
+                        ? "2px solid #c68129"
+                        : "1.5px solid rgba(137,115,95,0.35)",
                       boxShadow: isSelected
-                        ? "0 8px 20px rgba(198,129,41,0.18)"
-                        : "none",
+                        ? "0 10px 24px rgba(198,129,41,0.3)"
+                        : "0 4px 12px rgba(61,47,29,0.08)",
                     }}
                   >
                     <span
@@ -373,23 +402,60 @@ export default function MenuClient({ foods }: { foods: Food[] }) {
               })}
             </div>
 
+                        {/* Arrow buttons (phones only) */}
+            {filtered.length > 1 && (
+              <div
+                className="flex items-center justify-between lg:hidden"
+                style={{ marginTop: "14px" }}
+              >
+                <button
+                  type="button"
+                  onClick={() => scrollList("left")}
+                  aria-label="Scroll menu left"
+                  style={arrowButtonStyle}
+                >
+                  <ChevronLeft size={22} />
+                </button>
+
+                <span
+                  style={{
+                    fontSize:   "11px",
+                    fontWeight: 600,
+                    color:      "#6c5a49",
+                  }}
+                >
+                  Swipe or tap the arrows
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => scrollList("right")}
+                  aria-label="Scroll menu right"
+                  style={arrowButtonStyle}
+                >
+                  <ChevronRight size={22} />
+                </button>
+              </div>
+            )}
+
             {/* View all button */}
             {filtered.length > 6 && (
               <button
                 type="button"
                 onClick={() => setShowAll((s) => !s)}
-                style={{
+                 style={{
                   width:         "100%",
-                  marginTop:     "16px",
-                  padding:       "12px",
+                  marginTop:     "12px",
+                  padding:       "15px",
                   borderRadius:  "999px",
-                  border:        "1px solid rgba(137,115,95,0.4)",
-                  background:    "rgba(255,255,255,0.45)",
-                  fontSize:      "11px",
-                  fontWeight:    600,
+                  border:        "none",
+                  background:    "linear-gradient(135deg, #F97316, #EA580C)",
+                  fontSize:      "13px",
+                  fontWeight:    700,
                   letterSpacing: "0.12em",
                   textTransform: "uppercase",
-                  color:         "#6c5a49",
+                  color:         "white",
+                  boxShadow:     "0 10px 26px rgba(249,115,22,0.45)",
                   cursor:        "pointer",
                 }}
               >
@@ -679,14 +745,14 @@ export default function MenuClient({ foods }: { foods: Food[] }) {
                       height:        "46px",
                       padding:       "0 30px",
                       borderRadius:  "999px",
-                      background:    "linear-gradient(135deg, #d9962f, #c68129)",
+                      background:    "linear-gradient(135deg, #F97316, #EA580C)",
                       border:        "none",
                       fontSize:      "11px",
                       fontWeight:    700,
                       letterSpacing: "0.12em",
                       textTransform: "uppercase",
                       color:         "white",
-                      boxShadow:     "0 8px 22px rgba(198,129,41,0.4)",
+                      boxShadow:     "0 8px 22px rgba(249,115,22,0.4)",
                       cursor:        soldOut ? "not-allowed" : "pointer",
                       opacity:       soldOut ? 0.5 : 1,
                     }}
