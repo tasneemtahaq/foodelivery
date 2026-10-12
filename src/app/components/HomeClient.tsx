@@ -333,10 +333,10 @@ export default function HomeClient({
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.2em] text-[#8b7054]">
+              <p className="mb-2 text-[16px] font-medium uppercase tracking-[0.2em] text-[#8b7054]">
                 Crispy perfection
               </p>
-              <h2 className="text-[34px] font-medium leading-[1.03] tracking-[-1.1px] sm:text-[44px]">
+              <h2 className="text-[44px] font-medium leading-[1.03] tracking-[-1.1px] sm:text-[44px]">
                 Best Potatoes For
                 <br />
                 French Fries

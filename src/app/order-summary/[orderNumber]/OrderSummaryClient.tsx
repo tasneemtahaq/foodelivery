@@ -554,6 +554,29 @@ export default function OrderSummaryClient({ order }: { order: Order }) {
             <ShoppingBag size={17} />
             Order More
           </Link>
+
+          <Link
+            href={`/track?order=${order.orderNumber}`}
+                        style={{
+              flex:           "1 1 100%",
+              display:        "flex",
+              alignItems:     "center",
+              justifyContent: "center",
+              gap:            "10px",
+              padding:        "15px",
+              borderRadius:   "999px",
+              background:     "linear-gradient(135deg, #F97316, #EA580C)",
+              color:          "white",
+              fontSize:       "13px",
+              fontWeight:     700,
+              letterSpacing:  "0.1em",
+              textTransform:  "uppercase",
+              boxShadow:      "0 8px 22px rgba(249,115,22,0.4)",
+            }}
+          >
+            📍 Track this order
+          </Link>
+
         </motion.div>
       </div>
     </main>

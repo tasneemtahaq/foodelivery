@@ -156,7 +156,7 @@ export default function Footer() {
                 <br />
                 <strong style={{ color: "#fff4e6" }}>5:00 PM – 11:00 PM</strong>
                 <br />
-                <span style={{ color: "#fca5a5" }}>Sundays: 5:00 PM – 11:00 PM </span>
+                <span style={{ color: "#fca5a5" }}>Sundays: 5:00 PM – 11:30 PM </span>
               </span>
             </div>
           </div>

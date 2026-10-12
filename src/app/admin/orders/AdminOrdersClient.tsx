@@ -21,6 +21,22 @@ const PAYMENT_LABELS: Record<string, string> = {
   easypaisa: "EasyPaisa",
 };
 
+// Turns 0333-2287497 into 923332287497 (the format WhatsApp links need)
+const toWhatsAppNumber = (phone: string) => {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.startsWith("92")) return digits;
+  if (digits.startsWith("0"))  return "92" + digits.slice(1);
+  return "92" + digits;
+};
+
+const STATUS_MESSAGES: Record<string, string> = {
+  pending:          "we have received your order and will start preparing it soon.",
+  preparing:        "your order is being prepared fresh.",
+  out_for_delivery: "your order is out for delivery and will reach you soon.",
+  delivered:        "your order has been delivered. Enjoy your meal!",
+  cancelled:        "your order has been cancelled. Please call us if you have any questions.",
+};
+
 export default function AdminOrdersClient({
   orders: initialOrders,
 }: {
@@ -115,6 +131,22 @@ export default function AdminOrdersClient({
     const interval = setInterval(checkNewOrders, 30000);
     return () => clearInterval(interval);
   }, []);
+
+    // Builds the WhatsApp link with the message already written
+  const buildWhatsAppLink = (order: AdminOrder) => {
+    const items = order.orderItems
+      .map((i) => `• ${i.food.name} ×${i.quantity}`)
+      .join("\n");
+
+    const message =
+      `Hello ${order.customer.name}, this is Mama Soups.\n\n` +
+      `Order #${order.orderNumber}: ${STATUS_MESSAGES[order.status] ?? "thank you for your order."}\n\n` +
+      `${items}\n\n` +
+      `Total: Rs.${order.totalAmount}\n\n` +
+      `Track your order: https://www.mamasoups.net/track?order=${order.orderNumber}`;
+
+    return `https://wa.me/${toWhatsAppNumber(order.customer.phone)}?text=${encodeURIComponent(message)}`;
+  };
 
   // ── Toggle expand/collapse ──
   const toggleExpand = (id: number) => {
@@ -297,6 +329,20 @@ export default function AdminOrdersClient({
                       </motion.div>
                     )}
                   </div>
+                </div>
+
+                                {/* WhatsApp the customer */}
+                <div onClick={(e) => e.stopPropagation()}>
+                  <a
+                    href={buildWhatsAppLink(order)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Send a status update on WhatsApp"
+                    className="flex items-center gap-1.5 px-3 h-8 rounded-lg text-xs font-bold"
+                    style={{ background: "rgba(37,211,102,0.15)", color: "#25D366" }}
+                  >
+                    💬 WhatsApp
+                  </a>
                 </div>
 
                 {/* Delete button */}
