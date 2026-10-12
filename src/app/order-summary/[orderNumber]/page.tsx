@@ -31,20 +31,9 @@ export default async function OrderSummaryPage({ params }: PageProps) {
   if (!order) notFound();
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ background: "#f9fafb", paddingTop: "80px" }}
-    >
-      <div
-        style={{
-          maxWidth:  "1100px",
-          margin:    "0 auto",
-          padding:   "40px 32px",
-        }}
-      >
+    <>
       <OrderSummaryClient order={order} />
       <Footer />
-    </div>
-    </div>
+    </>
   );
 }

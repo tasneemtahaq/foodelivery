@@ -309,7 +309,8 @@ export default function HomeClient({
             style={{ marginInline: "auto" }}
           >
             <motion.div
-              className="relative mx-auto h-70 w-full max-w-152.5 sm:h-85 lg:h-97.5"
+              className="relative mx-auto w-full"
+              style={{ height: "clamp(320px, 55vw, 560px)", maxWidth: "900px" }}
               initial={{ opacity: 0, x: -28 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -320,7 +321,7 @@ export default function HomeClient({
                 src="/images/friessalsa.png"
                 alt="Best French Fries"
                 fill
-                sizes="2500px"
+                sizes="(max-width: 900px) 100vw, 900px"
                 className="object-contain object-center"
               />
             </motion.div>
