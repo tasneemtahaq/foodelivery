@@ -185,89 +185,114 @@ export async function POST(request: NextRequest) {
       console.error("Email failed:", emailError);
     }
 
-    // ── Send Discord Notification ──
+   
+       // ── Send Slack Notification ──
     try {
-      const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
-      if (!webhookUrl) {
-        console.log("⚠️ No Discord webhook URL in .env — skipping");
-      } else {
-        const discordMessage = {
-          embeds: [
-            {
-              title: "🛍️ New Order — Mama Soups",
-              color: 0xF97316,
-              fields: [
-                {
-                  name:   "📦 Order Number",
-                  value:  order.orderNumber,
-                  inline: true,
-                },
-                {
-                  name:   "💰 Total",
-                  value:  `Rs.${totalAmount}`,
-                  inline: true,
-                },
-                {
-                  name:   "💳 Payment",
-                  value:  paymentMethod,
-                  inline: true,
-                },
-                {
-                  name:   "👤 Customer",
-                  value:  savedCustomer.name,
-                  inline: true,
-                },
-                {
-                  name:   "📞 Phone",
-                  value:  savedCustomer.phone,
-                  inline: true,
-                },
-                {
-                  name:   "📍 Address",
-                  value:  `${savedCustomer.address}${savedCustomer.area ? `, ${savedCustomer.area}` : ""}, ${savedCustomer.city}`,
-                  inline: false,
-                },
-                {
-                  name:  "🛒 Items",
-                  value: order.orderItems
-                    .map((item) =>
-                      `• ${item.food.name} × ${item.quantity} — Rs.${item.price * item.quantity}`
-                    )
-                    .join("\n"),
-                  inline: false,
-                },
-                ...(instructions ? [{
-                  name:   "📝 Instructions",
-                  value:  instructions,
-                  inline: false,
-                }] : []),
-                ...(screenshotUrl ? [{
-                  name:   "📸 Payment Screenshot",
-                  value:  `[View Screenshot](${screenshotUrl})`,
-                  inline: false,
-                }] : []),
-              ],
-              image:  screenshotUrl ? { url: screenshotUrl } : undefined,
-              footer: { text: new Date().toLocaleString("en-PK") },
-            },
-          ],
-        };
+      const webhookUrl = process.env.SLACK_WEBHOOK_URL;
 
-        const discordRes = await fetch(webhookUrl, {
-          method:  "POST",
-          headers: { "Content-Type": "application/json" },
-          body:    JSON.stringify(discordMessage),
+      if (!webhookUrl) {
+        console.log("⚠️ No SLACK_WEBHOOK_URL in .env — skipping Slack");
+      } else {
+        // Slack treats < > & as special characters, so we make customer
+        // text safe (this also stops fake @channel pings)
+        const esc = (text: string) =>
+          String(text)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+
+        const address = `${savedCustomer.address}${
+          savedCustomer.area ? `, ${savedCustomer.area}` : ""
+        }, ${savedCustomer.city}`;
+
+        const itemsText = order.orderItems
+          .map(
+            (item) =>
+              `• ${esc(item.food.name)} × ${item.quantity} — Rs.${item.price * item.quantity}`
+          )
+          .join("\n");
+
+        // Only accept screenshots that really came from our Cloudinary
+        const safeScreenshot =
+          typeof screenshotUrl === "string" &&
+          screenshotUrl.startsWith("https://res.cloudinary.com/")
+            ? screenshotUrl
+            : null;
+
+        const blocks: Record<string, unknown>[] = [
+          {
+            type: "header",
+            text: { type: "plain_text", text: "🛍️ New Order — Mama Soups", emoji: true },
+          },
+          {
+            type: "section",
+            fields: [
+              { type: "mrkdwn", text: `*Order Number*\n${order.orderNumber}` },
+              { type: "mrkdwn", text: `*Total*\nRs.${totalAmount}` },
+              { type: "mrkdwn", text: `*Payment*\n${esc(paymentMethod)}` },
+              { type: "mrkdwn", text: `*Delivery charge*\nRs.${deliveryCharge}` },
+              { type: "mrkdwn", text: `*Customer*\n${esc(savedCustomer.name)}` },
+              { type: "mrkdwn", text: `*Phone*\n${esc(savedCustomer.phone)}` },
+            ],
+          },
+          {
+            type: "section",
+            text: { type: "mrkdwn", text: `*Address*\n${esc(address)}` },
+          },
+          {
+            type: "section",
+            text: { type: "mrkdwn", text: `*Items*\n${itemsText}` },
+          },
+        ];
+
+        if (instructions) {
+          blocks.push({
+            type: "section",
+            text: { type: "mrkdwn", text: `*Instructions*\n${esc(instructions)}` },
+          });
+        }
+
+        if (safeScreenshot) {
+          blocks.push({
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: `*Payment screenshot*\n<${safeScreenshot}|Open full size>`,
+            },
+          });
+          blocks.push({
+            type: "image",
+            image_url: safeScreenshot,
+            alt_text: "Payment screenshot",
+          });
+        }
+
+        blocks.push({
+          type: "context",
+          elements: [
+            { type: "mrkdwn", text: new Date().toLocaleString("en-PK") },
+          ],
         });
 
-        if (discordRes.ok) {
-          console.log("✅ Discord notification sent!");
+        const slackRes = await fetch(webhookUrl, {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            // This line is what shows in your phone's notification
+            text: `New order ${order.orderNumber} — Rs.${totalAmount}`,
+            blocks,
+          }),
+        });
+
+        if (slackRes.ok) {
+          console.log("✅ Slack notification sent!");
         } else {
-          const errorText = await discordRes.text();
-          console.error("Discord error:", errorText);
+          const errorText = await slackRes.text();
+          console.error("Slack error:", errorText);
         }
       }
-    } catch (discordError) {
-      console.error("Discord failed:", discordError);
+    } catch (slackError) {
+      console.error("Slack failed:", slackError);
     }
 
     return NextResponse.json({
