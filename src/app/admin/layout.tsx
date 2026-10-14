@@ -32,7 +32,8 @@ export default function AdminLayout({
 
   if (isLoginPage) {
     return (
-      <div className="min-h-screen" style={{ background: "#0F0F0F" }}>
+      <div className="admin-content min-h-screen" 
+      style={{ background: "#0F0F0F" }}>
         {children}
       </div>
     );
@@ -41,7 +42,7 @@ export default function AdminLayout({
   if (!hydrated || !isLoggedIn || user?.role !== "admin") {
     return (
       <div
-        className="min-h-screen flex flex-col items-center justify-center gap-3"
+        className="admin-content min-h-screen flex flex-col items-center justify-center gap-3"
         style={{ background: "#0F0F0F" }}
       >
         <div

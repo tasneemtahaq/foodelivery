@@ -308,21 +308,25 @@ export default function HomeClient({
             className="mx-auto grid w-full max-w-400 items-center justify-items-center gap-8 px-4 py-6 md:grid-cols-2 md:gap-12 md:px-8 md:py-8"
             style={{ marginInline: "auto" }}
           >
-            <motion.div
-              className="relative mx-auto w-full"
-              style={{ height: "clamp(320px, 55vw, 560px)", maxWidth: "900px" }}
+                        <motion.div
               initial={{ opacity: 0, x: -28 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
+              style={{
+                position:     "relative",
+                width:        "100%",
+                height:       "clamp(360px, 70vw, 720px)",
+                marginInline: "auto",
+              }}
             >
               <div className="absolute inset-[12%] rounded-full bg-[#f3b267]/25 blur-[70px]" />
               <Image
                 src="/images/friessalsa.png"
                 alt="Best French Fries"
                 fill
-                sizes="(max-width: 900px) 100vw, 900px"
-                className="object-contain object-center"
+                sizes="(max-width: 768px) 100vw, 900px"
+                className="object-contain object-center scale-110 md:scale-[1.35]"
               />
             </motion.div>
 

@@ -10,7 +10,7 @@
   --text-muted: #6B7280;
 }
 
-* 
+*:not(.admin-content, .admin-content *) 
 {
   margin: 0;
   padding: 0;
