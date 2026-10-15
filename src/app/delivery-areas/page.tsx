@@ -80,7 +80,7 @@ export default async function DeliveryAreasPage() {
             Delivery Areas
           </h1>
           <p style={{ fontSize: "14px", color: "#3d3b38" }}>
-            We deliver within an 8km radius of our location in Saddar, Karachi.
+            We deliver within an 12km radius of our location in Saddar, Karachi.
           </p>
         </div>
 

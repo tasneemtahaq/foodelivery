@@ -1,91 +1,97 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, Bot, User } from "lucide-react";
-
+import { BUSINESS } from "@/lib/business";
 
 interface Message {
   role:    "user" | "assistant";
   content: string;
 }
 
-interface MenuItem {
-  id:          number;
-  name:        string;
-  price:       number;
-  offerPrice:  number | null;
-  description: string;
-  category:    string;
-}
+const FIRST_MESSAGE =
+  "Assalam o Alaikum! 👋 Welcome to Mama Soups. Hot soup, crispy fries or fresh puri — what are you craving today? I can suggest something tasty in seconds! 🍜";
 
-interface AIAssistantProps {
-  menuItems: MenuItem[];
-}
+const QUICK_REPLIES = [
+  "What's popular? 🔥",
+  "Soup + fries combo?",
+  "Delivery to my area?",
+  "Are you open today?",
+];
 
-export default function AIAssistant({ menuItems }: AIAssistantProps) {
-  const [isOpen,   setIsOpen]   = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role:    "assistant",
-      content: "السلام علیکم! 👋 I'm your Mama Soups assistant! I can help you explore our menu, suggest dishes, and answer any questions. What are you craving today? 🍜",
-    },
+const orangeGradient = "linear-gradient(135deg, #F97316, #EA580C)";
+
+// The menu now loads from the database on the server, so this prop is no
+// longer needed. It is still accepted so existing pages keep working.
+export default function AIAssistant(_props: { menuItems?: unknown }) {
+  const [isOpen,     setIsOpen]     = useState(false);
+  const [showTeaser, setShowTeaser] = useState(false);
+  const [messages,   setMessages]   = useState<Message[]>([
+    { role: "assistant", content: FIRST_MESSAGE },
   ]);
-  const [input,    setInput]    = useState("");
-  const [loading,  setLoading]  = useState(false);
-  const bottomRef              = useRef<HTMLDivElement>(null);
-  
+  const [input,   setInput]   = useState("");
+  const [loading, setLoading] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Auto scroll to bottom
+  // Greet visitors with a small bubble, once per visit
+  useEffect(() => {
+    let hideTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const showTimer = setTimeout(() => {
+      try {
+        if (sessionStorage.getItem("mamaGreeted")) return;
+        sessionStorage.setItem("mamaGreeted", "1");
+      } catch {
+        // storage blocked: show the greeting anyway
+      }
+      setShowTeaser(true);
+      hideTimer = setTimeout(() => setShowTeaser(false), 14000);
+    }, 2500);
+
+    return () => {
+      clearTimeout(showTimer);
+      if (hideTimer) clearTimeout(hideTimer);
+    };
+  }, []);
+
+  // Scroll to the newest message
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, loading, isOpen]);
 
-  const sendMessage = async () => {
-    if (!input.trim() || loading) return;
+  const openChat = () => {
+    setShowTeaser(false);
+    setIsOpen(true);
+  };
 
-    const userMessage = input.trim();
+  const send = async (text: string) => {
+    const clean = text.trim();
+    if (!clean || loading) return;
+
+    const next: Message[] = [...messages, { role: "user", content: clean }];
+    setMessages(next);
     setInput("");
-
-    const newMessages: Message[] = [
-      ...messages,
-      { role: "user", content: userMessage },
-    ];
-
-    setMessages(newMessages);
     setLoading(true);
 
     try {
-      const response = await fetch("/api/chat", {
+      const res = await fetch("/api/chat", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages:  newMessages.map((m) => ({
-            role:    m.role,
-            content: m.content,
-          })),
-          menuItems,
-        }),
+        body:    JSON.stringify({ messages: next.slice(-12) }),
       });
+      const data = await res.json();
 
-      const data = await response.json();
+      if (!res.ok || !data.reply) throw new Error(data.error ?? "Failed");
 
-      if (!response.ok) {
-        throw new Error(data.error ?? "Failed");
-      }
-
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: data.reply },
-      ]);
-
-    } catch (error) {
-      console.error("Chat error:", error);
+      setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
+    } catch {
       setMessages((prev) => [
         ...prev,
         {
           role:    "assistant",
-          content: "Sorry, I'm having trouble right now. Please try again! 🙏",
+          content: `Sorry, I'm having a little trouble right now 🙏 You can still order from our Menu page, or call us on ${BUSINESS.phone}.`,
         },
       ]);
     } finally {
@@ -93,168 +99,242 @@ export default function AIAssistant({ menuItems }: AIAssistantProps) {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
+  const bubble = {
+    padding:    "9px 13px",
+    fontSize:   "13px",
+    lineHeight: 1.5,
+    maxWidth:   "80%",
+    whiteSpace: "pre-wrap",
+    wordBreak:  "break-word",
+  } as const;
 
   return (
     <>
-      {/* ── Floating Button ── */}
-      <motion.button
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-lg"
+      {/* ── Greeting bubble ── */}
+      <AnimatePresence>
+        {showTeaser && !isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 12, scale: 0.95 }}
+            style={{
+              position:     "fixed",
+              right:        "24px",
+              bottom:       "96px",
+              zIndex:       60,
+              width:        "min(270px, calc(100vw - 48px))",
+              padding:      "14px 16px",
+              borderRadius: "20px 20px 6px 20px",
+              background:   "white",
+              border:       "1px solid rgba(249,115,22,0.35)",
+              boxShadow:    "0 14px 36px rgba(61,47,29,0.25)",
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => setShowTeaser(false)}
+              aria-label="Close greeting"
+              style={{
+                position:   "absolute",
+                top:        "8px",
+                right:      "10px",
+                background: "none",
+                border:     "none",
+                color:      "#9a9189",
+                cursor:     "pointer",
+              }}
+            >
+              <X size={14} />
+            </button>
+
+            <p style={{ fontSize: "13px", lineHeight: 1.5, color: "#222", paddingRight: "14px" }}>
+              Assalam o Alaikum! 👋 Hungry? Tell me what you&apos;re in the mood
+              for and I&apos;ll pick the perfect soup, fries or puri for you!
+            </p>
+
+            <button
+              type="button"
+              onClick={openChat}
+              style={{
+                marginTop:    "10px",
+                padding:      "8px 16px",
+                borderRadius: "999px",
+                border:       "none",
+                background:   orangeGradient,
+                color:        "white",
+                fontSize:     "12px",
+                fontWeight:   700,
+                cursor:       "pointer",
+              }}
+            >
+              Chat with us 🍜
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Round chat button ── */}
+      <button
+        type="button"
+        onClick={() => (isOpen ? setIsOpen(false) : openChat())}
+        aria-label={isOpen ? "Close chat" : "Open chat"}
         style={{
-          background: "linear-gradient(135deg, #F97316, #EA580C)",
-          boxShadow:  "0 4px 24px rgba(249,115,22,0.5)",
-        }}
-        onClick={() => setIsOpen((o) => !o)}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{  scale: 0.95 }}
-        animate={isOpen ? {} : {
-          y: [0, -6, 0],
-        }}
-        transition={isOpen ? {} : {
-          duration: 2,
-          repeat:   Infinity,
-          ease:     "easeInOut",
+          position:       "fixed",
+          right:          "24px",
+          bottom:         "24px",
+          zIndex:         60,
+          width:          "60px",
+          height:         "60px",
+          borderRadius:   "50%",
+          border:         "none",
+          display:        "flex",
+          alignItems:     "center",
+          justifyContent: "center",
+          background:     orangeGradient,
+          color:          "white",
+          boxShadow:      "0 8px 26px rgba(249,115,22,0.55)",
+          cursor:         "pointer",
         }}
       >
-        <AnimatePresence mode="wait">
-          {isOpen ? (
-            <motion.div
-              key="close"
-              initial={{ rotate: -90, opacity: 0 }}
-              animate={{ rotate: 0,   opacity: 1 }}
-              exit={{    rotate:  90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <X size={22} color="white" />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="bot"
-              initial={{ rotate: 90, opacity: 0 }}
-              animate={{ rotate: 0,  opacity: 1 }}
-              exit={{    rotate: -90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Bot size={22} color="white" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.button>
+        {isOpen ? <X size={24} /> : <Bot size={26} />}
+      </button>
 
-      {/* ── Chat Window ── */}
+      {/* ── Chat window ── */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed bottom-24 right-6 z-50 w-80 sm:w-96 rounded-2xl overflow-hidden shadow-2xl"
+            initial={{ opacity: 0, y: 20, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.96 }}
+            transition={{ duration: 0.2 }}
             style={{
-              background: "white",
-              border:     "1px solid rgba(249,115,22,0.2)",
+              position:      "fixed",
+              right:         "24px",
+              bottom:        "96px",
+              zIndex:        60,
+              width:         "min(390px, calc(100vw - 32px))",
+              borderRadius:  "24px",
+              overflow:      "hidden",
+              background:    "#fffaf3",
+              border:        "1px solid rgba(249,115,22,0.3)",
+              boxShadow:     "0 24px 60px rgba(61,47,29,0.35)",
+              display:       "flex",
+              flexDirection: "column",
             }}
-            initial={{ opacity: 0, y: 20,  scale: 0.95 }}
-            animate={{ opacity: 1, y: 0,   scale: 1    }}
-            exit={{    opacity: 0, y: 20,  scale: 0.95 }}
-            transition={{ duration: 0.25 }}
           >
             {/* Header */}
             <div
-              className="px-4 py-3 flex items-center gap-3"
-              style={{ background: "linear-gradient(135deg, #F97316, #EA580C)" }}
+              style={{
+                padding:    "14px 18px",
+                background: orangeGradient,
+                display:    "flex",
+                alignItems: "center",
+                gap:        "12px",
+              }}
             >
-              <div
-                className="w-9 h-9 rounded-full flex items-center justify-center"
-                style={{ background: "rgba(255,255,255,0.2)" }}
+              <span
+                style={{
+                  width:          "38px",
+                  height:         "38px",
+                  borderRadius:   "50%",
+                  background:     "rgba(255,255,255,0.22)",
+                  display:        "flex",
+                  alignItems:     "center",
+                  justifyContent: "center",
+                  color:          "white",
+                }}
               >
-                <Bot size={20} color="white" />
-              </div>
+                <Bot size={20} />
+              </span>
               <div>
-                <p className="font-bold text-white text-sm">Mama Soups Assistant</p>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 rounded-full bg-green-300 animate-pulse" />
-                  <p className="text-xs" style={{ color: "rgba(255,255,255,0.85)" }}>
-                    Online — here to help!
-                  </p>
-                </div>
+                <p style={{ fontSize: "14px", fontWeight: 700, color: "white" }}>
+                  Mama Soups Assistant
+                </p>
+                <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.9)" }}>
+                  Ask me anything — I&apos;ll help you order 🍜
+                </p>
               </div>
             </div>
 
             {/* Messages */}
             <div
-              className="flex flex-col gap-3 p-4 overflow-y-auto"
-              style={{ height: "320px" }}
+              style={{
+                height:        "min(360px, 48vh)",
+                overflowY:     "auto",
+                padding:       "16px",
+                display:       "flex",
+                flexDirection: "column",
+                gap:           "12px",
+              }}
             >
-              {messages.map((msg, i) => (
-                <motion.div
-                  key={i}
-                  className={`flex gap-2 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0  }}
-                >
-                  {/* Avatar */}
+              {messages.map((msg, i) => {
+                const mine = msg.role === "user";
+                return (
                   <div
-                    className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-1"
+                    key={i}
                     style={{
-                      background: msg.role === "assistant"
-                        ? "linear-gradient(135deg, #F97316, #EA580C)"
-                        : "#E5E7EB",
+                      display:       "flex",
+                      gap:           "8px",
+                      flexDirection: mine ? "row-reverse" : "row",
+                      alignItems:    "flex-start",
                     }}
                   >
-                    {msg.role === "assistant"
-                      ? <Bot  size={14} color="white" />
-                      : <User size={14} color="#6B7280" />
-                    }
+                    <span
+                      style={{
+                        width:          "28px",
+                        height:         "28px",
+                        borderRadius:   "50%",
+                        flexShrink:     0,
+                        display:        "flex",
+                        alignItems:     "center",
+                        justifyContent: "center",
+                        background:     mine ? "#e5e7eb" : orangeGradient,
+                        color:          mine ? "#6B7280" : "white",
+                      }}
+                    >
+                      {mine ? <User size={14} /> : <Bot size={14} />}
+                    </span>
+                    <div
+                      style={{
+                        ...bubble,
+                        background:   mine ? orangeGradient : "white",
+                        color:        mine ? "white" : "#222",
+                        border:       mine ? "none" : "1px solid rgba(137,115,95,0.2)",
+                        borderRadius: mine ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
+                      }}
+                    >
+                      {msg.content}
+                    </div>
                   </div>
+                );
+              })}
 
-                  {/* Bubble */}
-                  <div
-                    className="max-w-[80%] px-3 py-2 rounded-2xl text-sm leading-relaxed"
-                    style={{
-                      padding: "6px 12px",
-                      background: msg.role === "assistant"
-                        ? "#FFF7ED"
-                        : "#F97316",
-                      color: msg.role === "assistant"
-                        ? "#1F2937"
-                        : "white",
-                      borderBottomLeftRadius:  msg.role === "assistant" ? "4px" : "16px",
-                      borderBottomRightRadius: msg.role === "user"      ? "4px" : "16px",
-                    }}
-                  >
-                    {msg.content}
-                  </div>
-                </motion.div>
-              ))}
-
-              {/* Loading dots */}
               {loading && (
-                <div className="flex gap-2">
-                  <div
-                    className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
-                    style={{padding: "4px 2px", background: "linear-gradient(135deg, #F97316, #EA580C)" }}
+                <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
+                  <span
+                    style={{
+                      width:          "28px",
+                      height:         "28px",
+                      borderRadius:   "50%",
+                      display:        "flex",
+                      alignItems:     "center",
+                      justifyContent: "center",
+                      background:     orangeGradient,
+                      color:          "white",
+                    }}
                   >
-                    <Bot size={14} color="white" />
-                  </div>
+                    <Bot size={14} />
+                  </span>
                   <div
-                    className="px-4 py-3 rounded-2xl flex items-center gap-1"
-                    style={{padding: "6px 12px", background: "#FFF7ED", borderBottomLeftRadius: "4px" }}
+                    style={{
+                      ...bubble,
+                      background:   "white",
+                      border:       "1px solid rgba(137,115,95,0.2)",
+                      borderRadius: "18px 18px 18px 4px",
+                      color:        "#9a9189",
+                    }}
                   >
-                    {[0, 1, 2].map((i) => (
-                      <motion.div
-                        key={i}
-                        className="w-2 h-2 rounded-full"
-                        style={{ padding:"4px 2px",background: "#F97316" }}
-                        animate={{ y: [0, -5, 0] }}
-                        transition={{
-                          duration: 0.6,
-                          repeat:   Infinity,
-                          delay:    i * 0.15,
-                        }}
-                      />
-                    ))}
+                    Typing...
                   </div>
                 </div>
               )}
@@ -262,104 +342,125 @@ export default function AIAssistant({ menuItems }: AIAssistantProps) {
               <div ref={bottomRef} />
             </div>
 
-            {/* Quick Suggestions */}
+            {/* One-tap questions (only before the customer has chatted) */}
             {messages.length === 1 && (
-              <div className="px-4 pb-2 flex flex-wrap gap-2">
-                {[
-                  "What's popular? 🔥",
-                  "Soup prices?",
-                  "Delivery areas?",
-                  "Opening hours?",
-                ].map((suggestion) => (
+              <div
+                style={{
+                  padding:  "0 16px 12px",
+                  display:  "flex",
+                  flexWrap: "wrap",
+                  gap:      "8px",
+                }}
+              >
+                {QUICK_REPLIES.map((q) => (
                   <button
-                    key={suggestion}
-                    onClick={async () => {
-                    setInput(suggestion);
-                    // Small delay to let state update
-                    await new Promise(r => setTimeout(r, 50));
-                    const userMessage = suggestion;
-                    setInput("");
-                    const newMessages: Message[] = [
-                      ...messages,
-                      { role: "user", content: userMessage },
-                    ];
-                    setMessages(newMessages);
-                    setLoading(true);
-
-                    try {
-                      const response = await fetch("/api/chat", {
-                        method:  "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          messages:  newMessages.map((m) => ({
-                            role:    m.role,
-                            content: m.content,
-                          })),
-                          menuItems,
-                        }),
-                      });
-                      const data = await response.json();
-                      setMessages((prev) => [
-                        ...prev,
-                        { role: "assistant", content: data.reply },
-                      ]);
-                    } catch {
-                      setMessages((prev) => [
-                        ...prev,
-                        { role: "assistant", content: "Sorry, try again! 🙏" },
-                      ]);
-                    } finally {
-                      setLoading(false);
-                    }
-                  }}
-                    className="px-3 py-1 rounded-full text-xs font-medium border transition-all hover:bg-orange-50"
+                    key={q}
+                    type="button"
+                    onClick={() => send(q)}
                     style={{
-                      padding:     "6px 12px",
-                      borderColor: "rgba(249,115,22,0.3)",
-                      color:       "#F97316",
+                      padding:      "7px 13px",
+                      borderRadius: "999px",
+                      border:       "1.5px solid rgba(249,115,22,0.5)",
+                      background:   "white",
+                      color:        "#EA580C",
+                      fontSize:     "12px",
+                      fontWeight:   600,
+                      cursor:       "pointer",
                     }}
                   >
-                    {suggestion}
+                    {q}
                   </button>
                 ))}
               </div>
             )}
 
-            {/* Input */}
-            <div
-              className="px-3 py-3 flex items-center gap-2"
-              style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }}
+            {/* Order buttons */}
+            <div style={{ padding: "0 16px 12px", display: "flex", gap: "10px" }}>
+              <Link
+                href="/menu"
+                style={{
+                  flex:         1,
+                  textAlign:    "center",
+                  padding:      "10px",
+                  borderRadius: "999px",
+                  background:   orangeGradient,
+                  color:        "white",
+                  fontSize:     "12px",
+                  fontWeight:   700,
+                  boxShadow:    "0 6px 16px rgba(249,115,22,0.35)",
+                }}
+              >
+                🍜 View Menu
+              </Link>
+              <Link
+                href="/cart"
+                style={{
+                  flex:         1,
+                  textAlign:    "center",
+                  padding:      "8px",
+                  borderRadius: "999px",
+                  border:       "2px solid #F97316",
+                  color:        "#EA580C",
+                  fontSize:     "12px",
+                  fontWeight:   700,
+                }}
+              >
+                🛒 My Cart
+              </Link>
+            </div>
+
+            {/* Typing box */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                send(input);
+              }}
+              style={{
+                padding:    "12px 14px",
+                display:    "flex",
+                alignItems: "center",
+                gap:        "10px",
+                borderTop:  "1px solid rgba(137,115,95,0.2)",
+                background: "white",
+              }}
             >
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Ask me anything..."
-                className="flex-1 text-sm outline-none px-3 py-2 rounded-xl"
-                style={{
-                  padding:     "8px 12px",
-                  background: "#F9FAFB",
-                  border:     "1px solid rgba(0,0,0,0.08)",
-                  color:      "#1F2937",
-                }}
+                placeholder="Type your message..."
                 disabled={loading}
-              />
-              <motion.button
-                onClick={sendMessage}
-                disabled={loading || !input.trim()}
-                className="w-9 h-9 rounded-xl flex items-center justify-center"
                 style={{
-                  padding: "8px 10px",
-                  background: input.trim()
-                    ? "linear-gradient(135deg, #F97316, #EA580C)"
-                    : "#E5E7EB",
+                  flex:         1,
+                  padding:      "10px 14px",
+                  borderRadius: "999px",
+                  border:       "1px solid rgba(137,115,95,0.3)",
+                  background:   "#fffaf3",
+                  fontSize:     "13px",
+                  color:        "#222",
+                  outline:      "none",
                 }}
-                whileTap={{ scale: 0.9 }}
+              />
+              <button
+                type="submit"
+                disabled={loading || !input.trim()}
+                aria-label="Send message"
+                style={{
+                  width:          "40px",
+                  height:         "40px",
+                  borderRadius:   "50%",
+                  border:         "none",
+                  display:        "flex",
+                  alignItems:     "center",
+                  justifyContent: "center",
+                  background:     input.trim() ? orangeGradient : "#e5e7eb",
+                  color:          input.trim() ? "white" : "#9ca3af",
+                  cursor:         input.trim() ? "pointer" : "not-allowed",
+                }}
               >
-                <Send size={16} color={input.trim() ? "white" : "#9CA3AF"} />
-              </motion.button>
-            </div>
+                <Send size={16} />
+              </button>
+            </form>
           </motion.div>
         )}
       </AnimatePresence>
