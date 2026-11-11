@@ -13,6 +13,7 @@ import { useCartStore } from "../../store/cartStore";
 import type { CartStore } from "../../store/cartStore";
 import toast from "react-hot-toast";
 import { pageStyle, glass } from "../../lib/theme";
+import { useStoreStatus } from "@/lib/useStoreStatus";
 
 interface FormData {
   name:          string;
@@ -142,6 +143,7 @@ export default function CheckoutPage() {
   const items      = useCartStore((s: CartStore) => s.items);
   const totalPrice = useCartStore((s: CartStore) => s.totalPrice());
   const clearCart  = useCartStore((s: CartStore) => s.clearCart);
+  const store      = useStoreStatus();
 
   const [deliveryAreas,  setDeliveryAreas]  = useState<DeliveryArea[]>([]);
   const [deliveryCharge, setDeliveryCharge] = useState<number>(0);
@@ -288,6 +290,10 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!store.open) {
+      toast.error("We're closed right now and not taking orders.");
+      return;
+    }
     if (!validate()) {
       toast.error("Please fill in all required fields");
       return;
@@ -317,6 +323,10 @@ export default function CheckoutPage() {
       });
 
       const data = await response.json();
+      if (response.status === 403) {
+        toast.error(data.error ?? "We're closed right now.");
+        return;
+      }
       if (!response.ok) throw new Error(data.error ?? "Order failed");
 
       clearCart();
@@ -1000,10 +1010,27 @@ export default function CheckoutPage() {
                 </span>
               </div>
 
+                            {!store.open && (
+                <div
+                  style={{
+                    marginBottom: "14px",
+                    padding:      "12px 14px",
+                    borderRadius: "16px",
+                    background:   "rgba(220,38,38,0.1)",
+                    border:       "1px solid rgba(220,38,38,0.3)",
+                    color:        "#991b1b",
+                    fontSize:     "13px",
+                    lineHeight:   1.5,
+                  }}
+                >
+                  🔒 {store.message}
+                </div>
+              )}
+
               {/* Place order */}
               <motion.button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !store.open}
                 whileHover={!isSubmitting ? { scale: 1.02 } : {}}
                 whileTap={!isSubmitting ? { scale: 0.98 } : {}}
                 style={{
@@ -1020,7 +1047,8 @@ export default function CheckoutPage() {
                   letterSpacing:  "0.1em",
                   textTransform:  "uppercase",
                   color:          "white",
-                  cursor:         isSubmitting ? "not-allowed" : "pointer",
+                  cursor:         isSubmitting || !store.open ? "not-allowed" : "pointer",
+                  opacity:        store.open ? 1 : 0.5,
                   background:     isSubmitting
                     ? "#b8b0a6"
                     : "linear-gradient(135deg, #F97316, #EA580C)",

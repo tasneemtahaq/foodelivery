@@ -79,6 +79,7 @@ model Settings {
   address        String  @default("")
   phone          String  @default("")
   taxPercent     Float   @default(0)
+  ordersOpen     Boolean @default(true)
 }
 
 model Admin {

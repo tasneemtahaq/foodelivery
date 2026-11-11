@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { ADMIN_COOKIE, createAdminToken, adminCookieOptions } from "@/lib/adminAuth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,11 +35,13 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      return NextResponse.json({
+        const response = NextResponse.json({
         success: true,
         role:    "admin",
         user: { id: admin.id, email: admin.email },
       });
+      response.cookies.set(ADMIN_COOKIE, createAdminToken(admin.id), adminCookieOptions);
+      return response;
 
     } else {
       // ── Customer Login ──

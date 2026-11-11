@@ -17,6 +17,14 @@ async function generateOrderNumber(): Promise<string> {
 export async function POST(request: NextRequest) {
   console.log("✅ Orders API called!");
   try {
+    // ── Refuse orders while the shop is closed ──
+    const shop = await prisma.settings.findFirst();
+    if (shop && shop.ordersOpen === false) {
+      return NextResponse.json(
+        { error: "We're closed right now and not taking orders. Please order during our opening hours." },
+        { status: 403 }
+      );
+    }
     const body = await request.json();
 
     const {

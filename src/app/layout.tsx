@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import NavbarWrapper from "./components/NavbarWrapper";
+import StoreStatusBanner from "./components/StoreStatusBanner";
 
 export const metadata: Metadata = {
   title: "Mama Soups | Best Soups in Karachi | Order Online",
@@ -77,6 +78,7 @@ export default function RootLayout({
   />
 
   <NavbarWrapper />
+        <StoreStatusBanner />
         <Toaster
           position="top-right"
           toastOptions={{

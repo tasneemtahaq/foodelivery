@@ -36,6 +36,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No message" }, { status: 400 });
     }
 
+        let shopOpen = true;
+    try {
+      const shop = await prisma.settings.findFirst();
+      if (shop && shop.ordersOpen === false) shopOpen = false;
+    } catch (error) {
+      console.error("Chat: could not read shop status:", error);
+    }
+
     // ── Load the live menu and delivery charges from the database ──
     let menuText  = "(The live menu could not be loaded. Ask the customer to open the Menu page.)";
     let areasText = "(Delivery areas could not be loaded. Ask the customer to open the Delivery Areas page.)";
@@ -82,6 +90,7 @@ ${areasText}
 
 BUSINESS FACTS:
 - Opening hours: ${BUSINESS.hoursText}
+${shopOpen ? "" : "- IMPORTANT: We are CLOSED right now and not taking orders. Tell customers politely, mention our opening hours, and invite them to come back then."}
 - We deliver within about ${BUSINESS.deliveryRadius} of ${BUSINESS.address}
 - Estimated delivery time: ${BUSINESS.deliveryTime}
 - Phone: ${BUSINESS.phone}

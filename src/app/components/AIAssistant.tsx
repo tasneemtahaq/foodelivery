@@ -21,6 +21,11 @@ const QUICK_REPLIES = [
   "Are you open today?",
 ];
 
+// ── Pop-up settings ──
+const AUTO_OPEN_DELAY_MS = 3000;  // time to wait after the page loads (3000 = 3 seconds)
+const OPEN_ON_PHONES     = true;  // true  = the chat opens by itself on phones too
+                                  // false = phones get a small greeting bubble instead
+
 const orangeGradient = "linear-gradient(135deg, #F97316, #EA580C)";
 
 // The menu now loads from the database on the server, so this prop is no
@@ -36,22 +41,32 @@ export default function AIAssistant(_props: { menuItems?: unknown }) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   // Greet visitors with a small bubble, once per visit
+    // Pop the chat open by itself, once per visit
   useEffect(() => {
     let hideTimer: ReturnType<typeof setTimeout> | undefined;
 
-    const showTimer = setTimeout(() => {
+    const openTimer = setTimeout(() => {
       try {
         if (sessionStorage.getItem("mamaGreeted")) return;
         sessionStorage.setItem("mamaGreeted", "1");
       } catch {
-        // storage blocked: show the greeting anyway
+        // storage blocked: still greet the visitor
       }
-      setShowTeaser(true);
-      hideTimer = setTimeout(() => setShowTeaser(false), 14000);
-    }, 2500);
+
+      const isPhone = window.innerWidth < 640;
+
+      if (isPhone && !OPEN_ON_PHONES) {
+        // Phones: small bubble that hides itself after 14 seconds
+        setShowTeaser(true);
+        hideTimer = setTimeout(() => setShowTeaser(false), 14000);
+      } else {
+        // Everyone else: open the full chat window
+        setIsOpen(true);
+      }
+    }, AUTO_OPEN_DELAY_MS);
 
     return () => {
-      clearTimeout(showTimer);
+      clearTimeout(openTimer);
       if (hideTimer) clearTimeout(hideTimer);
     };
   }, []);

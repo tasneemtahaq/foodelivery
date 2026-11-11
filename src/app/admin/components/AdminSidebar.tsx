@@ -9,6 +9,7 @@ import {
   LayoutDashboard, UtensilsCrossed, ShoppingBag,
   Users, Settings, LogOut, Tag, Menu, X, TrendingUp, Truck
 } from "lucide-react";
+import StoreSwitch from "./StoreSwitch";
 
 const NAV_ITEMS = [
   { label: "Dashboard",  href: "/admin",            icon: LayoutDashboard },
@@ -97,6 +98,8 @@ function SidebarContent({
         })}
       </nav>
 
+      <StoreSwitch />
+      
       {/* Bottom */}
       <div
         className="px-3 py-4"
